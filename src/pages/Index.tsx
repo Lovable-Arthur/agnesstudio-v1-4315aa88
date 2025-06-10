@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Calendar, Clock, Star, Phone, MapPin, Instagram } from "lucide-react";
+import { Calendar, Clock, Star, Phone, MapPin, Instagram, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import BookingModal from "@/components/BookingModal";
@@ -72,10 +72,16 @@ const Index = () => {
               </div>
               <h1 className="text-2xl font-bold text-primary">Beleza Salon</h1>
             </div>
-            <Button onClick={() => setIsBookingOpen(true)} className="bg-primary hover:bg-primary/90">
-              <Calendar className="w-4 h-4 mr-2" />
-              Agendar
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button onClick={() => window.location.href = '/agenda'} variant="outline">
+                <Users className="w-4 h-4 mr-2" />
+                Agenda
+              </Button>
+              <Button onClick={() => setIsBookingOpen(true)} className="bg-primary hover:bg-primary/90">
+                <Calendar className="w-4 h-4 mr-2" />
+                Agendar
+              </Button>
+            </div>
           </div>
         </div>
       </header>
