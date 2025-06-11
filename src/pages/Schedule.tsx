@@ -3,9 +3,9 @@ import CalendarView from "@/components/CalendarView";
 
 const Schedule = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white shadow-sm border-b flex-shrink-0">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -21,8 +21,8 @@ const Schedule = () => {
         </div>
       </header>
 
-      {/* Page Content */}
-      <div className="container mx-auto px-4 py-8">
+      {/* Calendar View */}
+      <div className="flex-1 overflow-hidden">
         <CalendarView />
       </div>
     </div>

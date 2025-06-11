@@ -1,9 +1,11 @@
-
 import { useState } from "react";
-import { Calendar, ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Users, Filter, Search, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import DayView from "./DayView";
 import WeekView from "./WeekView";
 import MonthView from "./MonthView";
@@ -133,11 +135,14 @@ export const professionals = [
 ];
 
 const CalendarView = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentView, setCurrentView] = useState("day");
+  const [selectedProfessionals, setSelectedProfessionals] = useState(
+    professionals.map(p => p.id)
+  );
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString + 'T00:00:00');
+  const formatDate = (date: Date) => {
     return date.toLocaleDateString('pt-BR', {
       weekday: 'long',
       year: 'numeric',
@@ -147,121 +152,182 @@ const CalendarView = () => {
   };
 
   const changeDate = (days: number) => {
-    const currentDate = new Date(selectedDate + 'T00:00:00');
-    currentDate.setDate(currentDate.getDate() + days);
-    setSelectedDate(currentDate.toISOString().split('T')[0]);
+    const newDate = new Date(selectedDate);
+    newDate.setDate(newDate.getDate() + days);
+    setSelectedDate(newDate);
   };
 
-  const totalAppointments = professionals.reduce((total, prof) => total + prof.appointments.length, 0);
+  const toggleProfessional = (professionalId: number) => {
+    setSelectedProfessionals(prev => 
+      prev.includes(professionalId) 
+        ? prev.filter(id => id !== professionalId)
+        : [...prev, professionalId]
+    );
+  };
+
+  const toggleAllProfessionals = () => {
+    setSelectedProfessionals(prev => 
+      prev.length === professionals.length ? [] : professionals.map(p => p.id)
+    );
+  };
+
+  const filteredProfessionals = professionals.filter(prof => 
+    selectedProfessionals.includes(prof.id) &&
+    prof.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const getMonthName = (date: Date) => {
+    return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  };
+
+  const selectedDateString = selectedDate.toISOString().split('T')[0];
 
   return (
-    <div className="space-y-6">
-      {/* Date Navigation */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Users className="w-6 h-6 text-primary" />
-              <div>
-                <CardTitle className="text-2xl">Agenda dos Profissionais</CardTitle>
-                <p className="text-muted-foreground mt-1">
-                  {formatDate(selectedDate)} • {totalAppointments} agendamentos
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => changeDate(-1)}
-              >
+    <div className="h-screen flex flex-col bg-background">
+      {/* Top Navigation */}
+      <div className="border-b bg-card">
+        <div className="flex items-center justify-between px-6 py-3">
+          <div className="flex items-center space-x-6">
+            <Tabs value={currentView} onValueChange={setCurrentView} className="flex items-center">
+              <TabsList className="grid grid-cols-4 w-auto">
+                <TabsTrigger value="agenda" className="px-4 py-2">Agenda</TabsTrigger>
+                <TabsTrigger value="day" className="px-4 py-2">Dia</TabsTrigger>
+                <TabsTrigger value="week" className="px-4 py-2">Semana</TabsTrigger>
+                <TabsTrigger value="month" className="px-4 py-2">Mês</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" onClick={() => changeDate(-1)}>
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                Hoje
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => changeDate(1)}
-              >
+              <span className="text-sm font-medium min-w-[120px] text-center">
+                {getMonthName(selectedDate)}
+              </span>
+              <Button variant="outline" size="sm" onClick={() => changeDate(1)}>
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {/* Calendar Views */}
-      <Tabs value={currentView} onValueChange={setCurrentView} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="day">Dia</TabsTrigger>
-          <TabsTrigger value="week">Semana</TabsTrigger>
-          <TabsTrigger value="month">Mês</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="day" className="mt-6">
-          <DayView 
-            selectedDate={selectedDate} 
-            professionals={professionals}
-          />
-        </TabsContent>
-        
-        <TabsContent value="week" className="mt-6">
-          <WeekView 
-            selectedDate={selectedDate} 
-            professionals={professionals}
-          />
-        </TabsContent>
-        
-        <TabsContent value="month" className="mt-6">
-          <MonthView 
-            selectedDate={selectedDate} 
-            professionals={professionals}
-          />
-        </TabsContent>
-      </Tabs>
-
-      {/* Summary */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-primary">{totalAppointments}</div>
-              <div className="text-sm text-muted-foreground">Total de Agendamentos</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-green-600">
-                {professionals.reduce((total, prof) => 
-                  total + prof.appointments.filter(apt => apt.status === "confirmed").length, 0
-                )}
-              </div>
-              <div className="text-sm text-muted-foreground">Confirmados</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-yellow-600">
-                {professionals.reduce((total, prof) => 
-                  total + prof.appointments.filter(apt => apt.status === "pending").length, 0
-                )}
-              </div>
-              <div className="text-sm text-muted-foreground">Pendentes</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-blue-600">
-                {professionals.reduce((total, prof) => 
-                  total + prof.appointments.filter(apt => apt.status === "completed").length, 0
-                )}
-              </div>
-              <div className="text-sm text-muted-foreground">Concluídos</div>
+            
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setSelectedDate(new Date())}
+              className="text-primary"
+            >
+              Hoje
+            </Button>
+            
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm">
+                <Settings className="w-4 h-4" />
+              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <div className="w-64 border-r bg-card flex flex-col">
+          {/* Mini Calendar */}
+          <div className="p-4 border-b">
+            <CalendarComponent
+              mode="single"
+              selected={selectedDate}
+              onSelect={(date) => date && setSelectedDate(date)}
+              className="rounded-md border-0"
+            />
+          </div>
+
+          {/* Professionals Filter */}
+          <div className="p-4 flex-1 overflow-auto">
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-medium text-sm mb-3">Profissionais</h3>
+                <Input
+                  placeholder="Pesquisar profissional"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="mb-3"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="all-professionals"
+                    checked={selectedProfessionals.length === professionals.length}
+                    onCheckedChange={toggleAllProfessionals}
+                  />
+                  <label
+                    htmlFor="all-professionals"
+                    className="text-sm font-medium cursor-pointer"
+                  >
+                    Todos
+                  </label>
+                </div>
+                
+                {professionals
+                  .filter(prof => prof.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .map((professional) => (
+                  <div key={professional.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`prof-${professional.id}`}
+                      checked={selectedProfessionals.includes(professional.id)}
+                      onCheckedChange={() => toggleProfessional(professional.id)}
+                    />
+                    <div className="flex items-center space-x-2 flex-1">
+                      <div className={`w-3 h-3 rounded-full ${professional.color}`}></div>
+                      <label
+                        htmlFor={`prof-${professional.id}`}
+                        className="text-sm cursor-pointer flex-1"
+                      >
+                        {professional.name}
+                      </label>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto">
+          <Tabs value={currentView} className="h-full">
+            <TabsContent value="agenda" className="mt-0 h-full">
+              <DayView 
+                selectedDate={selectedDateString} 
+                professionals={filteredProfessionals}
+              />
+            </TabsContent>
+            
+            <TabsContent value="day" className="mt-0 h-full">
+              <DayView 
+                selectedDate={selectedDateString} 
+                professionals={filteredProfessionals}
+              />
+            </TabsContent>
+            
+            <TabsContent value="week" className="mt-0 h-full">
+              <WeekView 
+                selectedDate={selectedDateString} 
+                professionals={filteredProfessionals}
+              />
+            </TabsContent>
+            
+            <TabsContent value="month" className="mt-0 h-full">
+              <MonthView 
+                selectedDate={selectedDateString} 
+                professionals={filteredProfessionals}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
 };
