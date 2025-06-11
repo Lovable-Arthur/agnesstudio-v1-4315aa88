@@ -30,10 +30,14 @@ const Index = () => {
     setSelectedService(null);
   };
 
+  const handleBookingOpen = () => {
+    setIsBookingModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      <HeroSection />
+      <Header onBookingOpen={handleBookingOpen} />
+      <HeroSection onBookingOpen={handleBookingOpen} />
       <ServicesSection onServiceBook={handleServiceBook} />
       <AboutSection />
       <ContactSection />
