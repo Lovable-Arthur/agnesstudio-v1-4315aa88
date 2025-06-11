@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, DollarSign, Package, Users, Megaphone, BarChart3, Settings } from "lucide-react";
 import CalendarView from "@/components/CalendarView";
 import FinanceiroView from "@/components/FinanceiroView";
 import EstoqueView from "@/components/EstoqueView";
@@ -8,7 +9,6 @@ import ClientesView from "@/components/ClientesView";
 import MarketingView from "@/components/MarketingView";
 import RelatoriosView from "@/components/RelatoriosView";
 import ConfiguracoesView from "@/components/ConfiguracoesView";
-import AvecPayView from "@/components/AvecPayView";
 
 const Schedule = () => {
   return (
@@ -34,62 +34,55 @@ const Schedule = () => {
       <div className="flex-1 overflow-hidden">
         <Tabs defaultValue="agenda" className="h-full flex flex-col">
           <div className="bg-white border-b px-4">
-            <TabsList className="grid w-full grid-cols-8 bg-transparent h-auto p-0 gap-0">
+            <TabsList className="grid w-full grid-cols-7 bg-transparent h-auto p-0 gap-0">
               <TabsTrigger 
                 value="agenda" 
                 className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
               >
-                <span className="text-lg mb-1">📅</span>
+                <Calendar className="w-5 h-5 mb-1" />
                 Agenda
               </TabsTrigger>
               <TabsTrigger 
                 value="financeiro"
                 className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
               >
-                <span className="text-lg mb-1">💰</span>
+                <DollarSign className="w-5 h-5 mb-1" />
                 Financeiro
               </TabsTrigger>
               <TabsTrigger 
                 value="estoque"
                 className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
               >
-                <span className="text-lg mb-1">📦</span>
+                <Package className="w-5 h-5 mb-1" />
                 Estoque
               </TabsTrigger>
               <TabsTrigger 
                 value="clientes"
                 className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
               >
-                <span className="text-lg mb-1">👥</span>
+                <Users className="w-5 h-5 mb-1" />
                 Clientes
               </TabsTrigger>
               <TabsTrigger 
                 value="marketing"
                 className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
               >
-                <span className="text-lg mb-1">🏷️</span>
+                <Megaphone className="w-5 h-5 mb-1" />
                 Marketing
               </TabsTrigger>
               <TabsTrigger 
                 value="relatorios"
                 className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
               >
-                <span className="text-lg mb-1">📊</span>
+                <BarChart3 className="w-5 h-5 mb-1" />
                 Relatórios
               </TabsTrigger>
               <TabsTrigger 
                 value="configuracoes"
                 className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
               >
-                <span className="text-lg mb-1">⚙️</span>
+                <Settings className="w-5 h-5 mb-1" />
                 Configurações
-              </TabsTrigger>
-              <TabsTrigger 
-                value="avecpay"
-                className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
-              >
-                <span className="text-lg mb-1">💳</span>
-                AvecPay
               </TabsTrigger>
             </TabsList>
           </div>
@@ -121,10 +114,6 @@ const Schedule = () => {
             
             <TabsContent value="configuracoes" className="h-full m-0">
               <ConfiguracoesView />
-            </TabsContent>
-            
-            <TabsContent value="avecpay" className="h-full m-0">
-              <AvecPayView />
             </TabsContent>
           </div>
         </Tabs>
