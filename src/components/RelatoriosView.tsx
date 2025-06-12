@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,7 +18,7 @@ import {
   PieChart,
   Percent
 } from "lucide-react";
-import { PieChart as RechartsPieChart, Cell, ResponsiveContainer } from "recharts";
+import { PieChart as RechartsPieChart, Cell, ResponsiveContainer, Pie } from "recharts";
 
 const RelatoriosView = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("hoje");
