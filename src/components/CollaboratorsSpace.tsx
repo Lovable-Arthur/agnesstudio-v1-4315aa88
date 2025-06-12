@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogOut, Users, Calendar, BarChart3, Settings } from "lucide-react";
+import { Link } from 'react-router-dom';
 
 interface CollaboratorsSpaceProps {
   onLogout: () => void;
@@ -40,22 +41,24 @@ const CollaboratorsSpace = ({ onLogout }: CollaboratorsSpaceProps) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Calendar className="mr-2 h-5 w-5 text-blue-500" />
-                  Agenda
-                </CardTitle>
-                <CardDescription>
-                  Gerencie seus agendamentos e horários
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full">
-                  Acessar Agenda
-                </Button>
-              </CardContent>
-            </Card>
+            <Link to="/agenda">
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Calendar className="mr-2 h-5 w-5 text-blue-500" />
+                    Agenda
+                  </CardTitle>
+                  <CardDescription>
+                    Gerencie seus agendamentos e horários
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="outline" className="w-full">
+                    Acessar Agenda
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
 
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardHeader>
@@ -91,22 +94,24 @@ const CollaboratorsSpace = ({ onLogout }: CollaboratorsSpaceProps) => {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Settings className="mr-2 h-5 w-5 text-gray-500" />
-                  Configurações
-                </CardTitle>
-                <CardDescription>
-                  Ajuste suas preferências e configurações
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full">
-                  Configurações
-                </Button>
-              </CardContent>
-            </Card>
+            <Link to="/comissoes">
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Settings className="mr-2 h-5 w-5 text-gray-500" />
+                    Comissões
+                  </CardTitle>
+                  <CardDescription>
+                    Gerencie comissões e pagamentos
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="outline" className="w-full">
+                    Ver Comissões
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
         </div>
       </main>

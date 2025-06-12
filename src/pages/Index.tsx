@@ -36,7 +36,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onBookingOpen={handleBookingOpen} />
+      <Header />
       <HeroSection onBookingOpen={handleBookingOpen} />
       <ServicesSection onServiceBook={handleServiceBook} />
       <AboutSection />
@@ -48,26 +48,6 @@ const Index = () => {
         onClose={handleCloseModal}
         selectedService={selectedService}
       />
-
-      {/* Links para outras páginas */}
-      <div className="fixed bottom-4 right-4 space-y-2">
-        <div>
-          <button 
-            onClick={() => window.location.href = '/agenda'}
-            className="block w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg shadow-lg hover:bg-primary/90 transition-colors"
-          >
-            📅 Agenda
-          </button>
-        </div>
-        <div>
-          <button 
-            onClick={() => window.location.href = '/comissoes'}
-            className="block w-full px-4 py-2 bg-secondary text-secondary-foreground rounded-lg shadow-lg hover:bg-secondary/90 transition-colors"
-          >
-            💰 Comissões
-          </button>
-        </div>
-      </div>
     </div>
   );
 };

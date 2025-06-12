@@ -33,12 +33,6 @@ const Header = () => {
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/agenda">
-              <Button variant="outline">
-                <Calendar className="mr-2 h-4 w-4" />
-                Agendar
-              </Button>
-            </Link>
             <Link to="/login">
               <Button variant="outline">
                 <LogIn className="mr-2 h-4 w-4" />
@@ -74,12 +68,6 @@ const Header = () => {
               Contato
             </a>
             <div className="flex flex-col space-y-2 px-3 pt-2">
-              <Link to="/agenda">
-                <Button variant="outline" className="w-full">
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Agendar
-                </Button>
-              </Link>
               <Link to="/login">
                 <Button variant="outline" className="w-full">
                   <LogIn className="mr-2 h-4 w-4" />
