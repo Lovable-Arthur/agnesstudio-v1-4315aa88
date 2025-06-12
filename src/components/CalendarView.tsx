@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Calendar, ChevronLeft, ChevronRight, Users, Settings } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Users, Filter, Search, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -8,7 +9,6 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import DayView from "./DayView";
 import WeekView from "./WeekView";
 import MonthView from "./MonthView";
-import ConfiguracoesView from "./ConfiguracoesView";
 
 // Dados mockados dos profissionais e agendamentos
 export const professionals = [
@@ -185,15 +185,15 @@ const CalendarView = () => {
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Top Navigation */}
-      <div className="border-b bg-card flex-shrink-0">
+      <div className="border-b bg-card">
         <div className="flex items-center justify-between px-6 py-3">
           <div className="flex items-center space-x-6">
             <Tabs value={currentView} onValueChange={setCurrentView} className="flex items-center">
-              <TabsList className="grid grid-cols-5 w-auto bg-muted">
-                <TabsTrigger value="day" className="px-4 py-2 text-sm">Dia</TabsTrigger>
-                <TabsTrigger value="week" className="px-4 py-2 text-sm">Semana</TabsTrigger>
-                <TabsTrigger value="month" className="px-4 py-2 text-sm">Mês</TabsTrigger>
-                <TabsTrigger value="configuracoes" className="px-4 py-2 text-sm">Configurações</TabsTrigger>
+              <TabsList className="grid grid-cols-4 w-auto">
+                <TabsTrigger value="agenda" className="px-4 py-2">Agenda</TabsTrigger>
+                <TabsTrigger value="day" className="px-4 py-2">Dia</TabsTrigger>
+                <TabsTrigger value="week" className="px-4 py-2">Semana</TabsTrigger>
+                <TabsTrigger value="month" className="px-4 py-2">Mês</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
@@ -203,7 +203,7 @@ const CalendarView = () => {
               <Button variant="outline" size="sm" onClick={() => changeDate(-1)}>
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm font-medium min-w-[150px] text-center">
+              <span className="text-sm font-medium min-w-[120px] text-center">
                 {getMonthName(selectedDate)}
               </span>
               <Button variant="outline" size="sm" onClick={() => changeDate(1)}>
@@ -230,79 +230,81 @@ const CalendarView = () => {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - only show for calendar views */}
-        {currentView !== "configuracoes" && (
-          <div className="w-64 border-r bg-card flex flex-col flex-shrink-0">
-            {/* Mini Calendar */}
-            <div className="p-4 border-b">
-              <CalendarComponent
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => date && setSelectedDate(date)}
-                className="rounded-md border-0"
-              />
-            </div>
+        {/* Sidebar */}
+        <div className="w-64 border-r bg-card flex flex-col">
+          {/* Mini Calendar */}
+          <div className="p-4 border-b">
+            <CalendarComponent
+              mode="single"
+              selected={selectedDate}
+              onSelect={(date) => date && setSelectedDate(date)}
+              className="rounded-md border-0"
+            />
+          </div>
 
-            {/* Professionals Filter */}
-            <div className="p-4 flex-1 overflow-auto">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-medium text-sm mb-3 flex items-center gap-2">
-                    <Users className="w-4 h-4" />
-                    Profissionais
-                  </h3>
-                  <Input
-                    placeholder="Pesquisar profissional"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="mb-3"
+          {/* Professionals Filter */}
+          <div className="p-4 flex-1 overflow-auto">
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-medium text-sm mb-3">Profissionais</h3>
+                <Input
+                  placeholder="Pesquisar profissional"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="mb-3"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="all-professionals"
+                    checked={selectedProfessionals.length === professionals.length}
+                    onCheckedChange={toggleAllProfessionals}
                   />
+                  <label
+                    htmlFor="all-professionals"
+                    className="text-sm font-medium cursor-pointer"
+                  >
+                    Todos
+                  </label>
                 </div>
                 
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
+                {professionals
+                  .filter(prof => prof.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .map((professional) => (
+                  <div key={professional.id} className="flex items-center space-x-2">
                     <Checkbox
-                      id="all-professionals"
-                      checked={selectedProfessionals.length === professionals.length}
-                      onCheckedChange={toggleAllProfessionals}
+                      id={`prof-${professional.id}`}
+                      checked={selectedProfessionals.includes(professional.id)}
+                      onCheckedChange={() => toggleProfessional(professional.id)}
                     />
-                    <label
-                      htmlFor="all-professionals"
-                      className="text-sm font-medium cursor-pointer"
-                    >
-                      Todos
-                    </label>
-                  </div>
-                  
-                  {professionals
-                    .filter(prof => prof.name.toLowerCase().includes(searchTerm.toLowerCase()))
-                    .map((professional) => (
-                    <div key={professional.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`prof-${professional.id}`}
-                        checked={selectedProfessionals.includes(professional.id)}
-                        onCheckedChange={() => toggleProfessional(professional.id)}
-                      />
-                      <div className="flex items-center space-x-2 flex-1">
-                        <div className={`w-3 h-3 rounded-full ${professional.color} flex-shrink-0`}></div>
-                        <label
-                          htmlFor={`prof-${professional.id}`}
-                          className="text-sm cursor-pointer flex-1 truncate"
-                        >
-                          {professional.name}
-                        </label>
-                      </div>
+                    <div className="flex items-center space-x-2 flex-1">
+                      <div className={`w-3 h-3 rounded-full ${professional.color}`}></div>
+                      <label
+                        htmlFor={`prof-${professional.id}`}
+                        className="text-sm cursor-pointer flex-1"
+                      >
+                        {professional.name}
+                      </label>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-        )}
+        </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-hidden">
-          <Tabs value={currentView} className="h-full">            
+        <div className="flex-1 overflow-auto">
+          <Tabs value={currentView} className="h-full">
+            <TabsContent value="agenda" className="mt-0 h-full">
+              <DayView 
+                selectedDate={selectedDateString} 
+                professionals={filteredProfessionals}
+              />
+            </TabsContent>
+            
             <TabsContent value="day" className="mt-0 h-full">
               <DayView 
                 selectedDate={selectedDateString} 
@@ -322,10 +324,6 @@ const CalendarView = () => {
                 selectedDate={selectedDateString} 
                 professionals={filteredProfessionals}
               />
-            </TabsContent>
-            
-            <TabsContent value="configuracoes" className="mt-0 h-full">
-              <ConfiguracoesView />
             </TabsContent>
           </Tabs>
         </div>

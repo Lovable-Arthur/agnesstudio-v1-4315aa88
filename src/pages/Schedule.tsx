@@ -1,13 +1,14 @@
 
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DollarSign, Package, Users, Megaphone, BarChart3 } from "lucide-react";
+import { Calendar, DollarSign, Package, Users, Megaphone, BarChart3, Settings } from "lucide-react";
 import CalendarView from "@/components/CalendarView";
 import FinanceiroView from "@/components/FinanceiroView";
 import EstoqueView from "@/components/EstoqueView";
 import ClientesView from "@/components/ClientesView";
 import MarketingView from "@/components/MarketingView";
 import RelatoriosView from "@/components/RelatoriosView";
+import ConfiguracoesView from "@/components/ConfiguracoesView";
 
 const Schedule = () => {
   return (
@@ -18,9 +19,9 @@ const Schedule = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">A</span>
+                <span className="text-primary-foreground font-bold text-sm">B</span>
               </div>
-              <h1 className="text-2xl font-bold text-primary">Agnes Studio</h1>
+              <h1 className="text-2xl font-bold text-primary">Beleza Salon</h1>
             </div>
             <button onClick={() => window.location.href = '/'} className="px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium">
               Voltar ao Site
@@ -33,12 +34,12 @@ const Schedule = () => {
       <div className="flex-1 overflow-hidden">
         <Tabs defaultValue="agenda" className="h-full flex flex-col">
           <div className="bg-white border-b px-4">
-            <TabsList className="grid w-full grid-cols-6 bg-transparent h-auto p-0 gap-0">
+            <TabsList className="grid w-full grid-cols-7 bg-transparent h-auto p-0 gap-0">
               <TabsTrigger 
                 value="agenda" 
                 className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
               >
-                <div className="w-5 h-5 mb-1 text-center">📅</div>
+                <Calendar className="w-5 h-5 mb-1" />
                 Agenda
               </TabsTrigger>
               <TabsTrigger 
@@ -76,6 +77,13 @@ const Schedule = () => {
                 <BarChart3 className="w-5 h-5 mb-1" />
                 Relatórios
               </TabsTrigger>
+              <TabsTrigger 
+                value="configuracoes"
+                className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
+              >
+                <Settings className="w-5 h-5 mb-1" />
+                Configurações
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -102,6 +110,10 @@ const Schedule = () => {
             
             <TabsContent value="relatorios" className="h-full m-0">
               <RelatoriosView />
+            </TabsContent>
+            
+            <TabsContent value="configuracoes" className="h-full m-0">
+              <ConfiguracoesView />
             </TabsContent>
           </div>
         </Tabs>
