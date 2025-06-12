@@ -1,28 +1,17 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
-import CollaboratorsSpace from '../components/CollaboratorsSpace';
 
 const Login = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = () => {
-    setIsLoggedIn(true);
+    // Após o login bem-sucedido, redireciona diretamente para a agenda
+    navigate('/agenda');
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
-
-  return (
-    <>
-      {isLoggedIn ? (
-        <CollaboratorsSpace onLogout={handleLogout} />
-      ) : (
-        <LoginForm onLogin={handleLogin} />
-      )}
-    </>
-  );
+  return <LoginForm onLogin={handleLogin} />;
 };
 
 export default Login;

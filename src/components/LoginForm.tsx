@@ -22,11 +22,11 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
     
     // Credenciais fixas para demonstração
     if (email === 'admin@admin.com' && password === 'admin') {
-      onLogin();
       toast({
         title: "Login realizado com sucesso!",
-        description: "Bem-vindo ao espaço dos colaboradores.",
+        description: "Redirecionando para a agenda...",
       });
+      onLogin();
     } else {
       toast({
         title: "Erro no login",
