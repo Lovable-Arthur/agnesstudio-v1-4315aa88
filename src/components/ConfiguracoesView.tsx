@@ -1,7 +1,9 @@
+
 import { useState } from "react";
 import EstabelecimentoConfig from "./configuracoes/EstabelecimentoConfig";
 import AgendamentoConfig from "./configuracoes/AgendamentoConfig";
 import NotificacoesConfig from "./configuracoes/NotificacoesConfig";
+import ProfissionaisConfig from "./configuracoes/ProfissionaisConfig";
 import ConfigBanner from "./configuracoes/ConfigBanner";
 import ConfigGrid from "./configuracoes/ConfigGrid";
 import ConfigPlaceholder from "./configuracoes/ConfigPlaceholder";
@@ -41,6 +43,10 @@ const ConfiguracoesView = () => {
 
   if (currentSection === 'notificacoes') {
     return <NotificacoesConfig onBack={handleBackToMain} />;
+  }
+
+  if (currentSection === 'profissionais') {
+    return <ProfissionaisConfig onBack={handleBackToMain} />;
   }
 
   // Renderizar seções temporárias para os outros itens
