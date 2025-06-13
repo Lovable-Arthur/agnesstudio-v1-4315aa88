@@ -1,9 +1,10 @@
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
 import CalendarHeader from "./calendar/CalendarHeader";
 import CalendarSidebar from "./calendar/CalendarSidebar";
 import CalendarContent from "./calendar/CalendarContent";
+import { formatDate, addDays, getNavigationDelta } from "@/utils/dateUtils";
 
 const CalendarView = () => {
   const { professionals } = useProfessionals();
@@ -15,8 +16,7 @@ const CalendarView = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const changeDate = (days: number) => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(newDate.getDate() + days);
+    const newDate = addDays(selectedDate, days);
     setSelectedDate(newDate);
   };
 
@@ -34,16 +34,27 @@ const CalendarView = () => {
     );
   };
 
-  // Ordenar profissionais por agendaOrder
-  const sortedProfessionals = [...professionals].sort((a, b) => a.agendaOrder - b.agendaOrder);
-
-  const filteredProfessionals = sortedProfessionals.filter(prof => 
-    selectedProfessionals.includes(prof.id) &&
-    prof.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    prof.hasAgenda
+  // Memoizar profissionais ordenados e filtrados
+  const sortedProfessionals = useMemo(() => 
+    [...professionals].sort((a, b) => a.agendaOrder - b.agendaOrder),
+    [professionals]
   );
 
-  const selectedDateString = selectedDate.toISOString().split('T')[0];
+  const filteredProfessionals = useMemo(() => 
+    sortedProfessionals.filter(prof => 
+      selectedProfessionals.includes(prof.id) &&
+      prof.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      prof.hasAgenda
+    ),
+    [sortedProfessionals, selectedProfessionals, searchTerm]
+  );
+
+  const professionalsList = useMemo(() => 
+    sortedProfessionals.filter(p => p.hasAgenda),
+    [sortedProfessionals]
+  );
+
+  const selectedDateString = formatDate(selectedDate);
 
   return (
     <div className="h-full flex flex-col bg-background">
@@ -61,7 +72,7 @@ const CalendarView = () => {
           setSelectedDate={setSelectedDate}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          professionals={sortedProfessionals.filter(p => p.hasAgenda)}
+          professionals={professionalsList}
           selectedProfessionals={selectedProfessionals}
           toggleProfessional={toggleProfessional}
           toggleAllProfessionals={toggleAllProfessionals}
