@@ -79,6 +79,10 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
     );
   };
 
+  const handleSelectProfessional = (professional: Professional) => {
+    setSelectedProfessional(professional);
+  };
+
   if (selectedProfessional) {
     return (
       <div className="h-full bg-background p-6">
@@ -140,7 +144,7 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
           professionals={professionals}
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
-          onSelectProfessional={setSelectedProfessional}
+          onSelectProfessional={handleSelectProfessional}
         />
 
         <div className="flex-1 flex items-center justify-center">
