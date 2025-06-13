@@ -25,6 +25,8 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
   const { professionals, updateProfessional } = useProfessionals();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProfessional, setSelectedProfessional] = useState<Professional | null>(null);
+  const [pendingChanges, setPendingChanges] = useState<Professional | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [expandedSections, setExpandedSections] = useState<string[]>(['access']);
 
   const [services, setServices] = useState<Service[]>([
@@ -41,13 +43,14 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
 
   // Atualiza o profissional selecionado quando a lista de profissionais muda
   useEffect(() => {
-    if (selectedProfessional) {
+    if (selectedProfessional && !hasUnsavedChanges) {
       const updatedProfessional = professionals.find(p => p.id === selectedProfessional.id);
       if (updatedProfessional) {
         setSelectedProfessional(updatedProfessional);
+        setPendingChanges(updatedProfessional);
       }
     }
-  }, [professionals, selectedProfessional]);
+  }, [professionals, selectedProfessional, hasUnsavedChanges]);
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => 
@@ -58,24 +61,39 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
   };
 
   const handleUpdateProfessional = (updatedProfessional: Professional) => {
-    // Atualiza imediatamente no contexto para refletir na agenda
-    updateProfessional(updatedProfessional);
-    setSelectedProfessional(updatedProfessional);
-    
-    toast({
-      title: "Profissional atualizado",
-      description: "As informações foram atualizadas automaticamente na agenda.",
-    });
+    // Armazena as alterações pendentes sem aplicar imediatamente
+    setPendingChanges(updatedProfessional);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleSaveAllChanges = () => {
+    if (pendingChanges) {
+      // Aplica as alterações no contexto para refletir na agenda
+      updateProfessional(pendingChanges);
+      setSelectedProfessional(pendingChanges);
+      setHasUnsavedChanges(false);
+      
+      toast({
+        title: "Alterações salvas",
+        description: "As informações foram atualizadas automaticamente na agenda.",
+      });
+    }
+  };
+
+  const handleDiscardChanges = () => {
+    if (selectedProfessional) {
+      setPendingChanges(selectedProfessional);
+      setHasUnsavedChanges(false);
+      
+      toast({
+        title: "Alterações descartadas",
+        description: "As alterações foram descartadas e os dados originais foram restaurados.",
+      });
+    }
   };
 
   const handleSaveProfessional = () => {
-    if (selectedProfessional) {
-      updateProfessional(selectedProfessional);
-      toast({
-        title: "Profissional salvo",
-        description: "As informações foram salvas com sucesso.",
-      });
-    }
+    handleSaveAllChanges();
   };
 
   const handleServiceToggle = (serviceId: number) => {
@@ -97,7 +115,18 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
   };
 
   const handleSelectProfessional = (professional: Professional) => {
+    if (hasUnsavedChanges) {
+      toast({
+        title: "Alterações não salvas",
+        description: "Você tem alterações não salvas. Salve ou descarte antes de selecionar outro profissional.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setSelectedProfessional(professional);
+    setPendingChanges(professional);
+    setHasUnsavedChanges(false);
   };
 
   if (selectedProfessional) {
@@ -106,7 +135,17 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
         <div className="flex items-center justify-between mb-6">
           <Button 
             variant="ghost" 
-            onClick={() => setSelectedProfessional(null)}
+            onClick={() => {
+              if (hasUnsavedChanges) {
+                toast({
+                  title: "Alterações não salvas",
+                  description: "Você tem alterações não salvas. Salve ou descarte antes de voltar.",
+                  variant: "destructive",
+                });
+                return;
+              }
+              setSelectedProfessional(null);
+            }}
             className="mb-4"
           >
             <ChevronRight className="w-4 h-4 mr-2 rotate-180" />
@@ -115,15 +154,23 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
           <span className="text-sm text-muted-foreground">Profissionais</span>
         </div>
 
+        {hasUnsavedChanges && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-yellow-800">
+              Você tem alterações não salvas. Clique em "Salvar Alterações" para aplicá-las ou "Descartar" para cancelá-las.
+            </p>
+          </div>
+        )}
+
         <div className="space-y-6">
           <ProfessionalForm 
-            professional={selectedProfessional}
+            professional={pendingChanges || selectedProfessional}
             onUpdate={handleUpdateProfessional}
             onSave={handleSaveProfessional}
           />
 
           <CollapsibleSections 
-            professional={selectedProfessional}
+            professional={pendingChanges || selectedProfessional}
             onUpdate={handleUpdateProfessional}
             expandedSections={expandedSections}
             onToggleSection={toggleSection}
@@ -134,9 +181,20 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
           />
 
           <div className="flex space-x-4">
-            <Button onClick={handleSaveProfessional} className="bg-cyan-500 hover:bg-cyan-600">
+            <Button 
+              onClick={handleSaveAllChanges} 
+              className="bg-cyan-500 hover:bg-cyan-600"
+              disabled={!hasUnsavedChanges}
+            >
               <Save className="w-4 h-4 mr-2" />
               Salvar Alterações
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleDiscardChanges}
+              disabled={!hasUnsavedChanges}
+            >
+              Descartar
             </Button>
             <Button variant="destructive">Excluir</Button>
           </div>
