@@ -43,4 +43,3 @@ const ServicesSection = ({ onServiceBook }: ServicesSectionProps) => {
 };
 
 export default ServicesSection;
-export { transformedServices as services };

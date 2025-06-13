@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,23 +39,12 @@ interface Professional {
   avatar?: string;
 }
 
-interface Service {
-  id: number;
-  name: string;
-  commission: number;
-  duration: number;
-  selected: boolean;
-}
-
 interface CollapsibleSectionsProps {
   professional: Professional;
   onUpdate: (professional: Professional) => void;
   expandedSections: string[];
   onToggleSection: (section: string) => void;
-  services: Service[];
-  onServiceToggle: (serviceId: number) => void;
-  onCommissionChange: (serviceId: number, commission: number) => void;
-  onDurationChange: (serviceId: number, duration: number) => void;
+  professionalId: number;
 }
 
 const CollapsibleSections = ({
@@ -64,10 +52,7 @@ const CollapsibleSections = ({
   onUpdate,
   expandedSections,
   onToggleSection,
-  services,
-  onServiceToggle,
-  onCommissionChange,
-  onDurationChange
+  professionalId
 }: CollapsibleSectionsProps) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -261,10 +246,7 @@ const CollapsibleSections = ({
         </CollapsibleTrigger>
         <CollapsibleContent className="mt-2 p-4 border rounded-lg bg-white">
           <ServiceCommissionSection 
-            services={services}
-            onServiceToggle={onServiceToggle}
-            onCommissionChange={onCommissionChange}
-            onDurationChange={onDurationChange}
+            professionalId={professionalId}
           />
         </CollapsibleContent>
       </Collapsible>

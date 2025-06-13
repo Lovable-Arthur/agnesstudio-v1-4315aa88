@@ -5,7 +5,6 @@ import { ChevronRight, Save } from "lucide-react";
 import { Professional } from "@/types/calendar";
 import ProfessionalForm from "./ProfessionalForm";
 import CollapsibleSections from "./CollapsibleSections";
-import { useServices } from "@/hooks/useServices";
 
 interface ProfessionalDetailViewProps {
   professional: Professional;
@@ -27,12 +26,6 @@ const ProfessionalDetailView = ({
   onBack
 }: ProfessionalDetailViewProps) => {
   const [expandedSections, setExpandedSections] = useState<string[]>(['access']);
-  const {
-    services,
-    handleServiceToggle,
-    handleServiceCommissionChange,
-    handleServiceDurationChange
-  } = useServices();
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => 
@@ -80,10 +73,7 @@ const ProfessionalDetailView = ({
           onUpdate={onUpdate}
           expandedSections={expandedSections}
           onToggleSection={toggleSection}
-          services={services}
-          onServiceToggle={handleServiceToggle}
-          onCommissionChange={handleServiceCommissionChange}
-          onDurationChange={handleServiceDurationChange}
+          professionalId={pendingChanges.id}
         />
 
         <div className="flex space-x-4">
