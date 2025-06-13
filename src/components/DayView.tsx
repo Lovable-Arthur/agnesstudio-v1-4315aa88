@@ -1,5 +1,5 @@
 
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
 import { getStatusColor, getProfessionalColor, getProfessionalInitials } from "@/utils/styleUtils";
