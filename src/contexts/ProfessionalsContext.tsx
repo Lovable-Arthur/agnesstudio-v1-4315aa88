@@ -26,6 +26,27 @@ export const ProfessionalsProvider = ({ children }: ProfessionalsProviderProps) 
   const [professionals, setProfessionals] = useState<Professional[]>([
     {
       id: 1,
+      name: "Administrador Master",
+      socialName: "Admin",
+      cpf: "000.000.000-00",
+      rg: "",
+      birthDate: "01/01/1980",
+      color: "bg-red-500",
+      agendaInterval: 15,
+      agendaOrder: 0,
+      position: "Master",
+      canBeAssistant: false,
+      specialties: "Administração do Sistema",
+      specialty: "Administração",
+      description: "Usuário administrador com acesso total ao sistema",
+      email: "admin@admin.com",
+      accessLevel: "Admin",
+      hasAgenda: false,
+      showOnlineBooking: false,
+      appointments: []
+    },
+    {
+      id: 2,
       name: "Lorena da Silva Rocha",
       socialName: "Lorena",
       cpf: "170.831.567-51",
@@ -65,7 +86,7 @@ export const ProfessionalsProvider = ({ children }: ProfessionalsProviderProps) 
       ]
     },
     {
-      id: 2,
+      id: 3,
       name: "Carlos Eduardo Santos",
       socialName: "Carlos",
       cpf: "123.456.789-00",
@@ -96,7 +117,7 @@ export const ProfessionalsProvider = ({ children }: ProfessionalsProviderProps) 
       ]
     },
     {
-      id: 3,
+      id: 4,
       name: "Fernanda Oliveira",
       socialName: "Fernanda",
       cpf: "987.654.321-00",
@@ -111,7 +132,7 @@ export const ProfessionalsProvider = ({ children }: ProfessionalsProviderProps) 
       specialty: "Cabelo",
       description: "Especialista em coloração e tratamentos capilares",
       email: "fernanda@salon.com",
-      accessLevel: "master",
+      accessLevel: "Gerente",
       hasAgenda: true,
       showOnlineBooking: true,
       appointments: []

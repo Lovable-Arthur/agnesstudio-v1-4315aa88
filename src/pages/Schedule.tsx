@@ -18,8 +18,8 @@ const Schedule = () => {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
 
-  // Simulando nível de acesso do usuário - em produção viria do contexto de auth
-  const userAccessLevel = "Profissionais"; // ou "Admin", "Gerente"
+  // Nível de acesso baseado no usuário logado
+  const userAccessLevel = user?.accessLevel || "Profissionais";
   const isRestrictedUser = userAccessLevel === "Profissionais";
 
   const handleLogout = () => {
@@ -51,6 +51,7 @@ const Schedule = () => {
               {user && (
                 <span className="text-sm text-muted-foreground">
                   {user.email} ({userAccessLevel})
+                  {user.professionalId && ` - ID: ${user.professionalId}`}
                 </span>
               )}
               <Button 

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: { email: string } | null;
+  user: { email: string; accessLevel: string; professionalId?: number } | null;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   loading: boolean;
@@ -26,7 +26,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ email: string } | null>(null);
+  const [user, setUser] = useState<{ email: string; accessLevel: string; professionalId?: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -36,14 +36,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const token = localStorage.getItem('auth_token');
       const sessionExpiry = localStorage.getItem('session_expiry');
       const userEmail = localStorage.getItem('user_email');
+      const userAccessLevel = localStorage.getItem('user_access_level');
+      const userProfessionalId = localStorage.getItem('user_professional_id');
 
-      if (token && sessionExpiry && userEmail) {
+      if (token && sessionExpiry && userEmail && userAccessLevel) {
         const now = new Date().getTime();
         const expiry = parseInt(sessionExpiry);
 
         if (now < expiry) {
           setIsAuthenticated(true);
-          setUser({ email: userEmail });
+          setUser({ 
+            email: userEmail, 
+            accessLevel: userAccessLevel,
+            professionalId: userProfessionalId ? parseInt(userProfessionalId) : undefined
+          });
           // Reset session expiry
           const newExpiry = now + (30 * 60 * 1000); // 30 minutes
           localStorage.setItem('session_expiry', newExpiry.toString());
@@ -99,6 +105,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('session_expiry');
     localStorage.removeItem('user_email');
+    localStorage.removeItem('user_access_level');
+    localStorage.removeItem('user_professional_id');
     setIsAuthenticated(false);
     setUser(null);
   };
@@ -116,12 +124,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Generate a simple session token
         const token = btoa(`${email}:${now}`);
         
+        // Admin user is associated with Master professional (ID 1)
+        const userAccessLevel = 'Admin';
+        const professionalId = 1; // Master professional
+        
         localStorage.setItem('auth_token', token);
         localStorage.setItem('session_expiry', expiry.toString());
         localStorage.setItem('user_email', email);
+        localStorage.setItem('user_access_level', userAccessLevel);
+        localStorage.setItem('user_professional_id', professionalId.toString());
         
         setIsAuthenticated(true);
-        setUser({ email });
+        setUser({ email, accessLevel: userAccessLevel, professionalId });
         
         return true;
       }
