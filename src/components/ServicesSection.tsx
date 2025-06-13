@@ -1,56 +1,24 @@
 
 import ServiceCard from "@/components/ServiceCard";
-
-const services = [
-  {
-    id: 1,
-    name: "Corte Feminino",
-    price: "R$ 45,00",
-    duration: "45 min",
-    description: "Corte personalizado com lavagem e escovação"
-  },
-  {
-    id: 2,
-    name: "Coloração",
-    price: "R$ 120,00",
-    duration: "2h 30min",
-    description: "Coloração completa com produtos de qualidade"
-  },
-  {
-    id: 3,
-    name: "Escova Progressiva",
-    price: "R$ 200,00",
-    duration: "3h",
-    description: "Alisamento natural e duradouro"
-  },
-  {
-    id: 4,
-    name: "Manicure",
-    price: "R$ 25,00",
-    duration: "30 min",
-    description: "Cuidado completo das unhas das mãos"
-  },
-  {
-    id: 5,
-    name: "Pedicure",
-    price: "R$ 30,00",
-    duration: "45 min",
-    description: "Cuidado completo das unhas dos pés"
-  },
-  {
-    id: 6,
-    name: "Sobrancelha",
-    price: "R$ 20,00",
-    duration: "20 min",
-    description: "Design e limpeza das sobrancelhas"
-  }
-];
+import { useServices } from "@/contexts/ServicesContext";
 
 interface ServicesSectionProps {
-  onServiceBook: (service: typeof services[0]) => void;
+  onServiceBook: (service: any) => void;
 }
 
 const ServicesSection = ({ onServiceBook }: ServicesSectionProps) => {
+  const { getActiveServices } = useServices();
+  const services = getActiveServices();
+
+  // Transformar os serviços do contexto para o formato esperado pelo ServiceCard
+  const transformedServices = services.map(service => ({
+    id: service.id,
+    name: service.name,
+    price: `R$ ${service.price.toFixed(2)}`,
+    duration: `${service.duration} min`,
+    description: service.description
+  }));
+
   return (
     <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
@@ -61,7 +29,7 @@ const ServicesSection = ({ onServiceBook }: ServicesSectionProps) => {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service) => (
+          {transformedServices.map((service) => (
             <ServiceCard
               key={service.id}
               service={service}
@@ -75,4 +43,4 @@ const ServicesSection = ({ onServiceBook }: ServicesSectionProps) => {
 };
 
 export default ServicesSection;
-export { services };
+export { transformedServices as services };

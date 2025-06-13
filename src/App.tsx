@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProfessionalsProvider } from "@/contexts/ProfessionalsContext";
+import { ServicesProvider } from "@/contexts/ServicesContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Schedule from "./pages/Schedule";
@@ -23,27 +24,29 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <ProfessionalsProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route 
-                path="/agenda" 
-                element={
-                  <ProtectedRoute>
-                    <Schedule />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/comissoes" 
-                element={
-                  <ProtectedRoute>
-                    <Commissions />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <ServicesProvider>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route 
+                  path="/agenda" 
+                  element={
+                    <ProtectedRoute>
+                      <Schedule />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/comissoes" 
+                  element={
+                    <ProtectedRoute>
+                      <Commissions />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </ServicesProvider>
           </ProfessionalsProvider>
         </AuthProvider>
       </BrowserRouter>

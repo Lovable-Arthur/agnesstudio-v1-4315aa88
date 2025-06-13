@@ -4,6 +4,7 @@ import EstabelecimentoConfig from "./configuracoes/EstabelecimentoConfig";
 import AgendamentoConfig from "./configuracoes/AgendamentoConfig";
 import NotificacoesConfig from "./configuracoes/NotificacoesConfig";
 import ProfissionaisConfig from "./configuracoes/ProfissionaisConfig";
+import ServicesConfig from "./configuracoes/ServicesConfig";
 import ConfigBanner from "./configuracoes/ConfigBanner";
 import ConfigGrid from "./configuracoes/ConfigGrid";
 import ConfigPlaceholder from "./configuracoes/ConfigPlaceholder";
@@ -47,6 +48,10 @@ const ConfiguracoesView = () => {
 
   if (currentSection === 'profissionais') {
     return <ProfissionaisConfig onBack={handleBackToMain} />;
+  }
+
+  if (currentSection === 'servicos') {
+    return <ServicesConfig onBack={handleBackToMain} />;
   }
 
   // Renderizar seções temporárias para os outros itens
