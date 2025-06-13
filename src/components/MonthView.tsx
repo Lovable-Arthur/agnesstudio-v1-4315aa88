@@ -1,3 +1,4 @@
+
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
@@ -141,7 +142,7 @@ const MonthView = ({ selectedDate, professionals }: MonthViewProps) => {
             }}
           />
         </CardContent>
-      </CardHeader>
+      </Card>
 
       <Card>
         <CardHeader>
