@@ -87,6 +87,10 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
     );
   };
 
+  const handleUpdateProfessional = (updatedProfessional: Professional) => {
+    setSelectedProfessional(updatedProfessional);
+  };
+
   const handleSaveProfessional = () => {
     if (selectedProfessional) {
       setProfessionals(prev => 
@@ -135,13 +139,13 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
         <div className="space-y-6">
           <ProfessionalForm 
             professional={selectedProfessional}
-            onUpdate={setSelectedProfessional}
+            onUpdate={handleUpdateProfessional}
             onSave={handleSaveProfessional}
           />
 
           <CollapsibleSections 
             professional={selectedProfessional}
-            onUpdate={setSelectedProfessional}
+            onUpdate={handleUpdateProfessional}
             expandedSections={expandedSections}
             onToggleSection={toggleSection}
             services={services}
