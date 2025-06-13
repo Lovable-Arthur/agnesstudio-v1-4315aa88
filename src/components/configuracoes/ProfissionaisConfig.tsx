@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -96,8 +95,8 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
     { id: 6, name: "Esmaltação", commission: 80, duration: 30, selected: true },
     { id: 7, name: "Esmaltação gel", commission: 80, duration: 120, selected: true },
     { id: 8, name: "Mão Somente", commission: 80, duration: 60, selected: true },
-    { id: 9, name: "Pé e Mão", commission: 80, duration: 90, selected: true }
-  ];
+    { id: 9, name: "Pé e Mão", commission: 80, duration: 90, selected: true },
+  ]);
 
   const filteredProfessionals = professionals.filter(prof => 
     prof.name.toLowerCase().includes(searchTerm.toLowerCase())
