@@ -1,25 +1,7 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
-
-interface Appointment {
-  id: number;
-  clientName: string;
-  service: string;
-  time: string;
-  duration: string;
-  status: "confirmed" | "pending" | "completed";
-  date: string;
-}
-
-interface Professional {
-  id: number;
-  name: string;
-  specialty: string;
-  color: string;
-  appointments: Appointment[];
-}
+import { Professional, Appointment } from "@/types/calendar";
 
 interface MonthViewProps {
   selectedDate: string;
@@ -51,7 +33,6 @@ const MonthView = ({ selectedDate, professionals }: MonthViewProps) => {
     return stats;
   };
 
-  // Personalizar a renderização dos dias no calendário
   const modifiers = {
     hasAppointments: (date: Date) => getAppointmentsForDate(date) > 0
   };
@@ -65,7 +46,6 @@ const MonthView = ({ selectedDate, professionals }: MonthViewProps) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Calendário */}
       <Card className="lg:col-span-2">
         <CardHeader>
           <CardTitle>Visualização do Mês</CardTitle>
@@ -113,7 +93,6 @@ const MonthView = ({ selectedDate, professionals }: MonthViewProps) => {
         </CardContent>
       </Card>
 
-      {/* Detalhes do dia selecionado */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">

@@ -1,140 +1,9 @@
 
 import { useState } from "react";
-import { Calendar, ChevronLeft, ChevronRight, Users, Filter, Search, Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import DayView from "./DayView";
-import WeekView from "./WeekView";
-import MonthView from "./MonthView";
-
-// Dados mockados dos profissionais e agendamentos
-export const professionals = [
-  {
-    id: 1,
-    name: "Maria Silva",
-    specialty: "Cabelo e Coloração",
-    color: "bg-blue-500",
-    appointments: [
-      {
-        id: 1,
-        clientName: "Ana Costa",
-        service: "Corte Feminino",
-        time: "09:00",
-        duration: "45 min",
-        status: "confirmed" as const,
-        date: new Date().toISOString().split('T')[0]
-      },
-      {
-        id: 2,
-        clientName: "Beatriz Santos",
-        service: "Coloração",
-        time: "11:00",
-        duration: "2h 30min",
-        status: "confirmed" as const,
-        date: new Date().toISOString().split('T')[0]
-      },
-      {
-        id: 3,
-        clientName: "Carla Oliveira",
-        service: "Escova Progressiva",
-        time: "14:30",
-        duration: "3h",
-        status: "pending" as const,
-        date: new Date().toISOString().split('T')[0]
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: "João Pereira",
-    specialty: "Cortes Masculinos",
-    color: "bg-green-500",
-    appointments: [
-      {
-        id: 4,
-        clientName: "Pedro Lima",
-        service: "Corte Masculino",
-        time: "10:00",
-        duration: "30 min",
-        status: "completed" as const,
-        date: new Date().toISOString().split('T')[0]
-      },
-      {
-        id: 5,
-        clientName: "Carlos Rocha",
-        service: "Barba",
-        time: "15:00",
-        duration: "20 min",
-        status: "confirmed" as const,
-        date: new Date().toISOString().split('T')[0]
-      }
-    ]
-  },
-  {
-    id: 3,
-    name: "Fernanda Costa",
-    specialty: "Manicure e Pedicure",
-    color: "bg-purple-500",
-    appointments: [
-      {
-        id: 6,
-        clientName: "Lúcia Mendes",
-        service: "Manicure",
-        time: "08:30",
-        duration: "30 min",
-        status: "completed" as const,
-        date: new Date().toISOString().split('T')[0]
-      },
-      {
-        id: 7,
-        clientName: "Sofia Alves",
-        service: "Pedicure",
-        time: "13:00",
-        duration: "45 min",
-        status: "confirmed" as const,
-        date: new Date().toISOString().split('T')[0]
-      },
-      {
-        id: 8,
-        clientName: "Mônica Ribeiro",
-        service: "Manicure",
-        time: "16:30",
-        duration: "30 min",
-        status: "pending" as const,
-        date: new Date().toISOString().split('T')[0]
-      }
-    ]
-  },
-  {
-    id: 4,
-    name: "Ricardo Martins",
-    specialty: "Estética e Sobrancelha",
-    color: "bg-orange-500",
-    appointments: [
-      {
-        id: 9,
-        clientName: "Juliana Ferreira",
-        service: "Sobrancelha",
-        time: "12:00",
-        duration: "20 min",
-        status: "confirmed" as const,
-        date: new Date().toISOString().split('T')[0]
-      }
-    ]
-  },
-  {
-    id: 5,
-    name: "Camila Rodrigues",
-    specialty: "Tratamentos Capilares",
-    color: "bg-pink-500",
-    appointments: []
-  }
-];
+import { professionals } from "@/data/mockCalendarData";
+import CalendarHeader from "./calendar/CalendarHeader";
+import CalendarSidebar from "./calendar/CalendarSidebar";
+import CalendarContent from "./calendar/CalendarContent";
 
 const CalendarView = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -143,15 +12,6 @@ const CalendarView = () => {
     professionals.map(p => p.id)
   );
   const [searchTerm, setSearchTerm] = useState("");
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('pt-BR', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
 
   const changeDate = (days: number) => {
     const newDate = new Date(selectedDate);
@@ -178,169 +38,35 @@ const CalendarView = () => {
     prof.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getMonthName = (date: Date) => {
-    return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-  };
-
   const selectedDateString = selectedDate.toISOString().split('T')[0];
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Top Navigation */}
-      <div className="border-b bg-card flex-shrink-0">
-        <div className="flex items-center justify-between px-6 py-3">
-          <div className="flex items-center space-x-6">
-            <Tabs value={currentView} onValueChange={setCurrentView} className="flex items-center">
-              <TabsList className="grid grid-cols-4 w-auto">
-                <TabsTrigger value="agenda" className="px-4 py-2">Agenda</TabsTrigger>
-                <TabsTrigger value="day" className="px-4 py-2">Dia</TabsTrigger>
-                <TabsTrigger value="week" className="px-4 py-2">Semana</TabsTrigger>
-                <TabsTrigger value="month" className="px-4 py-2">Mês</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" onClick={() => changeDate(-1)}>
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <span className="text-sm font-medium min-w-[120px] text-center">
-                {getMonthName(selectedDate)}
-              </span>
-              <Button variant="outline" size="sm" onClick={() => changeDate(1)}>
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-            
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setSelectedDate(new Date())}
-              className="text-primary"
-            >
-              Hoje
-            </Button>
-            
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm">
-                <Settings className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <CalendarHeader
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+        selectedDate={selectedDate}
+        changeDate={changeDate}
+        setSelectedDate={setSelectedDate}
+      />
 
       <div className="flex flex-1 min-h-0">
-        {/* Sidebar */}
-        <div className="w-64 border-r bg-card flex flex-col">
-          {/* Mini Calendar */}
-          <div className="p-4 border-b flex-shrink-0">
-            <CalendarComponent
-              mode="single"
-              selected={selectedDate}
-              onSelect={(date) => date && setSelectedDate(date)}
-              className="rounded-md border-0"
-            />
-          </div>
+        <CalendarSidebar
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          professionals={professionals}
+          selectedProfessionals={selectedProfessionals}
+          toggleProfessional={toggleProfessional}
+          toggleAllProfessionals={toggleAllProfessionals}
+        />
 
-          {/* Professionals Filter */}
-          <div className="flex-1 min-h-0">
-            <ScrollArea className="h-full">
-              <div className="p-4">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-medium text-sm mb-3">Profissionais</h3>
-                    <Input
-                      placeholder="Pesquisar profissional"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="mb-3"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="all-professionals"
-                        checked={selectedProfessionals.length === professionals.length}
-                        onCheckedChange={toggleAllProfessionals}
-                      />
-                      <label
-                        htmlFor="all-professionals"
-                        className="text-sm font-medium cursor-pointer"
-                      >
-                        Todos
-                      </label>
-                    </div>
-                    
-                    {professionals
-                      .filter(prof => prof.name.toLowerCase().includes(searchTerm.toLowerCase()))
-                      .map((professional) => (
-                      <div key={professional.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`prof-${professional.id}`}
-                          checked={selectedProfessionals.includes(professional.id)}
-                          onCheckedChange={() => toggleProfessional(professional.id)}
-                        />
-                        <div className="flex items-center space-x-2 flex-1">
-                          <div className={`w-3 h-3 rounded-full ${professional.color}`}></div>
-                          <label
-                            htmlFor={`prof-${professional.id}`}
-                            className="text-sm cursor-pointer flex-1"
-                          >
-                            {professional.name}
-                          </label>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </ScrollArea>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 min-h-0">
-          <Tabs value={currentView} className="h-full flex flex-col">
-            <TabsContent value="agenda" className="flex-1 min-h-0 m-0">
-              <ScrollArea className="h-full">
-                <DayView 
-                  selectedDate={selectedDateString} 
-                  professionals={filteredProfessionals}
-                />
-              </ScrollArea>
-            </TabsContent>
-            
-            <TabsContent value="day" className="flex-1 min-h-0 m-0">
-              <ScrollArea className="h-full">
-                <DayView 
-                  selectedDate={selectedDateString} 
-                  professionals={filteredProfessionals}
-                />
-              </ScrollArea>
-            </TabsContent>
-            
-            <TabsContent value="week" className="flex-1 min-h-0 m-0">
-              <ScrollArea className="h-full">
-                <WeekView 
-                  selectedDate={selectedDateString} 
-                  professionals={filteredProfessionals}
-                />
-              </ScrollArea>
-            </TabsContent>
-            
-            <TabsContent value="month" className="flex-1 min-h-0 m-0">
-              <ScrollArea className="h-full">
-                <MonthView 
-                  selectedDate={selectedDateString} 
-                  professionals={filteredProfessionals}
-                />
-              </ScrollArea>
-            </TabsContent>
-          </Tabs>
-        </div>
+        <CalendarContent
+          currentView={currentView}
+          selectedDate={selectedDateString}
+          filteredProfessionals={filteredProfessionals}
+        />
       </div>
     </div>
   );
