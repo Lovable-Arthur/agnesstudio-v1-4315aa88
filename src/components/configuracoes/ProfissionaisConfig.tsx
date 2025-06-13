@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { ChevronRight, Save, User } from "lucide-react";
@@ -39,6 +39,16 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
     { id: 9, name: "Pé e Mão", commission: 80, duration: 90, selected: true },
   ]);
 
+  // Atualiza o profissional selecionado quando a lista de profissionais muda
+  useEffect(() => {
+    if (selectedProfessional) {
+      const updatedProfessional = professionals.find(p => p.id === selectedProfessional.id);
+      if (updatedProfessional) {
+        setSelectedProfessional(updatedProfessional);
+      }
+    }
+  }, [professionals, selectedProfessional]);
+
   const toggleSection = (section: string) => {
     setExpandedSections(prev => 
       prev.includes(section) 
@@ -48,15 +58,22 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
   };
 
   const handleUpdateProfessional = (updatedProfessional: Professional) => {
+    // Atualiza imediatamente no contexto para refletir na agenda
+    updateProfessional(updatedProfessional);
     setSelectedProfessional(updatedProfessional);
+    
+    toast({
+      title: "Profissional atualizado",
+      description: "As informações foram atualizadas automaticamente na agenda.",
+    });
   };
 
   const handleSaveProfessional = () => {
     if (selectedProfessional) {
       updateProfessional(selectedProfessional);
       toast({
-        title: "Profissional atualizado",
-        description: "As informações foram salvas com sucesso e refletidas na agenda.",
+        title: "Profissional salvo",
+        description: "As informações foram salvas com sucesso.",
       });
     }
   };

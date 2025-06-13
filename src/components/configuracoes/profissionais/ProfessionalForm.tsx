@@ -33,10 +33,6 @@ const ProfessionalForm = ({ professional, onUpdate, onSave }: ProfessionalFormPr
         <div className="flex items-start space-x-6">
           <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
             <User className="w-12 h-12 text-gray-400" />
-            <div className="absolute mt-16 text-xs text-center">
-              <div>Tamanho máximo: 4 Mb</div>
-              <button className="text-blue-500">Dúvida?</button>
-            </div>
           </div>
           <div className="flex-1 grid grid-cols-3 gap-4">
             <div>
