@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, DollarSign, Package, Users, Megaphone, BarChart3, Settings, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/contexts/AuthContext";
 import CalendarView from "@/components/CalendarView";
 import FinanceiroView from "@/components/FinanceiroView";
@@ -65,9 +65,9 @@ const Schedule = () => {
       </header>
 
       {/* Main Navigation Tabs */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 min-h-0">
         <Tabs defaultValue="agenda" className="h-full flex flex-col">
-          <div className="bg-white border-b px-4">
+          <div className="bg-white border-b px-4 flex-shrink-0">
             <TabsList className="grid w-full grid-cols-7 bg-transparent h-auto p-0 gap-0">
               <TabsTrigger 
                 value="agenda" 
@@ -121,33 +121,45 @@ const Schedule = () => {
             </TabsList>
           </div>
 
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 min-h-0">
             <TabsContent value="agenda" className="h-full m-0">
               <CalendarView />
             </TabsContent>
             
             <TabsContent value="financeiro" className="h-full m-0">
-              <FinanceiroView />
+              <ScrollArea className="h-full">
+                <FinanceiroView />
+              </ScrollArea>
             </TabsContent>
             
             <TabsContent value="estoque" className="h-full m-0">
-              <EstoqueView />
+              <ScrollArea className="h-full">
+                <EstoqueView />
+              </ScrollArea>
             </TabsContent>
             
             <TabsContent value="clientes" className="h-full m-0">
-              <ClientesView />
+              <ScrollArea className="h-full">
+                <ClientesView />
+              </ScrollArea>
             </TabsContent>
             
             <TabsContent value="marketing" className="h-full m-0">
-              <MarketingView />
+              <ScrollArea className="h-full">
+                <MarketingView />
+              </ScrollArea>
             </TabsContent>
             
             <TabsContent value="relatorios" className="h-full m-0">
-              <RelatoriosView />
+              <ScrollArea className="h-full">
+                <RelatoriosView />
+              </ScrollArea>
             </TabsContent>
             
             <TabsContent value="configuracoes" className="h-full m-0">
-              <ConfiguracoesView />
+              <ScrollArea className="h-full">
+                <ConfiguracoesView />
+              </ScrollArea>
             </TabsContent>
           </div>
         </Tabs>

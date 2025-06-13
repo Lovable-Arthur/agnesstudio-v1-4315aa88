@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Calendar, ChevronLeft, ChevronRight, Users, Filter, Search, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import DayView from "./DayView";
 import WeekView from "./WeekView";
 import MonthView from "./MonthView";
@@ -183,9 +185,9 @@ const CalendarView = () => {
   const selectedDateString = selectedDate.toISOString().split('T')[0];
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background">
       {/* Top Navigation */}
-      <div className="border-b bg-card">
+      <div className="border-b bg-card flex-shrink-0">
         <div className="flex items-center justify-between px-6 py-3">
           <div className="flex items-center space-x-6">
             <Tabs value={currentView} onValueChange={setCurrentView} className="flex items-center">
@@ -229,11 +231,11 @@ const CalendarView = () => {
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 min-h-0">
         {/* Sidebar */}
         <div className="w-64 border-r bg-card flex flex-col">
           {/* Mini Calendar */}
-          <div className="p-4 border-b">
+          <div className="p-4 border-b flex-shrink-0">
             <CalendarComponent
               mode="single"
               selected={selectedDate}
@@ -243,87 +245,99 @@ const CalendarView = () => {
           </div>
 
           {/* Professionals Filter */}
-          <div className="p-4 flex-1 overflow-auto">
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-medium text-sm mb-3">Profissionais</h3>
-                <Input
-                  placeholder="Pesquisar profissional"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="mb-3"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="all-professionals"
-                    checked={selectedProfessionals.length === professionals.length}
-                    onCheckedChange={toggleAllProfessionals}
-                  />
-                  <label
-                    htmlFor="all-professionals"
-                    className="text-sm font-medium cursor-pointer"
-                  >
-                    Todos
-                  </label>
-                </div>
-                
-                {professionals
-                  .filter(prof => prof.name.toLowerCase().includes(searchTerm.toLowerCase()))
-                  .map((professional) => (
-                  <div key={professional.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`prof-${professional.id}`}
-                      checked={selectedProfessionals.includes(professional.id)}
-                      onCheckedChange={() => toggleProfessional(professional.id)}
+          <div className="flex-1 min-h-0">
+            <ScrollArea className="h-full">
+              <div className="p-4">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-medium text-sm mb-3">Profissionais</h3>
+                    <Input
+                      placeholder="Pesquisar profissional"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="mb-3"
                     />
-                    <div className="flex items-center space-x-2 flex-1">
-                      <div className={`w-3 h-3 rounded-full ${professional.color}`}></div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="all-professionals"
+                        checked={selectedProfessionals.length === professionals.length}
+                        onCheckedChange={toggleAllProfessionals}
+                      />
                       <label
-                        htmlFor={`prof-${professional.id}`}
-                        className="text-sm cursor-pointer flex-1"
+                        htmlFor="all-professionals"
+                        className="text-sm font-medium cursor-pointer"
                       >
-                        {professional.name}
+                        Todos
                       </label>
                     </div>
+                    
+                    {professionals
+                      .filter(prof => prof.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                      .map((professional) => (
+                      <div key={professional.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`prof-${professional.id}`}
+                          checked={selectedProfessionals.includes(professional.id)}
+                          onCheckedChange={() => toggleProfessional(professional.id)}
+                        />
+                        <div className="flex items-center space-x-2 flex-1">
+                          <div className={`w-3 h-3 rounded-full ${professional.color}`}></div>
+                          <label
+                            htmlFor={`prof-${professional.id}`}
+                            className="text-sm cursor-pointer flex-1"
+                          >
+                            {professional.name}
+                          </label>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
+            </ScrollArea>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-auto">
-          <Tabs value={currentView} className="h-full">
-            <TabsContent value="agenda" className="mt-0 h-full">
-              <DayView 
-                selectedDate={selectedDateString} 
-                professionals={filteredProfessionals}
-              />
+        <div className="flex-1 min-h-0">
+          <Tabs value={currentView} className="h-full flex flex-col">
+            <TabsContent value="agenda" className="flex-1 min-h-0 m-0">
+              <ScrollArea className="h-full">
+                <DayView 
+                  selectedDate={selectedDateString} 
+                  professionals={filteredProfessionals}
+                />
+              </ScrollArea>
             </TabsContent>
             
-            <TabsContent value="day" className="mt-0 h-full">
-              <DayView 
-                selectedDate={selectedDateString} 
-                professionals={filteredProfessionals}
-              />
+            <TabsContent value="day" className="flex-1 min-h-0 m-0">
+              <ScrollArea className="h-full">
+                <DayView 
+                  selectedDate={selectedDateString} 
+                  professionals={filteredProfessionals}
+                />
+              </ScrollArea>
             </TabsContent>
             
-            <TabsContent value="week" className="mt-0 h-full">
-              <WeekView 
-                selectedDate={selectedDateString} 
-                professionals={filteredProfessionals}
-              />
+            <TabsContent value="week" className="flex-1 min-h-0 m-0">
+              <ScrollArea className="h-full">
+                <WeekView 
+                  selectedDate={selectedDateString} 
+                  professionals={filteredProfessionals}
+                />
+              </ScrollArea>
             </TabsContent>
             
-            <TabsContent value="month" className="mt-0 h-full">
-              <MonthView 
-                selectedDate={selectedDateString} 
-                professionals={filteredProfessionals}
-              />
+            <TabsContent value="month" className="flex-1 min-h-0 m-0">
+              <ScrollArea className="h-full">
+                <MonthView 
+                  selectedDate={selectedDateString} 
+                  professionals={filteredProfessionals}
+                />
+              </ScrollArea>
             </TabsContent>
           </Tabs>
         </div>
