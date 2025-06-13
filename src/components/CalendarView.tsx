@@ -1,11 +1,12 @@
 
 import { useState } from "react";
-import { professionals } from "@/data/mockCalendarData";
+import { useProfessionals } from "@/contexts/ProfessionalsContext";
 import CalendarHeader from "./calendar/CalendarHeader";
 import CalendarSidebar from "./calendar/CalendarSidebar";
 import CalendarContent from "./calendar/CalendarContent";
 
 const CalendarView = () => {
+  const { professionals } = useProfessionals();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentView, setCurrentView] = useState("day");
   const [selectedProfessionals, setSelectedProfessionals] = useState(
@@ -33,9 +34,13 @@ const CalendarView = () => {
     );
   };
 
-  const filteredProfessionals = professionals.filter(prof => 
+  // Ordenar profissionais por agendaOrder
+  const sortedProfessionals = [...professionals].sort((a, b) => a.agendaOrder - b.agendaOrder);
+
+  const filteredProfessionals = sortedProfessionals.filter(prof => 
     selectedProfessionals.includes(prof.id) &&
-    prof.name.toLowerCase().includes(searchTerm.toLowerCase())
+    prof.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    prof.hasAgenda
   );
 
   const selectedDateString = selectedDate.toISOString().split('T')[0];
@@ -56,7 +61,7 @@ const CalendarView = () => {
           setSelectedDate={setSelectedDate}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          professionals={professionals}
+          professionals={sortedProfessionals.filter(p => p.hasAgenda)}
           selectedProfessionals={selectedProfessionals}
           toggleProfessional={toggleProfessional}
           toggleAllProfessionals={toggleAllProfessionals}

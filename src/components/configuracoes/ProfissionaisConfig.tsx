@@ -3,30 +3,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { ChevronRight, Save, User } from "lucide-react";
+import { useProfessionals } from "@/contexts/ProfessionalsContext";
 import ProfessionalList from "./profissionais/ProfessionalList";
 import ProfessionalForm from "./profissionais/ProfessionalForm";
 import CollapsibleSections from "./profissionais/CollapsibleSections";
-
-interface Professional {
-  id: number;
-  name: string;
-  socialName: string;
-  cpf: string;
-  rg: string;
-  birthDate: string;
-  color: string;
-  agendaInterval: number;
-  agendaOrder: number;
-  position: string;
-  canBeAssistant: boolean;
-  specialties: string;
-  description: string;
-  email: string;
-  accessLevel: string;
-  hasAgenda: boolean;
-  showOnlineBooking: boolean;
-  avatar?: string;
-}
+import { Professional } from "@/types/calendar";
 
 interface Service {
   id: number;
@@ -41,31 +22,10 @@ interface ProfissionaisConfigProps {
 }
 
 const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
+  const { professionals, updateProfessional } = useProfessionals();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProfessional, setSelectedProfessional] = useState<Professional | null>(null);
   const [expandedSections, setExpandedSections] = useState<string[]>(['access']);
-
-  const [professionals, setProfessionals] = useState<Professional[]>([
-    {
-      id: 1,
-      name: "Lorena da Silva Rocha",
-      socialName: "Lorena",
-      cpf: "170.831.567-51",
-      rg: "",
-      birthDate: "16/03/1993",
-      color: "#74ff9b",
-      agendaInterval: 10,
-      agendaOrder: 9,
-      position: "Freelancer",
-      canBeAssistant: false,
-      specialties: "",
-      description: "",
-      email: "Lorenaroxca@gmail.com",
-      accessLevel: "Profissionais",
-      hasAgenda: true,
-      showOnlineBooking: true
-    }
-  ]);
 
   const [services, setServices] = useState<Service[]>([
     { id: 1, name: "Ampola Com Aplicação", commission: 0, duration: 30, selected: false },
@@ -93,12 +53,10 @@ const ProfissionaisConfig = ({ onBack }: ProfissionaisConfigProps) => {
 
   const handleSaveProfessional = () => {
     if (selectedProfessional) {
-      setProfessionals(prev => 
-        prev.map(p => p.id === selectedProfessional.id ? selectedProfessional : p)
-      );
+      updateProfessional(selectedProfessional);
       toast({
         title: "Profissional atualizado",
-        description: "As informações foram salvas com sucesso.",
+        description: "As informações foram salvas com sucesso e refletidas na agenda.",
       });
     }
   };

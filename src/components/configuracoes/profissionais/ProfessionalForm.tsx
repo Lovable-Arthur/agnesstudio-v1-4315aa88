@@ -7,27 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { User } from "lucide-react";
-
-interface Professional {
-  id: number;
-  name: string;
-  socialName: string;
-  cpf: string;
-  rg: string;
-  birthDate: string;
-  color: string;
-  agendaInterval: number;
-  agendaOrder: number;
-  position: string;
-  canBeAssistant: boolean;
-  specialties: string;
-  description: string;
-  email: string;
-  accessLevel: string;
-  hasAgenda: boolean;
-  showOnlineBooking: boolean;
-  avatar?: string;
-}
+import { Professional } from "@/types/calendar";
 
 interface ProfessionalFormProps {
   professional: Professional;
@@ -36,6 +16,17 @@ interface ProfessionalFormProps {
 }
 
 const ProfessionalForm = ({ professional, onUpdate, onSave }: ProfessionalFormProps) => {
+  const colorOptions = [
+    { value: "bg-blue-500", label: "Azul", hex: "#3b82f6" },
+    { value: "bg-green-500", label: "Verde", hex: "#10b981" },
+    { value: "bg-purple-500", label: "Roxo", hex: "#8b5cf6" },
+    { value: "bg-orange-500", label: "Laranja", hex: "#f97316" },
+    { value: "bg-pink-500", label: "Rosa", hex: "#ec4899" },
+    { value: "bg-red-500", label: "Vermelho", hex: "#ef4444" },
+    { value: "bg-yellow-500", label: "Amarelo", hex: "#eab308" },
+    { value: "bg-indigo-500", label: "Índigo", hex: "#6366f1" },
+  ];
+
   return (
     <Card>
       <CardContent className="p-6">
@@ -145,21 +136,29 @@ const ProfessionalForm = ({ professional, onUpdate, onSave }: ProfessionalFormPr
             <Label>Possui alguma(s) especialidade(s)?</Label>
             <Input 
               value={professional.specialties}
-              onChange={(e) => onUpdate({...professional, specialties: e.target.value})}
+              onChange={(e) => onUpdate({...professional, specialties: e.target.value, specialty: e.target.value})}
             />
           </div>
           <div>
             <Label>Qual cor deverá aparecer na agenda?</Label>
-            <div className="flex items-center space-x-2">
-              <Input 
-                value={professional.color}
-                onChange={(e) => onUpdate({...professional, color: e.target.value})}
-              />
-              <div 
-                className="w-8 h-8 rounded border"
-                style={{ backgroundColor: professional.color }}
-              />
-            </div>
+            <Select value={professional.color} onValueChange={(value) => onUpdate({...professional, color: value})}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {colorOptions.map((color) => (
+                  <SelectItem key={color.value} value={color.value}>
+                    <div className="flex items-center space-x-2">
+                      <div 
+                        className="w-4 h-4 rounded border"
+                        style={{ backgroundColor: color.hex }}
+                      />
+                      <span>{color.label}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <Label>Qual intervalo de agendamento deve aparecer na agenda?</Label>
@@ -168,10 +167,10 @@ const ProfessionalForm = ({ professional, onUpdate, onSave }: ProfessionalFormPr
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="15">15</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="60">60</SelectItem>
+                <SelectItem value="10">10 minutos</SelectItem>
+                <SelectItem value="15">15 minutos</SelectItem>
+                <SelectItem value="30">30 minutos</SelectItem>
+                <SelectItem value="60">60 minutos</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -180,7 +179,7 @@ const ProfessionalForm = ({ professional, onUpdate, onSave }: ProfessionalFormPr
             <Input 
               type="number"
               value={professional.agendaOrder}
-              onChange={(e) => onUpdate({...professional, agendaOrder: parseInt(e.target.value)})}
+              onChange={(e) => onUpdate({...professional, agendaOrder: parseInt(e.target.value) || 1})}
             />
           </div>
         </div>
