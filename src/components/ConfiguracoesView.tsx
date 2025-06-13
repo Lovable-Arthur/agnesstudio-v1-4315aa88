@@ -1,5 +1,6 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
   Home, 
@@ -13,8 +14,67 @@ import {
   Bell,
   ChevronRight
 } from "lucide-react";
+import EstabelecimentoConfig from "./configuracoes/EstabelecimentoConfig";
+import AgendamentoConfig from "./configuracoes/AgendamentoConfig";
+import NotificacoesConfig from "./configuracoes/NotificacoesConfig";
+
+type ConfigSection = 
+  | 'main'
+  | 'estabelecimento'
+  | 'agendamento'
+  | 'notificacoes'
+  | 'servicos'
+  | 'comissoes'
+  | 'profissionais'
+  | 'estoque'
+  | 'financeiro'
+  | 'grupos'
+  | 'customizacoes'
+  | 'nota-fiscal';
 
 const ConfiguracoesView = () => {
+  const [currentSection, setCurrentSection] = useState<ConfigSection>('main');
+
+  const handleSectionClick = (section: ConfigSection) => {
+    setCurrentSection(section);
+  };
+
+  const handleBackToMain = () => {
+    setCurrentSection('main');
+  };
+
+  if (currentSection === 'estabelecimento') {
+    return <EstabelecimentoConfig onBack={handleBackToMain} />;
+  }
+
+  if (currentSection === 'agendamento') {
+    return <AgendamentoConfig onBack={handleBackToMain} />;
+  }
+
+  if (currentSection === 'notificacoes') {
+    return <NotificacoesConfig onBack={handleBackToMain} />;
+  }
+
+  // Renderizar seções temporárias para os outros itens
+  if (currentSection !== 'main') {
+    return (
+      <div className="h-full bg-background p-6">
+        <Button 
+          variant="ghost" 
+          onClick={handleBackToMain}
+          className="mb-4"
+        >
+          <ChevronRight className="w-4 h-4 mr-2 rotate-180" />
+          Voltar para Configurações
+        </Button>
+        <div className="text-center py-20">
+          <h2 className="text-2xl font-bold mb-4">Seção em Desenvolvimento</h2>
+          <p className="text-muted-foreground">Esta seção de configuração estará disponível em breve.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full bg-background p-6">
       {/* Banner de Dicas de Segurança */}
@@ -46,7 +106,7 @@ const ConfiguracoesView = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         
         {/* Informações do Estabelecimento */}
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleSectionClick('estabelecimento')}>
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-blue-100 rounded-lg">
@@ -62,7 +122,7 @@ const ConfiguracoesView = () => {
         </Card>
 
         {/* Agendamento */}
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleSectionClick('agendamento')}>
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -78,7 +138,7 @@ const ConfiguracoesView = () => {
         </Card>
 
         {/* Notificações */}
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleSectionClick('notificacoes')}>
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-yellow-100 rounded-lg">
@@ -94,7 +154,7 @@ const ConfiguracoesView = () => {
         </Card>
 
         {/* Serviços e Pacotes */}
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleSectionClick('servicos')}>
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-purple-100 rounded-lg">
@@ -110,7 +170,7 @@ const ConfiguracoesView = () => {
         </Card>
 
         {/* Comissões */}
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleSectionClick('comissoes')}>
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-orange-100 rounded-lg">
@@ -126,7 +186,7 @@ const ConfiguracoesView = () => {
         </Card>
 
         {/* Profissionais */}
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleSectionClick('profissionais')}>
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-teal-100 rounded-lg">
@@ -142,7 +202,7 @@ const ConfiguracoesView = () => {
         </Card>
 
         {/* Estoque */}
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleSectionClick('estoque')}>
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-indigo-100 rounded-lg">
@@ -158,7 +218,7 @@ const ConfiguracoesView = () => {
         </Card>
 
         {/* Financeiro */}
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleSectionClick('financeiro')}>
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -174,7 +234,7 @@ const ConfiguracoesView = () => {
         </Card>
 
         {/* Grupos de Acessos */}
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleSectionClick('grupos')}>
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-red-100 rounded-lg">
@@ -190,7 +250,7 @@ const ConfiguracoesView = () => {
         </Card>
 
         {/* Customizações */}
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleSectionClick('customizacoes')}>
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-pink-100 rounded-lg">
@@ -206,7 +266,7 @@ const ConfiguracoesView = () => {
         </Card>
 
         {/* Nota Fiscal */}
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleSectionClick('nota-fiscal')}>
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-gray-100 rounded-lg">
