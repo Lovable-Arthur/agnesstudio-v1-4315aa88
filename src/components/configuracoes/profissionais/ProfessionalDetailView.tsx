@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Save } from "lucide-react";
+import { ChevronRight, Save, X } from "lucide-react";
 import { Professional } from "@/types/calendar";
 import ProfessionalForm from "./ProfessionalForm";
 import CollapsibleSections from "./CollapsibleSections";
@@ -14,6 +14,7 @@ interface ProfessionalDetailViewProps {
   onSave: () => void;
   onDiscard: () => void;
   onBack: () => void;
+  isInlineView?: boolean;
 }
 
 const ProfessionalDetailView = ({
@@ -23,7 +24,8 @@ const ProfessionalDetailView = ({
   onUpdate,
   onSave,
   onDiscard,
-  onBack
+  onBack,
+  isInlineView = false
 }: ProfessionalDetailViewProps) => {
   const [expandedSections, setExpandedSections] = useState<string[]>(['access']);
 
@@ -40,18 +42,33 @@ const ProfessionalDetailView = ({
   };
 
   return (
-    <div className="h-full bg-background p-6">
-      <div className="flex items-center justify-between mb-6">
-        <Button 
-          variant="ghost" 
-          onClick={onBack}
-          className="mb-4"
-        >
-          <ChevronRight className="w-4 h-4 mr-2 rotate-180" />
-          Configurações
-        </Button>
-        <span className="text-sm text-muted-foreground">Profissionais</span>
-      </div>
+    <div className={`h-full bg-background ${!isInlineView ? 'p-6' : ''}`}>
+      {!isInlineView && (
+        <div className="flex items-center justify-between mb-6">
+          <Button 
+            variant="ghost" 
+            onClick={onBack}
+            className="mb-4"
+          >
+            <ChevronRight className="w-4 h-4 mr-2 rotate-180" />
+            Configurações
+          </Button>
+          <span className="text-sm text-muted-foreground">Profissionais</span>
+        </div>
+      )}
+
+      {isInlineView && (
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Editar Profissional</h2>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={onBack}
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+      )}
 
       {hasUnsavedChanges && (
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -61,11 +78,12 @@ const ProfessionalDetailView = ({
         </div>
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-200px)]">
         <ProfessionalForm 
           professional={pendingChanges}
           onUpdate={onUpdate}
           onSave={handleSaveProfessional}
+          isCompact={isInlineView}
         />
 
         <CollapsibleSections 
@@ -76,7 +94,7 @@ const ProfessionalDetailView = ({
           professionalId={pendingChanges.id}
         />
 
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 pt-4">
           <Button 
             onClick={onSave} 
             className="bg-cyan-500 hover:bg-cyan-600"

@@ -17,20 +17,22 @@ interface ProfessionalListProps {
   searchTerm: string;
   onSearchChange: (term: string) => void;
   onSelectProfessional: (professional: Professional) => void;
+  selectedProfessionalId?: number;
 }
 
 const ProfessionalList = ({ 
   professionals, 
   searchTerm, 
   onSearchChange, 
-  onSelectProfessional 
+  onSelectProfessional,
+  selectedProfessionalId
 }: ProfessionalListProps) => {
   const filteredProfessionals = professionals.filter(prof => 
     prof.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="w-80 space-y-4">
+    <div className="space-y-4">
       <Button className="w-full bg-blue-600 hover:bg-blue-700">
         <Plus className="w-4 h-4 mr-2" />
         Adicionar Profissional
@@ -64,7 +66,9 @@ const ProfessionalList = ({
         {filteredProfessionals.map((professional) => (
           <Card 
             key={professional.id} 
-            className="cursor-pointer hover:bg-accent transition-colors"
+            className={`cursor-pointer hover:bg-accent transition-colors ${
+              selectedProfessionalId === professional.id ? 'ring-2 ring-primary bg-accent' : ''
+            }`}
             onClick={() => onSelectProfessional(professional)}
           >
             <CardContent className="p-4">
