@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LoginFormProps {
   onLogin: () => void;
@@ -15,24 +16,38 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
-    // Credenciais fixas para demonstração
-    if (email === 'admin@admin.com' && password === 'admin') {
-      toast({
-        title: "Login realizado com sucesso!",
-        description: "Redirecionando para a agenda...",
-      });
-      onLogin();
-    } else {
+    try {
+      const success = await login(email, password);
+      
+      if (success) {
+        toast({
+          title: "Login realizado com sucesso!",
+          description: "Redirecionando para a agenda...",
+        });
+        onLogin();
+      } else {
+        toast({
+          title: "Erro no login",
+          description: "Email ou senha incorretos.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
       toast({
         title: "Erro no login",
-        description: "Email ou senha incorretos.",
+        description: "Ocorreu um erro durante o login. Tente novamente.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,6 +71,7 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
                 required
+                disabled={isLoading}
                 className="w-full"
               />
             </div>
@@ -70,12 +86,14 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
+                  disabled={isLoading}
                   className="w-full pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  disabled={isLoading}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 disabled:opacity-50"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -84,10 +102,20 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
 
             <Button 
               type="submit" 
-              className="w-full bg-cyan-500 hover:bg-cyan-600 text-white"
+              disabled={isLoading}
+              className="w-full bg-cyan-500 hover:bg-cyan-600 text-white disabled:opacity-50"
             >
-              <LogIn className="mr-2 h-4 w-4" />
-              Entrar
+              {isLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Entrando...
+                </>
+              ) : (
+                <>
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Entrar
+                </>
+              )}
             </Button>
           </form>
           
@@ -95,12 +123,6 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
             <a href="#" className="text-cyan-500 hover:text-cyan-600 text-sm">
               Esqueci minha senha
             </a>
-          </div>
-          
-          <div className="mt-6 text-center text-xs text-gray-500">
-            <p>Para demonstração:</p>
-            <p>Email: admin@admin.com</p>
-            <p>Senha: admin</p>
           </div>
         </CardContent>
       </Card>

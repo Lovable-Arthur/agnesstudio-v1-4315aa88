@@ -1,7 +1,10 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, DollarSign, Package, Users, Megaphone, BarChart3, Settings } from "lucide-react";
+import { Calendar, DollarSign, Package, Users, Megaphone, BarChart3, Settings, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 import CalendarView from "@/components/CalendarView";
 import FinanceiroView from "@/components/FinanceiroView";
 import EstoqueView from "@/components/EstoqueView";
@@ -11,6 +14,17 @@ import RelatoriosView from "@/components/RelatoriosView";
 import ConfiguracoesView from "@/components/ConfiguracoesView";
 
 const Schedule = () => {
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  const handleBackToSite = () => {
+    navigate('/');
+  };
+
   return (
     <div className="h-screen bg-background flex flex-col">
       {/* Header */}
@@ -23,9 +37,29 @@ const Schedule = () => {
               </div>
               <h1 className="text-2xl font-bold text-primary">Beleza Salon</h1>
             </div>
-            <button onClick={() => window.location.href = '/'} className="px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium">
-              Voltar ao Site
-            </button>
+            <div className="flex items-center space-x-3">
+              {user && (
+                <span className="text-sm text-muted-foreground">
+                  {user.email}
+                </span>
+              )}
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleBackToSite}
+              >
+                Voltar ao Site
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleLogout}
+                className="text-red-600 border-red-200 hover:bg-red-50"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sair
+              </Button>
+            </div>
           </div>
         </div>
       </header>

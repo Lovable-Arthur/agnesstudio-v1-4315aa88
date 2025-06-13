@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Schedule from "./pages/Schedule";
 import Commissions from "./pages/Commissions";
@@ -18,13 +20,29 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/agenda" element={<Schedule />} />
-          <Route path="/comissoes" element={<Commissions />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route 
+              path="/agenda" 
+              element={
+                <ProtectedRoute>
+                  <Schedule />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/comissoes" 
+              element={
+                <ProtectedRoute>
+                  <Commissions />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
