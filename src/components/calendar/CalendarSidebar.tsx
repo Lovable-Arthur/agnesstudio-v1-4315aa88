@@ -69,7 +69,10 @@ const CalendarSidebar = ({
                 </div>
                 
                 {professionals
-                  .filter(prof => prof.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .filter(prof => {
+                    const displayName = prof.socialName || prof.name;
+                    return displayName.toLowerCase().includes(searchTerm.toLowerCase());
+                  })
                   .map((professional) => (
                   <div key={professional.id} className="flex items-center space-x-2">
                     <Checkbox
@@ -83,7 +86,7 @@ const CalendarSidebar = ({
                         htmlFor={`prof-${professional.id}`}
                         className="text-sm cursor-pointer flex-1"
                       >
-                        {professional.name}
+                        {professional.socialName || professional.name}
                       </label>
                     </div>
                   </div>

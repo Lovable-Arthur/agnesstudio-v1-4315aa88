@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
@@ -24,10 +23,10 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         <div className="flex items-center justify-center space-x-2">
           <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
             <span className="text-xs font-bold">
-              {getProfessionalInitials(professional.name)}
+              {getProfessionalInitials(professional.socialName || professional.name)}
             </span>
           </div>
-          <span className="truncate">{professional.name}</span>
+          <span className="truncate">{professional.socialName || professional.name}</span>
         </div>
       </div>
       <div className="text-xs text-muted-foreground truncate">

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,6 +18,10 @@ const Schedule = () => {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
 
+  // Simulando nível de acesso do usuário - em produção viria do contexto de auth
+  const userAccessLevel = "Profissionais"; // ou "Admin", "Gerente"
+  const isRestrictedUser = userAccessLevel === "Profissionais";
+
   const handleLogout = () => {
     logout();
   };
@@ -24,6 +29,11 @@ const Schedule = () => {
   const handleBackToSite = () => {
     navigate('/');
   };
+
+  // Abas permitidas baseadas no nível de acesso
+  const allowedTabs = isRestrictedUser 
+    ? ['agenda', 'clientes'] 
+    : ['agenda', 'financeiro', 'estoque', 'clientes', 'marketing', 'relatorios', 'configuracoes'];
 
   return (
     <div className="h-screen bg-background flex flex-col">
@@ -40,7 +50,7 @@ const Schedule = () => {
             <div className="flex items-center space-x-3">
               {user && (
                 <span className="text-sm text-muted-foreground">
-                  {user.email}
+                  {user.email} ({userAccessLevel})
                 </span>
               )}
               <Button 
@@ -68,56 +78,70 @@ const Schedule = () => {
       <div className="flex-1 min-h-0">
         <Tabs defaultValue="agenda" className="h-full flex flex-col">
           <div className="bg-white border-b px-4 flex-shrink-0">
-            <TabsList className="grid w-full grid-cols-7 bg-transparent h-auto p-0 gap-0">
-              <TabsTrigger 
-                value="agenda" 
-                className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
-              >
-                <Calendar className="w-5 h-5 mb-1" />
-                Agenda
-              </TabsTrigger>
-              <TabsTrigger 
-                value="financeiro"
-                className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
-              >
-                <DollarSign className="w-5 h-5 mb-1" />
-                Financeiro
-              </TabsTrigger>
-              <TabsTrigger 
-                value="estoque"
-                className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
-              >
-                <Package className="w-5 h-5 mb-1" />
-                Estoque
-              </TabsTrigger>
-              <TabsTrigger 
-                value="clientes"
-                className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
-              >
-                <Users className="w-5 h-5 mb-1" />
-                Clientes
-              </TabsTrigger>
-              <TabsTrigger 
-                value="marketing"
-                className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
-              >
-                <Megaphone className="w-5 h-5 mb-1" />
-                Marketing
-              </TabsTrigger>
-              <TabsTrigger 
-                value="relatorios"
-                className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
-              >
-                <BarChart3 className="w-5 h-5 mb-1" />
-                Relatórios
-              </TabsTrigger>
-              <TabsTrigger 
-                value="configuracoes"
-                className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
-              >
-                <Settings className="w-5 h-5 mb-1" />
-                Configurações
-              </TabsTrigger>
+            <TabsList className="grid w-full bg-transparent h-auto p-0 gap-0" style={{ gridTemplateColumns: `repeat(${allowedTabs.length}, 1fr)` }}>
+              {allowedTabs.includes('agenda') && (
+                <TabsTrigger 
+                  value="agenda" 
+                  className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
+                >
+                  <Calendar className="w-5 h-5 mb-1" />
+                  Agenda
+                </TabsTrigger>
+              )}
+              {allowedTabs.includes('financeiro') && (
+                <TabsTrigger 
+                  value="financeiro"
+                  className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
+                >
+                  <DollarSign className="w-5 h-5 mb-1" />
+                  Financeiro
+                </TabsTrigger>
+              )}
+              {allowedTabs.includes('estoque') && (
+                <TabsTrigger 
+                  value="estoque"
+                  className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
+                >
+                  <Package className="w-5 h-5 mb-1" />
+                  Estoque
+                </TabsTrigger>
+              )}
+              {allowedTabs.includes('clientes') && (
+                <TabsTrigger 
+                  value="clientes"
+                  className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
+                >
+                  <Users className="w-5 h-5 mb-1" />
+                  Clientes
+                </TabsTrigger>
+              )}
+              {allowedTabs.includes('marketing') && (
+                <TabsTrigger 
+                  value="marketing"
+                  className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
+                >
+                  <Megaphone className="w-5 h-5 mb-1" />
+                  Marketing
+                </TabsTrigger>
+              )}
+              {allowedTabs.includes('relatorios') && (
+                <TabsTrigger 
+                  value="relatorios"
+                  className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
+                >
+                  <BarChart3 className="w-5 h-5 mb-1" />
+                  Relatórios
+                </TabsTrigger>
+              )}
+              {allowedTabs.includes('configuracoes') && (
+                <TabsTrigger 
+                  value="configuracoes"
+                  className="flex flex-col items-center py-3 px-4 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary rounded-none"
+                >
+                  <Settings className="w-5 h-5 mb-1" />
+                  Configurações
+                </TabsTrigger>
+              )}
             </TabsList>
           </div>
 
@@ -126,17 +150,21 @@ const Schedule = () => {
               <CalendarView />
             </TabsContent>
             
-            <TabsContent value="financeiro" className="h-full m-0">
-              <ScrollArea className="h-full">
-                <FinanceiroView />
-              </ScrollArea>
-            </TabsContent>
+            {allowedTabs.includes('financeiro') && (
+              <TabsContent value="financeiro" className="h-full m-0">
+                <ScrollArea className="h-full">
+                  <FinanceiroView />
+                </ScrollArea>
+              </TabsContent>
+            )}
             
-            <TabsContent value="estoque" className="h-full m-0">
-              <ScrollArea className="h-full">
-                <EstoqueView />
-              </ScrollArea>
-            </TabsContent>
+            {allowedTabs.includes('estoque') && (
+              <TabsContent value="estoque" className="h-full m-0">
+                <ScrollArea className="h-full">
+                  <EstoqueView />
+                </ScrollArea>
+              </TabsContent>
+            )}
             
             <TabsContent value="clientes" className="h-full m-0">
               <ScrollArea className="h-full">
@@ -144,23 +172,29 @@ const Schedule = () => {
               </ScrollArea>
             </TabsContent>
             
-            <TabsContent value="marketing" className="h-full m-0">
-              <ScrollArea className="h-full">
-                <MarketingView />
-              </ScrollArea>
-            </TabsContent>
+            {allowedTabs.includes('marketing') && (
+              <TabsContent value="marketing" className="h-full m-0">
+                <ScrollArea className="h-full">
+                  <MarketingView />
+                </ScrollArea>
+              </TabsContent>
+            )}
             
-            <TabsContent value="relatorios" className="h-full m-0">
-              <ScrollArea className="h-full">
-                <RelatoriosView />
-              </ScrollArea>
-            </TabsContent>
+            {allowedTabs.includes('relatorios') && (
+              <TabsContent value="relatorios" className="h-full m-0">
+                <ScrollArea className="h-full">
+                  <RelatoriosView />
+                </ScrollArea>
+              </TabsContent>
+            )}
             
-            <TabsContent value="configuracoes" className="h-full m-0">
-              <ScrollArea className="h-full">
-                <ConfiguracoesView />
-              </ScrollArea>
-            </TabsContent>
+            {allowedTabs.includes('configuracoes') && (
+              <TabsContent value="configuracoes" className="h-full m-0">
+                <ScrollArea className="h-full">
+                  <ConfiguracoesView />
+                </ScrollArea>
+              </TabsContent>
+            )}
           </div>
         </Tabs>
       </div>

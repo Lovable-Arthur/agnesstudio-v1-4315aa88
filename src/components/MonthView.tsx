@@ -1,4 +1,3 @@
-
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
@@ -108,7 +107,7 @@ const MonthView = ({ selectedDate, professionals }: MonthViewProps) => {
       <div key={professional.id} className="space-y-2">
         <div className="flex items-center space-x-2">
           <div className={`w-3 h-3 rounded-full ${professional.color}`}></div>
-          <span className="font-medium text-sm">{professional.name}</span>
+          <span className="font-medium text-sm">{professional.socialName || professional.name}</span>
         </div>
         
         {dayAppointments.length > 0 ? (
@@ -142,7 +141,7 @@ const MonthView = ({ selectedDate, professionals }: MonthViewProps) => {
             }}
           />
         </CardContent>
-      </Card>
+      </CardHeader>
 
       <Card>
         <CardHeader>

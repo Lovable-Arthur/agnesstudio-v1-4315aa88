@@ -1,4 +1,3 @@
-
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Professional, Appointment } from "@/types/calendar";
@@ -50,7 +49,7 @@ const WeekView = ({ selectedDate, professionals }: WeekViewProps) => {
       <div className="flex items-center space-x-2 p-2 border-r">
         <div className={`w-3 h-3 rounded-full ${professional.color}`}></div>
         <div>
-          <div className="font-medium text-sm truncate">{professional.name}</div>
+          <div className="font-medium text-sm truncate">{professional.socialName || professional.name}</div>
           <div className="text-xs text-muted-foreground truncate">{professional.specialty}</div>
         </div>
       </div>
