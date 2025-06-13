@@ -13,9 +13,10 @@ interface ProfessionalFormProps {
   professional: Professional;
   onUpdate: (professional: Professional) => void;
   onSave: () => void;
+  isCompact?: boolean;
 }
 
-const ProfessionalForm = ({ professional, onUpdate, onSave }: ProfessionalFormProps) => {
+const ProfessionalForm = ({ professional, onUpdate, onSave, isCompact = false }: ProfessionalFormProps) => {
   const colorOptions = [
     { value: "bg-blue-500", label: "Azul", hex: "#3b82f6" },
     { value: "bg-green-500", label: "Verde", hex: "#10b981" },
