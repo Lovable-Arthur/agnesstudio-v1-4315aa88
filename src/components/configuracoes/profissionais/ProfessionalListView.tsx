@@ -40,7 +40,7 @@ const ProfessionalListView = ({ onBack }: ProfessionalListViewProps) => {
       </Button>
 
       <div className="flex space-x-6 h-full">
-        <div className="w-80 flex-shrink-0">
+        <div className="w-64 flex-shrink-0">
           <ProfessionalList 
             professionals={professionals}
             searchTerm={searchTerm}
