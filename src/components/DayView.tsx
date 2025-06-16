@@ -1,7 +1,9 @@
+
 import React, { useMemo } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
 import { getStatusColor, getProfessionalColor, getProfessionalInitials } from "@/utils/styleUtils";
+import AppointmentContextMenu from "./AppointmentContextMenu";
 
 interface DayViewProps {
   selectedDate: string;
@@ -15,6 +17,12 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     return professional.appointments.find(apt => 
       apt.date === selectedDate && apt.time === timeSlot
     );
+  };
+
+  const handleAddAppointment = (appointmentData: any) => {
+    console.log("Novo agendamento:", appointmentData);
+    // Aqui você pode implementar a lógica para adicionar o agendamento
+    // Por exemplo, usando um contexto ou chamando uma API
   };
 
   const renderProfessionalHeader = (professional: Professional) => (
@@ -39,27 +47,34 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     const appointment = getAppointmentForTimeSlot(professional, timeSlot);
     
     return (
-      <div 
-        key={`${timeSlot}-${professional.id}`} 
-        className={`border-r border-b last:border-r-0 min-h-[60px] p-1 ${getProfessionalColor(professional.color)}`}
+      <AppointmentContextMenu
+        key={`${timeSlot}-${professional.id}`}
+        timeSlot={timeSlot}
+        professionalId={professional.id}
+        selectedDate={selectedDate}
+        onAddAppointment={handleAddAppointment}
       >
-        {appointment ? (
-          <div className={`h-full p-2 rounded text-xs border-2 ${getStatusColor(appointment.status)}`}>
-            <div className="font-medium truncate text-white">
-              {appointment.time}
+        <div 
+          className={`border-r border-b last:border-r-0 min-h-[60px] p-1 cursor-pointer hover:bg-gray-50 ${getProfessionalColor(professional.color)}`}
+        >
+          {appointment ? (
+            <div className={`h-full p-2 rounded text-xs border-2 ${getStatusColor(appointment.status)}`}>
+              <div className="font-medium truncate text-white">
+                {appointment.time}
+              </div>
+              <div className="font-semibold truncate text-white">
+                {appointment.clientName}
+              </div>
+              <div className="text-xs opacity-90 truncate">
+                {appointment.service}
+              </div>
             </div>
-            <div className="font-semibold truncate text-white">
-              {appointment.clientName}
+          ) : (
+            <div className="h-full rounded opacity-30 hover:opacity-50 transition-opacity">
             </div>
-            <div className="text-xs opacity-90 truncate">
-              {appointment.service}
-            </div>
-          </div>
-        ) : (
-          <div className="h-full rounded opacity-30 hover:opacity-50 cursor-pointer transition-opacity">
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </AppointmentContextMenu>
     );
   };
 
