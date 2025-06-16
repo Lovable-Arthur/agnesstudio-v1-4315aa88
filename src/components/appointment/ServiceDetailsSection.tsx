@@ -1,8 +1,10 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Plus, Search } from "lucide-react";
 import { Service } from "@/contexts/ServicesContext";
 import { Professional } from "@/types/calendar";
 
@@ -29,55 +31,92 @@ const ServiceDetailsSection = ({
   price,
   setPrice
 }: ServiceDetailsSectionProps) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredServices = availableServices.filter(service =>
+    service.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleAddNewService = () => {
+    // Aqui você pode implementar a lógica para abrir um modal ou navegar para uma página de criação de serviços
+    console.log("Adicionar novo serviço");
+  };
+
   return (
-    <>
-      <div className="grid grid-cols-5 gap-4">
-        <div className="space-y-2">
-          <Label>Serviço</Label>
-          <Select value={selectedService} onValueChange={onServiceChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecionar" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableServices.map((service) => (
+    <div className="grid grid-cols-6 gap-4">
+      <div className="space-y-2">
+        <Label>Serviço</Label>
+        <Select value={selectedService} onValueChange={onServiceChange}>
+          <SelectTrigger>
+            <SelectValue placeholder="Selecionar" />
+          </SelectTrigger>
+          <SelectContent>
+            <div className="p-2 border-b">
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Pesquisar serviços..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+            </div>
+            <div className="p-2 border-b">
+              <Button
+                onClick={handleAddNewService}
+                variant="outline"
+                size="sm"
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Adicionar Novo Serviço
+              </Button>
+            </div>
+            {filteredServices.length > 0 ? (
+              filteredServices.map((service) => (
                 <SelectItem key={service.id} value={service.id.toString()}>
                   {service.name}
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+              ))
+            ) : (
+              <div className="p-2 text-sm text-muted-foreground text-center">
+                Nenhum serviço encontrado
+              </div>
+            )}
+          </SelectContent>
+        </Select>
+      </div>
 
-        <div className="space-y-2">
-          <Label>Profissional</Label>
-          <Input value={selectedProfessional?.socialName || selectedProfessional?.name || "Não encontrado"} readOnly />
-        </div>
+      <div className="space-y-2">
+        <Label>Profissional</Label>
+        <Input value={selectedProfessional?.socialName || selectedProfessional?.name || "Não encontrado"} readOnly />
+      </div>
 
-        <div className="space-y-2">
-          <Label>Tempo</Label>
-          <Input 
-            value={selectedService ? availableServices.find(s => s.id.toString() === selectedService)?.duration + "min" : ""} 
-            readOnly 
-          />
-        </div>
+      <div className="space-y-2">
+        <Label>Tempo</Label>
+        <Input 
+          value={selectedService ? availableServices.find(s => s.id.toString() === selectedService)?.duration + "min" : ""} 
+          readOnly 
+        />
+      </div>
 
-        <div className="space-y-2">
-          <Label>Início</Label>
-          <Input 
-            type="time" 
-            value={startTime} 
-            onChange={(e) => setStartTime(e.target.value)}
-          />
-        </div>
+      <div className="space-y-2">
+        <Label>Início</Label>
+        <Input 
+          type="time" 
+          value={startTime} 
+          onChange={(e) => setStartTime(e.target.value)}
+        />
+      </div>
 
-        <div className="space-y-2">
-          <Label>Fim</Label>
-          <Input 
-            type="time" 
-            value={endTime} 
-            readOnly
-          />
-        </div>
+      <div className="space-y-2">
+        <Label>Fim</Label>
+        <Input 
+          type="time" 
+          value={endTime} 
+          readOnly
+        />
       </div>
 
       <div className="space-y-2">
@@ -86,10 +125,9 @@ const ServiceDetailsSection = ({
           type="number" 
           value={price} 
           onChange={(e) => setPrice(e.target.value)}
-          className="w-32"
         />
       </div>
-    </>
+    </div>
   );
 };
 
