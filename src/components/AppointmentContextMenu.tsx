@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   ContextMenu,
@@ -27,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, X, Calendar, User, Clock } from "lucide-react";
 import { useServices } from "@/contexts/ServicesContext";
+import { useProfessionals } from "@/contexts/ProfessionalsContext";
 
 interface AppointmentContextMenuProps {
   children: React.ReactNode;
@@ -54,6 +54,10 @@ const AppointmentContextMenu = ({
   const [observations, setObservations] = useState("");
 
   const { getServicesByProfessional } = useServices();
+  const { professionals } = useProfessionals();
+  
+  // Buscar dados do profissional selecionado
+  const selectedProfessional = professionals.find(p => p.id === professionalId);
   const availableServices = getServicesByProfessional(professionalId);
 
   // Cores predefinidas para as etiquetas
@@ -231,7 +235,7 @@ const AppointmentContextMenu = ({
 
               <div className="space-y-2">
                 <Label>Profissional</Label>
-                <Input value="Selecionado" readOnly />
+                <Input value={selectedProfessional?.socialName || selectedProfessional?.name || "Não encontrado"} readOnly />
               </div>
 
               <div className="space-y-2">
