@@ -1,5 +1,5 @@
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
 import { getStatusColor, getProfessionalColor, getProfessionalInitials } from "@/utils/styleUtils";
@@ -12,17 +12,42 @@ interface DayViewProps {
 
 const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   const displayTimeSlots = useMemo(() => getDisplayTimeSlots(30), []);
+  const [savedAppointments, setSavedAppointments] = useState<{ [key: string]: Appointment[] }>({});
 
   const getAppointmentForTimeSlot = (professional: Professional, timeSlot: string): Appointment | undefined => {
-    return professional.appointments.find(apt => 
+    // Primeiro, verifica os agendamentos originais do profissional
+    const originalAppointment = professional.appointments.find(apt => 
       apt.date === selectedDate && apt.time === timeSlot
     );
+    
+    if (originalAppointment) return originalAppointment;
+
+    // Depois, verifica os agendamentos salvos dinamicamente
+    const dayKey = `${selectedDate}-${professional.id}`;
+    const dayAppointments = savedAppointments[dayKey] || [];
+    return dayAppointments.find(apt => apt.time === timeSlot);
   };
 
   const handleAddAppointment = (appointmentData: any) => {
     console.log("Novo agendamento:", appointmentData);
-    // Aqui você pode implementar a lógica para adicionar o agendamento
-    // Por exemplo, usando um contexto ou chamando uma API
+    
+    // Criar o agendamento formatado
+    const newAppointment: Appointment = {
+      id: Date.now(),
+      clientName: appointmentData.clientName,
+      service: appointmentData.services.map((s: any) => s.name).join(", "),
+      time: appointmentData.time,
+      duration: appointmentData.duration,
+      status: appointmentData.status,
+      date: appointmentData.date
+    };
+
+    // Adicionar aos agendamentos salvos
+    const dayKey = `${appointmentData.date}-${appointmentData.professionalId}`;
+    setSavedAppointments(prev => ({
+      ...prev,
+      [dayKey]: [...(prev[dayKey] || []), newAppointment]
+    }));
   };
 
   const renderProfessionalHeader = (professional: Professional) => (
