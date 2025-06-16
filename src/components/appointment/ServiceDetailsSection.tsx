@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Plus, Search } from "lucide-react";
 import { Service } from "@/contexts/ServicesContext";
 import { Professional } from "@/types/calendar";
+import { useProfessionals } from "@/contexts/ProfessionalsContext";
 
 interface ServiceDetailsSectionProps {
   selectedService: string;
   onServiceChange: (serviceId: string) => void;
   selectedProfessional: Professional | undefined;
+  onProfessionalChange: (professionalId: number) => void;
   availableServices: Service[];
   startTime: string;
   setStartTime: (time: string) => void;
@@ -24,6 +26,7 @@ const ServiceDetailsSection = ({
   selectedService,
   onServiceChange,
   selectedProfessional,
+  onProfessionalChange,
   availableServices,
   startTime,
   setStartTime,
@@ -32,14 +35,29 @@ const ServiceDetailsSection = ({
   setPrice
 }: ServiceDetailsSectionProps) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [professionalSearchTerm, setProfessionalSearchTerm] = useState("");
+  const { professionals } = useProfessionals();
 
   const filteredServices = availableServices.filter(service =>
     service.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const availableProfessionals = professionals.filter(prof => prof.hasAgenda);
+  const filteredProfessionals = availableProfessionals.filter(prof =>
+    prof.name.toLowerCase().includes(professionalSearchTerm.toLowerCase()) ||
+    (prof.socialName && prof.socialName.toLowerCase().includes(professionalSearchTerm.toLowerCase()))
+  );
+
   const handleAddNewService = () => {
-    // Aqui você pode implementar a lógica para abrir um modal ou navegar para uma página de criação de serviços
     console.log("Adicionar novo serviço");
+  };
+
+  const handleSelectProfessional = (professionalId: string) => {
+    onProfessionalChange(Number(professionalId));
+    const prof = professionals.find(p => p.id === Number(professionalId));
+    if (prof) {
+      setProfessionalSearchTerm(prof.socialName || prof.name);
+    }
   };
 
   return (
@@ -90,7 +108,32 @@ const ServiceDetailsSection = ({
 
       <div className="space-y-2">
         <Label>Profissional</Label>
-        <Input value={selectedProfessional?.socialName || selectedProfessional?.name || "Não encontrado"} readOnly />
+        <Select value={selectedProfessional?.id.toString() || ""} onValueChange={handleSelectProfessional}>
+          <SelectTrigger>
+            <SelectValue placeholder="Selecionar Profissional" />
+          </SelectTrigger>
+          <SelectContent>
+            <div className="p-2">
+              <Input
+                placeholder="Pesquisar profissional..."
+                value={professionalSearchTerm}
+                onChange={(e) => setProfessionalSearchTerm(e.target.value)}
+                className="mb-2"
+              />
+            </div>
+            {filteredProfessionals.length > 0 ? (
+              filteredProfessionals.map((professional) => (
+                <SelectItem key={professional.id} value={professional.id.toString()}>
+                  {professional.socialName || professional.name}
+                </SelectItem>
+              ))
+            ) : (
+              <div className="p-2 text-sm text-muted-foreground text-center">
+                Nenhum profissional encontrado
+              </div>
+            )}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-2">

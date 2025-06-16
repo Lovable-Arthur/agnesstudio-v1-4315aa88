@@ -30,11 +30,6 @@ const ClientSection = ({ clientName, setClientName }: ClientSectionProps) => {
     client.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleInputChange = (value: string) => {
-    setSearchTerm(value);
-    setClientName(value);
-  };
-
   const handleSelectClient = (selectedClient: string) => {
     setClientName(selectedClient);
     setSearchTerm(selectedClient);
@@ -44,16 +39,9 @@ const ClientSection = ({ clientName, setClientName }: ClientSectionProps) => {
     <div className="space-y-2">
       <Label htmlFor="client">Cliente:</Label>
       <div className="flex gap-2">
-        <div className="flex-1 flex gap-2">
-          <Input
-            id="client"
-            placeholder="Digite ou pesquise o nome do cliente"
-            value={clientName}
-            onChange={(e) => handleInputChange(e.target.value)}
-            className="flex-1"
-          />
+        <div className="flex-1">
           <Select value={clientName} onValueChange={handleSelectClient}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger>
               <SelectValue placeholder="Selecionar Cliente" />
             </SelectTrigger>
             <SelectContent>

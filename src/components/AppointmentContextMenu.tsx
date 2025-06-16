@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Dialog,
@@ -44,6 +43,7 @@ const AppointmentContextMenu = ({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [clientName, setClientName] = useState("");
   const [selectedService, setSelectedService] = useState("");
+  const [selectedProfessionalId, setSelectedProfessionalId] = useState(professionalId);
   const [startTime, setStartTime] = useState(timeSlot);
   const [endTime, setEndTime] = useState("");
   const [price, setPrice] = useState("");
@@ -55,8 +55,8 @@ const AppointmentContextMenu = ({
   const { getServicesByProfessional } = useServices();
   const { professionals } = useProfessionals();
   
-  const selectedProfessional = professionals.find(p => p.id === professionalId);
-  const availableServices = getServicesByProfessional(professionalId);
+  const selectedProfessional = professionals.find(p => p.id === selectedProfessionalId);
+  const availableServices = getServicesByProfessional(selectedProfessionalId);
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
@@ -66,6 +66,7 @@ const AppointmentContextMenu = ({
     setIsDialogOpen(false);
     setClientName("");
     setSelectedService("");
+    setSelectedProfessionalId(professionalId);
     setStartTime(timeSlot);
     setEndTime("");
     setPrice("");
@@ -96,6 +97,14 @@ const AppointmentContextMenu = ({
       const endMinutes = startMinutes + service.duration;
       setEndTime(convertMinutesToTime(endMinutes));
     }
+  };
+
+  const handleProfessionalChange = (professionalId: number) => {
+    setSelectedProfessionalId(professionalId);
+    // Reset service selection when professional changes
+    setSelectedService("");
+    setPrice("");
+    setEndTime("");
   };
 
   const handleAddService = () => {
@@ -153,7 +162,7 @@ const AppointmentContextMenu = ({
       duration: `${convertTimeToMinutes(allServices[allServices.length - 1]?.endTime || endTime) - convertTimeToMinutes(allServices[0]?.startTime || startTime)}min`,
       status: "confirmed" as const,
       date: selectedDate,
-      professionalId,
+      professionalId: selectedProfessionalId,
       totalPrice: calculateTotalPrice(),
       labels: customLabels,
       observations
@@ -185,6 +194,7 @@ const AppointmentContextMenu = ({
               selectedService={selectedService}
               onServiceChange={handleServiceChange}
               selectedProfessional={selectedProfessional}
+              onProfessionalChange={handleProfessionalChange}
               availableServices={availableServices}
               startTime={startTime}
               setStartTime={setStartTime}
