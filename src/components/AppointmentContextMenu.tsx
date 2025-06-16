@@ -1,11 +1,6 @@
 
 import React, { useState } from "react";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
@@ -37,7 +32,6 @@ const AppointmentContextMenu = ({
   selectedDate,
   onAddAppointment
 }: AppointmentContextMenuProps) => {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [clientName, setClientName] = useState("");
   const [selectedService, setSelectedService] = useState("");
@@ -56,7 +50,6 @@ const AppointmentContextMenu = ({
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
-    setIsPopoverOpen(false);
   };
 
   const handleCloseDialog = () => {
@@ -115,27 +108,9 @@ const AppointmentContextMenu = ({
 
   return (
     <>
-      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-        <PopoverTrigger asChild>
-          {children}
-        </PopoverTrigger>
-        <PopoverContent className="w-48 p-2" side="right" align="start">
-          <div className="space-y-1">
-            <button
-              onClick={handleOpenDialog}
-              className="w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-sm hover:bg-accent hover:text-accent-foreground transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Novo Agendamento
-            </button>
-            <div className="border-t my-1"></div>
-            <div className="flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground">
-              <Clock className="w-4 h-4" />
-              {timeSlot}
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
+      <div onClick={handleOpenDialog}>
+        {children}
+      </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
