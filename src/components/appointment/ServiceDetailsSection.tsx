@@ -4,8 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Plus, Search, Clock } from "lucide-react";
+import { Search } from "lucide-react";
 import { Service } from "@/contexts/ServicesContext";
 import { Professional } from "@/types/calendar";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
@@ -23,18 +22,6 @@ interface ServiceDetailsSectionProps {
   setPrice: (price: string) => void;
 }
 
-const generateTimeOptions = () => {
-  const options = [];
-  for (let h = 0; h < 24; h++) {
-    for (let m = 0; m < 60; m += 15) {
-      const hour = h.toString().padStart(2, '0');
-      const minute = m.toString().padStart(2, '0');
-      options.push(`${hour}:${minute}`);
-    }
-  }
-  return options;
-};
-
 const ServiceDetailsSection = ({
   selectedService,
   onServiceChange,
@@ -50,8 +37,6 @@ const ServiceDetailsSection = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [professionalSearchTerm, setProfessionalSearchTerm] = useState("");
   const { professionals } = useProfessionals();
-
-  const timeOptions = generateTimeOptions();
 
   const filteredServices = availableServices.filter(service =>
     service.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -75,18 +60,12 @@ const ServiceDetailsSection = ({
     }
   };
 
-  const handleTimeSelect = (time: string, field: 'start' | 'end') => {
-    if (field === 'start') {
-      setStartTime(time);
-    }
-  };
-
   return (
-    <div className="grid grid-cols-6 gap-4">
+    <div className="grid grid-cols-7 gap-4 p-4 bg-gray-50 rounded-lg items-end">
       <div className="space-y-2">
-        <Label>Serviço</Label>
+        <Label className="text-xs font-medium text-gray-700">Serviço</Label>
         <Select value={selectedService} onValueChange={onServiceChange}>
-          <SelectTrigger>
+          <SelectTrigger className="h-8">
             <SelectValue placeholder="Selecionar" />
           </SelectTrigger>
           <SelectContent>
@@ -108,7 +87,6 @@ const ServiceDetailsSection = ({
                 size="sm"
                 className="w-full"
               >
-                <Plus className="w-4 h-4 mr-2" />
                 Adicionar Novo Serviço
               </Button>
             </div>
@@ -128,10 +106,10 @@ const ServiceDetailsSection = ({
       </div>
 
       <div className="space-y-2">
-        <Label>Profissional</Label>
+        <Label className="text-xs font-medium text-gray-700">Profissional</Label>
         <Select value={selectedProfessional?.id.toString() || ""} onValueChange={handleSelectProfessional}>
-          <SelectTrigger>
-            <SelectValue placeholder="Selecionar Profissional" />
+          <SelectTrigger className="h-8">
+            <SelectValue placeholder="Selecionar" />
           </SelectTrigger>
           <SelectContent>
             <div className="p-2">
@@ -158,94 +136,49 @@ const ServiceDetailsSection = ({
       </div>
 
       <div className="space-y-2">
-        <Label>Tempo</Label>
+        <Label className="text-xs font-medium text-gray-700">Tempo</Label>
         <Input 
           value={selectedService ? availableServices.find(s => s.id.toString() === selectedService)?.duration + "min" : ""} 
           readOnly 
+          className="h-8"
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Início</Label>
-        <div className="relative">
-          <Input 
-            type="time" 
-            value={startTime} 
-            onChange={(e) => setStartTime(e.target.value)}
-          />
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
-              >
-                <Clock className="h-3 w-3" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-2" align="end">
-              <div className="grid grid-cols-4 gap-1 max-h-60 overflow-y-auto">
-                {timeOptions.map((time) => (
-                  <Button
-                    key={time}
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 text-xs"
-                    onClick={() => handleTimeSelect(time, 'start')}
-                  >
-                    {time}
-                  </Button>
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
+        <Label className="text-xs font-medium text-gray-700">Início</Label>
+        <Input 
+          type="time" 
+          value={startTime} 
+          onChange={(e) => setStartTime(e.target.value)}
+          className="h-8"
+        />
       </div>
 
       <div className="space-y-2">
-        <Label>Fim</Label>
-        <div className="relative">
-          <Input 
-            type="time" 
-            value={endTime} 
-            readOnly
-          />
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
-              >
-                <Clock className="h-3 w-3" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-2" align="end">
-              <div className="grid grid-cols-4 gap-1 max-h-60 overflow-y-auto">
-                {timeOptions.map((time) => (
-                  <Button
-                    key={time}
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 text-xs"
-                    onClick={() => handleTimeSelect(time, 'end')}
-                  >
-                    {time}
-                  </Button>
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
+        <Label className="text-xs font-medium text-gray-700">Fim</Label>
+        <Input 
+          type="time" 
+          value={endTime} 
+          readOnly
+          className="h-8"
+        />
       </div>
 
       <div className="space-y-2">
-        <Label>Valor (R$)</Label>
+        <Label className="text-xs font-medium text-gray-700">Valor (R$)</Label>
         <Input 
           type="number" 
           value={price} 
           onChange={(e) => setPrice(e.target.value)}
+          className="h-8"
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-xs font-medium text-gray-700 opacity-0">Ação</Label>
+        <div className="h-8 flex items-center justify-center">
+          <span className="text-xs text-gray-500">Principal</span>
+        </div>
       </div>
     </div>
   );
