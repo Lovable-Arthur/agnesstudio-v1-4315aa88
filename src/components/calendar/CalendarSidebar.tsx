@@ -37,27 +37,27 @@ const CalendarSidebar = ({
           </div>
           
           {/* Calendário */}
-          <div className="p-2">
+          <div className="p-1">
             <CalendarComponent
               mode="single"
               selected={selectedDate}
               onSelect={(date) => date && setSelectedDate(date)}
               className="rounded-md border-0 w-full"
               classNames={{
-                months: "flex flex-col space-y-2",
-                month: "space-y-2",
+                months: "flex flex-col space-y-1",
+                month: "space-y-1 w-full",
                 caption: "flex justify-center pt-1 relative items-center",
                 caption_label: "text-xs font-medium",
                 nav: "space-x-1 flex items-center",
-                nav_button: "h-6 w-6 bg-transparent p-0 opacity-50 hover:opacity-100 border border-gray-200 rounded",
+                nav_button: "h-5 w-5 bg-transparent p-0 opacity-50 hover:opacity-100 border border-gray-200 rounded text-xs",
                 nav_button_previous: "absolute left-1",
                 nav_button_next: "absolute right-1",
-                table: "w-full border-collapse space-y-1",
-                head_row: "flex",
-                head_cell: "text-muted-foreground rounded-md w-8 font-normal text-[0.7rem]",
-                row: "flex w-full mt-1",
-                cell: "h-8 w-8 text-center text-xs p-0 relative",
-                day: "h-8 w-8 p-0 font-normal aria-selected:opacity-100 hover:bg-red-50 rounded",
+                table: "w-full border-collapse",
+                head_row: "flex w-full",
+                head_cell: "text-muted-foreground w-full text-center font-normal text-[0.6rem] p-0 flex-1",
+                row: "flex w-full",
+                cell: "text-center text-xs p-0 relative flex-1 h-6 flex items-center justify-center",
+                day: "h-6 w-full p-0 font-normal aria-selected:opacity-100 hover:bg-red-50 rounded text-xs flex items-center justify-center",
                 day_selected: "bg-red-500 text-white hover:bg-red-600",
                 day_today: "bg-gray-100 text-gray-900",
                 day_outside: "text-muted-foreground opacity-50",

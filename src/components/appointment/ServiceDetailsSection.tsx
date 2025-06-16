@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -203,11 +204,39 @@ const ServiceDetailsSection = ({
 
       <div className="space-y-2">
         <Label>Fim</Label>
-        <Input 
-          type="time" 
-          value={endTime} 
-          readOnly
-        />
+        <div className="relative">
+          <Input 
+            type="time" 
+            value={endTime} 
+            readOnly
+          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+              >
+                <Clock className="h-3 w-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-2" align="end">
+              <div className="grid grid-cols-4 gap-1 max-h-60 overflow-y-auto">
+                {timeOptions.map((time) => (
+                  <Button
+                    key={time}
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-xs"
+                    onClick={() => handleTimeSelect(time, 'end')}
+                  >
+                    {time}
+                  </Button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       <div className="space-y-2">
