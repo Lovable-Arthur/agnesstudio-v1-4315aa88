@@ -72,21 +72,42 @@ export const useAppointmentForm = ({
   };
 
   const handleAddService = () => {
-    if (selectedService) {
-      const newService: ServiceItem = {
-        id: Date.now().toString(),
-        serviceId: selectedService,
-        startTime,
-        endTime,
-        price
-      };
-      
-      setServices(prev => [...prev, newService]);
-      
-      setSelectedService("");
-      setStartTime(endTime);
-      setEndTime("");
-      setPrice("");
+    const newService: ServiceItem = {
+      id: Date.now().toString(),
+      serviceId: "",
+      startTime: services.length === 0 ? startTime : "",
+      endTime: "",
+      price: ""
+    };
+    
+    setServices(prev => [...prev, newService]);
+  };
+
+  const handleRemoveLastService = () => {
+    setServices(prev => prev.slice(0, -1));
+  };
+
+  const handleUpdateService = (serviceId: string, field: keyof ServiceItem, value: string) => {
+    setServices(prev => prev.map(service => 
+      service.id === serviceId ? { ...service, [field]: value } : service
+    ));
+
+    if (field === 'serviceId') {
+      const service = availableServices.find(s => s.id.toString() === value);
+      if (service) {
+        const serviceItem = services.find(s => s.id === serviceId);
+        if (serviceItem && serviceItem.startTime) {
+          const startMinutes = convertTimeToMinutes(serviceItem.startTime);
+          const endMinutes = startMinutes + service.duration;
+          const endTime = convertMinutesToTime(endMinutes);
+          
+          setServices(prev => prev.map(s => 
+            s.id === serviceId 
+              ? { ...s, endTime, price: service.price.toString() }
+              : s
+          ));
+        }
+      }
     }
   };
 
@@ -95,7 +116,10 @@ export const useAppointmentForm = ({
   };
 
   const calculateTotalPrice = () => {
-    const servicesTotal = services.reduce((total, service) => total + parseFloat(service.price), 0);
+    const servicesTotal = services.reduce((total, service) => {
+      const servicePrice = service.price ? parseFloat(service.price) : 0;
+      return total + servicePrice;
+    }, 0);
     const currentPrice = price ? parseFloat(price) : 0;
     return servicesTotal + currentPrice;
   };
@@ -125,17 +149,19 @@ export const useAppointmentForm = ({
       });
     }
 
+    const validServices = allServices.filter(service => service.serviceId);
+
     const appointmentData = {
       clientName,
-      services: allServices.map(service => ({
+      services: validServices.map(service => ({
         name: availableServices.find(s => s.id.toString() === service.serviceId)?.name || "",
         startTime: service.startTime,
         endTime: service.endTime,
         price: parseFloat(service.price)
       })),
-      time: allServices[0]?.startTime || startTime,
-      endTime: allServices[allServices.length - 1]?.endTime || endTime,
-      duration: `${convertTimeToMinutes(allServices[allServices.length - 1]?.endTime || endTime) - convertTimeToMinutes(allServices[0]?.startTime || startTime)}min`,
+      time: validServices[0]?.startTime || startTime,
+      endTime: validServices[validServices.length - 1]?.endTime || endTime,
+      duration: `${convertTimeToMinutes(validServices[validServices.length - 1]?.endTime || endTime) - convertTimeToMinutes(validServices[0]?.startTime || startTime)}min`,
       status: "confirmed" as const,
       date: selectedDate,
       professionalId: selectedProfessionalId,
@@ -148,7 +174,7 @@ export const useAppointmentForm = ({
     return true;
   };
 
-  const isFormValid = !!(clientName && (selectedService || services.length > 0));
+  const isFormValid = !!(clientName && (selectedService || services.some(s => s.serviceId)));
 
   return {
     // State
@@ -176,6 +202,8 @@ export const useAppointmentForm = ({
     handleProfessionalChange,
     handleAddService,
     handleRemoveService,
+    handleRemoveLastService,
+    handleUpdateService,
     calculateTotalPrice,
     resetForm,
     handleSave,

@@ -47,6 +47,8 @@ const AppointmentForm = ({
     handleProfessionalChange,
     handleAddService,
     handleRemoveService,
+    handleRemoveLastService,
+    handleUpdateService,
     calculateTotalPrice,
     resetForm,
     handleSave,
@@ -100,7 +102,9 @@ const AppointmentForm = ({
         availableServices={availableServices}
         onAddService={handleAddService}
         onRemoveService={handleRemoveService}
-        canAddService={!!selectedService}
+        onRemoveLastService={handleRemoveLastService}
+        onUpdateService={handleUpdateService}
+        canAddService={true}
       />
 
       <LabelsSection
