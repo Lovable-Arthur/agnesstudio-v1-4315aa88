@@ -67,32 +67,6 @@ const MultipleServicesSection = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Serviços Adicionais</h3>
-        <div className="flex gap-2">
-          {services.length > 0 && (
-            <Button
-              onClick={onRemoveLastService}
-              variant="outline"
-              size="sm"
-              className="text-red-600 border-red-200 hover:bg-red-50"
-            >
-              <X className="w-4 h-4 mr-2" />
-              Remover Último
-            </Button>
-          )}
-          <Button
-            onClick={onAddService}
-            variant="outline"
-            size="sm"
-            className="text-green-600 border-green-200 hover:bg-green-50"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Adicionar Serviço
-          </Button>
-        </div>
-      </div>
-
       {services.length > 0 && (
         <div className="space-y-3">
           {services.map((service, index) => (
@@ -171,11 +145,28 @@ const MultipleServicesSection = ({
         </div>
       )}
 
-      {services.length === 0 && (
-        <div className="text-center py-4 text-gray-500 text-sm">
-          Clique em "Adicionar Serviço" para incluir serviços adicionais
-        </div>
-      )}
+      <div className="flex gap-2">
+        {services.length > 0 && (
+          <Button
+            onClick={onRemoveLastService}
+            variant="outline"
+            size="sm"
+            className="text-red-600 border-red-200 hover:bg-red-50"
+          >
+            <X className="w-4 h-4 mr-2" />
+            Remover Último
+          </Button>
+        )}
+        <Button
+          onClick={onAddService}
+          variant="outline"
+          size="sm"
+          className="text-green-600 border-green-200 hover:bg-green-50"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Adicionar Serviço
+        </Button>
+      </div>
     </div>
   );
 };
