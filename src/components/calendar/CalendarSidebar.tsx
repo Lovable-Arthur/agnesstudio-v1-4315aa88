@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Professional } from "@/types/calendar";
+import { ptBR } from "date-fns/locale";
 
 interface CalendarSidebarProps {
   selectedDate: Date;
@@ -42,6 +43,7 @@ const CalendarSidebar = ({
               mode="single"
               selected={selectedDate}
               onSelect={(date) => date && setSelectedDate(date)}
+              locale={ptBR}
               className="rounded-md border-0 w-full"
               classNames={{
                 months: "flex flex-col space-y-1",
@@ -62,6 +64,12 @@ const CalendarSidebar = ({
                 day_today: "bg-gray-100 text-gray-900",
                 day_outside: "text-muted-foreground opacity-50",
                 day_disabled: "text-muted-foreground opacity-50",
+              }}
+              formatters={{
+                formatWeekdayName: (date) => {
+                  const days = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+                  return days[date.getDay()];
+                }
               }}
             />
           </div>

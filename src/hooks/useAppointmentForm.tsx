@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
 import { useAppointmentServices } from "./useAppointmentServices";
@@ -79,30 +78,58 @@ export const useAppointmentForm = ({
 
     const validServices = allServices.filter(service => service.serviceId);
 
-    const appointmentData: AppointmentFormData = {
-      clientName,
-      services: validServices.map(service => ({
-        name: availableServices.find(s => s.id.toString() === service.serviceId)?.name || "",
-        startTime: service.startTime,
+    // Criar um agendamento para cada serviço
+    validServices.forEach((service, index) => {
+      const serviceInfo = availableServices.find(s => s.id.toString() === service.serviceId);
+      
+      const appointmentData: AppointmentFormData = {
+        clientName,
+        services: [{
+          name: serviceInfo?.name || "",
+          startTime: service.startTime,
+          endTime: service.endTime,
+          price: parseFloat(service.price),
+          professionalId: Number(service.professionalId) || selectedProfessionalId
+        }],
+        time: service.startTime,
         endTime: service.endTime,
-        price: parseFloat(service.price),
-        professionalId: Number(service.professionalId) || selectedProfessionalId
-      })),
-      time: validServices[0]?.startTime || startTime,
-      endTime: validServices[validServices.length - 1]?.endTime || endTime,
-      duration: calculateTotalDuration(
-        validServices[0]?.startTime || startTime,
-        validServices[validServices.length - 1]?.endTime || endTime
-      ),
-      status: "confirmed",
-      date: selectedDate,
-      professionalId: selectedProfessionalId,
-      totalPrice: calculateTotalPrice(price),
-      labels: customLabels,
-      observations
-    };
+        duration: serviceInfo ? `${serviceInfo.duration}min` : calculateTotalDuration(service.startTime, service.endTime),
+        status: "confirmed",
+        date: selectedDate,
+        professionalId: Number(service.professionalId) || selectedProfessionalId,
+        totalPrice: parseFloat(service.price),
+        labels: customLabels,
+        observations
+      };
 
-    onAddAppointment?.(appointmentData);
+      onAddAppointment?.(appointmentData);
+    });
+
+    // Se houver apenas o serviço principal (sem serviços adicionais)
+    if (validServices.length === 0 && selectedService) {
+      const appointmentData: AppointmentFormData = {
+        clientName,
+        services: [{
+          name: availableServices.find(s => s.id.toString() === selectedService)?.name || "",
+          startTime,
+          endTime,
+          price: parseFloat(price),
+          professionalId: selectedProfessionalId
+        }],
+        time: startTime,
+        endTime: endTime,
+        duration: calculateTotalDuration(startTime, endTime),
+        status: "confirmed",
+        date: selectedDate,
+        professionalId: selectedProfessionalId,
+        totalPrice: parseFloat(price),
+        labels: customLabels,
+        observations
+      };
+
+      onAddAppointment?.(appointmentData);
+    }
+
     return true;
   };
 

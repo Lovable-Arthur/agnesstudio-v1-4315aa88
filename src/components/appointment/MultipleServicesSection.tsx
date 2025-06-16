@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, X } from "lucide-react";
@@ -75,7 +74,7 @@ const MultipleServicesSection = ({
       {services.length > 0 && (
         <div className="space-y-3">
           {services.map((service, index) => (
-            <div key={service.id} className="grid grid-cols-7 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div key={service.id} className="grid grid-cols-7 gap-4 p-4 bg-gray-50 rounded-lg items-end">
               <div className="space-y-2">
                 <label className="text-xs font-medium text-gray-700">Serviço</label>
                 <Select 
@@ -153,8 +152,7 @@ const MultipleServicesSection = ({
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-700">Ação</label>
+              <div className="flex justify-center items-center">
                 <Button
                   onClick={() => onRemoveService(service.id)}
                   variant="ghost"

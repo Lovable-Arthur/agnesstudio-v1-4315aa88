@@ -11,11 +11,21 @@ export const useAppointmentServices = (selectedProfessionalId: number) => {
   const availableServices = getServicesByProfessional(selectedProfessionalId);
 
   const handleAddService = (startTime: string) => {
+    // Se já existem serviços, pegar o horário de fim do último serviço
+    const lastService = services[services.length - 1];
+    let defaultStartTime = startTime;
+    
+    if (lastService && lastService.endTime) {
+      defaultStartTime = lastService.endTime;
+    } else if (services.length === 0) {
+      defaultStartTime = startTime;
+    }
+
     const newService: ServiceItem = {
       id: Date.now().toString(),
       serviceId: "",
       professionalId: "",
-      startTime: services.length === 0 ? startTime : "",
+      startTime: defaultStartTime,
       endTime: "",
       price: ""
     };
