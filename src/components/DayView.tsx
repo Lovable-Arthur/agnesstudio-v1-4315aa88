@@ -55,8 +55,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         onAddAppointment={handleAddAppointment}
       >
         <div 
-          className={`border-r border-b last:border-r-0 min-h-[60px] p-1 cursor-context-menu hover:bg-gray-50 ${getProfessionalColor(professional.color)}`}
-          onContextMenu={(e) => e.preventDefault()}
+          className={`border-r border-b last:border-r-0 min-h-[60px] p-1 cursor-pointer hover:bg-gray-50 ${getProfessionalColor(professional.color)}`}
         >
           {appointment ? (
             <div className={`h-full p-2 rounded text-xs border-2 ${getStatusColor(appointment.status)}`}>
@@ -72,7 +71,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
             </div>
           ) : (
             <div className="h-full rounded transition-opacity flex items-center justify-center">
-              {/* Removed the "Clique direito" text */}
+              {/* Slot vazio - clique para adicionar agendamento */}
             </div>
           )}
         </div>
