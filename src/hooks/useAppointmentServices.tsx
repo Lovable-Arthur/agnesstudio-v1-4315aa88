@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useServices } from "@/contexts/ServicesContext";
 import { ServiceItem } from "@/types/appointment";
@@ -10,13 +9,16 @@ export const useAppointmentServices = (selectedProfessionalId: number) => {
   
   const availableServices = getServicesByProfessional(selectedProfessionalId);
 
-  const handleAddService = (startTime: string) => {
+  const handleAddService = (startTime: string, mainServiceEndTime?: string) => {
     // Se já existem serviços, pegar o horário de fim do último serviço
     const lastService = services[services.length - 1];
     let defaultStartTime = startTime;
     
     if (lastService && lastService.endTime) {
       defaultStartTime = lastService.endTime;
+    } else if (services.length === 0 && mainServiceEndTime) {
+      // Se não há serviços adicionais mas há um serviço principal, usar o fim dele
+      defaultStartTime = mainServiceEndTime;
     } else if (services.length === 0) {
       defaultStartTime = startTime;
     }
@@ -24,7 +26,7 @@ export const useAppointmentServices = (selectedProfessionalId: number) => {
     const newService: ServiceItem = {
       id: Date.now().toString(),
       serviceId: "",
-      professionalId: "",
+      professionalId: selectedProfessionalId.toString(),
       startTime: defaultStartTime,
       endTime: "",
       price: ""

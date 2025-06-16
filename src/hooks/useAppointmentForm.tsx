@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
 import { useAppointmentServices } from "./useAppointmentServices";
@@ -64,22 +65,37 @@ export const useAppointmentForm = ({
   };
 
   const handleSave = () => {
-    const allServices = [...services];
-    if (selectedService) {
-      allServices.push({
-        id: Date.now().toString(),
-        serviceId: selectedService,
-        professionalId: selectedProfessionalId.toString(),
-        startTime,
-        endTime,
-        price
-      });
+    // Criar agendamento para o serviço principal se existir
+    if (selectedService && clientName) {
+      const serviceInfo = availableServices.find(s => s.id.toString() === selectedService);
+      
+      const mainAppointmentData: AppointmentFormData = {
+        clientName,
+        services: [{
+          name: serviceInfo?.name || "",
+          startTime,
+          endTime,
+          price: parseFloat(price),
+          professionalId: selectedProfessionalId
+        }],
+        time: startTime,
+        endTime: endTime,
+        duration: serviceInfo ? `${serviceInfo.duration}min` : calculateTotalDuration(startTime, endTime),
+        status: "confirmed",
+        date: selectedDate,
+        professionalId: selectedProfessionalId,
+        totalPrice: parseFloat(price),
+        labels: customLabels,
+        observations
+      };
+
+      onAddAppointment?.(mainAppointmentData);
     }
 
-    const validServices = allServices.filter(service => service.serviceId);
-
-    // Criar um agendamento para cada serviço
-    validServices.forEach((service, index) => {
+    // Criar agendamentos para os serviços adicionais
+    const validServices = services.filter(service => service.serviceId && service.professionalId);
+    
+    validServices.forEach((service) => {
       const serviceInfo = availableServices.find(s => s.id.toString() === service.serviceId);
       
       const appointmentData: AppointmentFormData = {
@@ -89,14 +105,14 @@ export const useAppointmentForm = ({
           startTime: service.startTime,
           endTime: service.endTime,
           price: parseFloat(service.price),
-          professionalId: Number(service.professionalId) || selectedProfessionalId
+          professionalId: Number(service.professionalId)
         }],
         time: service.startTime,
         endTime: service.endTime,
         duration: serviceInfo ? `${serviceInfo.duration}min` : calculateTotalDuration(service.startTime, service.endTime),
         status: "confirmed",
         date: selectedDate,
-        professionalId: Number(service.professionalId) || selectedProfessionalId,
+        professionalId: Number(service.professionalId),
         totalPrice: parseFloat(service.price),
         labels: customLabels,
         observations
@@ -104,31 +120,6 @@ export const useAppointmentForm = ({
 
       onAddAppointment?.(appointmentData);
     });
-
-    // Se houver apenas o serviço principal (sem serviços adicionais)
-    if (validServices.length === 0 && selectedService) {
-      const appointmentData: AppointmentFormData = {
-        clientName,
-        services: [{
-          name: availableServices.find(s => s.id.toString() === selectedService)?.name || "",
-          startTime,
-          endTime,
-          price: parseFloat(price),
-          professionalId: selectedProfessionalId
-        }],
-        time: startTime,
-        endTime: endTime,
-        duration: calculateTotalDuration(startTime, endTime),
-        status: "confirmed",
-        date: selectedDate,
-        professionalId: selectedProfessionalId,
-        totalPrice: parseFloat(price),
-        labels: customLabels,
-        observations
-      };
-
-      onAddAppointment?.(appointmentData);
-    }
 
     return true;
   };
@@ -159,7 +150,7 @@ export const useAppointmentForm = ({
     // Actions
     handleServiceChange,
     handleProfessionalChange,
-    handleAddService: () => handleAddService(startTime),
+    handleAddService: () => handleAddService(startTime, endTime),
     handleRemoveService,
     handleRemoveLastService,
     handleUpdateService,

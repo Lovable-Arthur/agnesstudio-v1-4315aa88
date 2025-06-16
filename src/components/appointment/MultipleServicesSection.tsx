@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, X } from "lucide-react";
@@ -152,7 +153,7 @@ const MultipleServicesSection = ({
                 />
               </div>
 
-              <div className="flex justify-center items-center">
+              <div className="flex justify-center items-end h-full pb-1">
                 <Button
                   onClick={() => onRemoveService(service.id)}
                   variant="ghost"
