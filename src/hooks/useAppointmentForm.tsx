@@ -6,6 +6,7 @@ import { useProfessionals } from "@/contexts/ProfessionalsContext";
 interface ServiceItem {
   id: string;
   serviceId: string;
+  professionalId: string;
   startTime: string;
   endTime: string;
   price: string;
@@ -75,6 +76,7 @@ export const useAppointmentForm = ({
     const newService: ServiceItem = {
       id: Date.now().toString(),
       serviceId: "",
+      professionalId: "",
       startTime: services.length === 0 ? startTime : "",
       endTime: "",
       price: ""
@@ -143,6 +145,7 @@ export const useAppointmentForm = ({
       allServices.push({
         id: Date.now().toString(),
         serviceId: selectedService,
+        professionalId: selectedProfessionalId.toString(),
         startTime,
         endTime,
         price
@@ -157,7 +160,8 @@ export const useAppointmentForm = ({
         name: availableServices.find(s => s.id.toString() === service.serviceId)?.name || "",
         startTime: service.startTime,
         endTime: service.endTime,
-        price: parseFloat(service.price)
+        price: parseFloat(service.price),
+        professionalId: Number(service.professionalId) || selectedProfessionalId
       })),
       time: validServices[0]?.startTime || startTime,
       endTime: validServices[validServices.length - 1]?.endTime || endTime,

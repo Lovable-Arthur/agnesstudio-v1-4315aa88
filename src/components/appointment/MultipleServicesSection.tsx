@@ -3,12 +3,15 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, X } from "lucide-react";
 import { Service } from "@/contexts/ServicesContext";
+import { Professional } from "@/types/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { useProfessionals } from "@/contexts/ProfessionalsContext";
 
 interface ServiceItem {
   id: string;
   serviceId: string;
+  professionalId: string;
   startTime: string;
   endTime: string;
   price: string;
@@ -33,6 +36,9 @@ const MultipleServicesSection = ({
   onUpdateService,
   canAddService
 }: MultipleServicesSectionProps) => {
+  const { professionals } = useProfessionals();
+  const availableProfessionals = professionals.filter(prof => prof.hasAgenda);
+
   const convertTimeToMinutes = (time: string) => {
     const [hours, minutes] = time.split(':').map(Number);
     return hours * 60 + minutes;
@@ -46,6 +52,21 @@ const MultipleServicesSection = ({
 
   const handleServiceChange = (serviceId: string, selectedServiceId: string) => {
     onUpdateService(serviceId, 'serviceId', selectedServiceId);
+    
+    // Update price when service changes
+    const service = availableServices.find(s => s.id.toString() === selectedServiceId);
+    if (service) {
+      onUpdateService(serviceId, 'price', service.price.toString());
+      
+      // Update end time based on duration if start time exists
+      const serviceItem = services.find(s => s.id === serviceId);
+      if (serviceItem && serviceItem.startTime) {
+        const startMinutes = convertTimeToMinutes(serviceItem.startTime);
+        const endMinutes = startMinutes + service.duration;
+        const endTime = convertMinutesToTime(endMinutes);
+        onUpdateService(serviceId, 'endTime', endTime);
+      }
+    }
   };
 
   const handleTimeChange = (serviceId: string, field: 'startTime' | 'endTime', value: string) => {
@@ -65,12 +86,19 @@ const MultipleServicesSection = ({
     }
   };
 
+  const getServicesByProfessional = (professionalId: string) => {
+    if (!professionalId) return availableServices;
+    return availableServices.filter(service => 
+      service.allowedProfessionals.includes(Number(professionalId))
+    );
+  };
+
   return (
     <div className="space-y-4">
       {services.length > 0 && (
         <div className="space-y-3">
           {services.map((service, index) => (
-            <div key={service.id} className="grid grid-cols-6 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div key={service.id} className="grid grid-cols-7 gap-4 p-4 bg-gray-50 rounded-lg">
               <div className="space-y-2">
                 <label className="text-xs font-medium text-gray-700">Serviço</label>
                 <Select 
@@ -81,9 +109,28 @@ const MultipleServicesSection = ({
                     <SelectValue placeholder="Selecionar" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableServices.map((availableService) => (
+                    {getServicesByProfessional(service.professionalId).map((availableService) => (
                       <SelectItem key={availableService.id} value={availableService.id.toString()}>
                         {availableService.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-700">Profissional</label>
+                <Select 
+                  value={service.professionalId} 
+                  onValueChange={(value) => onUpdateService(service.id, 'professionalId', value)}
+                >
+                  <SelectTrigger className="h-8">
+                    <SelectValue placeholder="Selecionar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableProfessionals.map((professional) => (
+                      <SelectItem key={professional.id} value={professional.id.toString()}>
+                        {professional.socialName || professional.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -114,7 +161,7 @@ const MultipleServicesSection = ({
                 <Input 
                   type="time" 
                   value={service.endTime} 
-                  readOnly
+                  onChange={(e) => handleTimeChange(service.id, 'endTime', e.target.value)}
                   className="h-8"
                 />
               </div>
@@ -146,6 +193,15 @@ const MultipleServicesSection = ({
       )}
 
       <div className="flex gap-2">
+        <Button
+          onClick={onAddService}
+          variant="outline"
+          size="sm"
+          className="text-green-600 border-green-200 hover:bg-green-50"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Adicionar Serviço
+        </Button>
         {services.length > 0 && (
           <Button
             onClick={onRemoveLastService}
@@ -157,15 +213,6 @@ const MultipleServicesSection = ({
             Remover Último
           </Button>
         )}
-        <Button
-          onClick={onAddService}
-          variant="outline"
-          size="sm"
-          className="text-green-600 border-green-200 hover:bg-green-50"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Adicionar Serviço
-        </Button>
       </div>
     </div>
   );
