@@ -71,8 +71,8 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
               </div>
             </div>
           ) : (
-            <div className="h-full rounded opacity-30 hover:opacity-50 transition-opacity flex items-center justify-center">
-              <span className="text-xs text-gray-400">Clique direito</span>
+            <div className="h-full rounded transition-opacity flex items-center justify-center">
+              {/* Removed the "Clique direito" text */}
             </div>
           )}
         </div>
