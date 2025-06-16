@@ -1,9 +1,10 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Clock } from "lucide-react";
 import { Service } from "@/contexts/ServicesContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
 import { ServiceItem } from "@/types/appointment";
 import { calculateServiceEndTime } from "@/utils/appointmentUtils";
@@ -18,6 +19,18 @@ interface MultipleServicesSectionProps {
   canAddService: boolean;
 }
 
+const generateTimeOptions = () => {
+  const options = [];
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      const hour = h.toString().padStart(2, '0');
+      const minute = m.toString().padStart(2, '0');
+      options.push(`${hour}:${minute}`);
+    }
+  }
+  return options;
+};
+
 const MultipleServicesSection = ({
   services,
   availableServices,
@@ -29,6 +42,7 @@ const MultipleServicesSection = ({
 }: MultipleServicesSectionProps) => {
   const { professionals } = useProfessionals();
   const availableProfessionals = professionals.filter(prof => prof.hasAgenda);
+  const timeOptions = generateTimeOptions();
 
   const handleServiceChange = (serviceId: string, selectedServiceId: string) => {
     onUpdateService(serviceId, 'serviceId', selectedServiceId);
@@ -67,6 +81,21 @@ const MultipleServicesSection = ({
     return availableServices.filter(service => 
       service.allowedProfessionals.includes(Number(professionalId))
     );
+  };
+
+  const handleTimeSelect = (serviceId: string, time: string, field: 'startTime' | 'endTime') => {
+    onUpdateService(serviceId, field, time);
+    
+    if (field === 'startTime') {
+      const service = services.find(s => s.id === serviceId);
+      if (service && service.serviceId) {
+        const selectedService = availableServices.find(s => s.id.toString() === service.serviceId);
+        if (selectedService) {
+          const endTime = calculateServiceEndTime(time, selectedService.duration);
+          onUpdateService(serviceId, 'endTime', endTime);
+        }
+      }
+    }
   };
 
   return (
@@ -124,22 +153,78 @@ const MultipleServicesSection = ({
 
               <div className="space-y-2">
                 <label className="text-xs font-medium text-gray-700">Início</label>
-                <Input 
-                  type="time" 
-                  value={service.startTime} 
-                  onChange={(e) => handleTimeChange(service.id, 'startTime', e.target.value)}
-                  className="h-8"
-                />
+                <div className="relative">
+                  <Input 
+                    type="time" 
+                    value={service.startTime} 
+                    onChange={(e) => handleTimeChange(service.id, 'startTime', e.target.value)}
+                    className="h-8"
+                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                      >
+                        <Clock className="h-3 w-3" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-2" align="end">
+                      <div className="grid grid-cols-4 gap-1 max-h-60 overflow-y-auto">
+                        {timeOptions.map((time) => (
+                          <Button
+                            key={time}
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 text-xs"
+                            onClick={() => handleTimeSelect(service.id, time, 'startTime')}
+                          >
+                            {time}
+                          </Button>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <label className="text-xs font-medium text-gray-700">Fim</label>
-                <Input 
-                  type="time" 
-                  value={service.endTime} 
-                  onChange={(e) => handleTimeChange(service.id, 'endTime', e.target.value)}
-                  className="h-8"
-                />
+                <div className="relative">
+                  <Input 
+                    type="time" 
+                    value={service.endTime} 
+                    onChange={(e) => handleTimeChange(service.id, 'endTime', e.target.value)}
+                    className="h-8"
+                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                      >
+                        <Clock className="h-3 w-3" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-2" align="end">
+                      <div className="grid grid-cols-4 gap-1 max-h-60 overflow-y-auto">
+                        {timeOptions.map((time) => (
+                          <Button
+                            key={time}
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 text-xs"
+                            onClick={() => handleTimeSelect(service.id, time, 'endTime')}
+                          >
+                            {time}
+                          </Button>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
 
               <div className="space-y-2">

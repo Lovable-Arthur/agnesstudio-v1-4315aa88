@@ -1,10 +1,10 @@
-
 import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Plus, Search } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Plus, Search, Clock } from "lucide-react";
 import { Service } from "@/contexts/ServicesContext";
 import { Professional } from "@/types/calendar";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
@@ -22,6 +22,18 @@ interface ServiceDetailsSectionProps {
   setPrice: (price: string) => void;
 }
 
+const generateTimeOptions = () => {
+  const options = [];
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      const hour = h.toString().padStart(2, '0');
+      const minute = m.toString().padStart(2, '0');
+      options.push(`${hour}:${minute}`);
+    }
+  }
+  return options;
+};
+
 const ServiceDetailsSection = ({
   selectedService,
   onServiceChange,
@@ -37,6 +49,8 @@ const ServiceDetailsSection = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [professionalSearchTerm, setProfessionalSearchTerm] = useState("");
   const { professionals } = useProfessionals();
+
+  const timeOptions = generateTimeOptions();
 
   const filteredServices = availableServices.filter(service =>
     service.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -57,6 +71,12 @@ const ServiceDetailsSection = ({
     const prof = professionals.find(p => p.id === Number(professionalId));
     if (prof) {
       setProfessionalSearchTerm(prof.socialName || prof.name);
+    }
+  };
+
+  const handleTimeSelect = (time: string, field: 'start' | 'end') => {
+    if (field === 'start') {
+      setStartTime(time);
     }
   };
 
@@ -146,11 +166,39 @@ const ServiceDetailsSection = ({
 
       <div className="space-y-2">
         <Label>Início</Label>
-        <Input 
-          type="time" 
-          value={startTime} 
-          onChange={(e) => setStartTime(e.target.value)}
-        />
+        <div className="relative">
+          <Input 
+            type="time" 
+            value={startTime} 
+            onChange={(e) => setStartTime(e.target.value)}
+          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+              >
+                <Clock className="h-3 w-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-2" align="end">
+              <div className="grid grid-cols-4 gap-1 max-h-60 overflow-y-auto">
+                {timeOptions.map((time) => (
+                  <Button
+                    key={time}
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-xs"
+                    onClick={() => handleTimeSelect(time, 'start')}
+                  >
+                    {time}
+                  </Button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       <div className="space-y-2">
