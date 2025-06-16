@@ -1,23 +1,9 @@
 
 import { useState } from "react";
-import { useServices } from "@/contexts/ServicesContext";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
-
-interface ServiceItem {
-  id: string;
-  serviceId: string;
-  professionalId: string;
-  startTime: string;
-  endTime: string;
-  price: string;
-}
-
-interface UseAppointmentFormProps {
-  initialTimeSlot: string;
-  initialProfessionalId: number;
-  selectedDate: string;
-  onAddAppointment?: (appointmentData: any) => void;
-}
+import { useAppointmentServices } from "./useAppointmentServices";
+import { UseAppointmentFormProps, AppointmentFormData } from "@/types/appointment";
+import { calculateServiceEndTime, calculateTotalDuration } from "@/utils/appointmentUtils";
 
 export const useAppointmentForm = ({
   initialTimeSlot,
@@ -31,37 +17,30 @@ export const useAppointmentForm = ({
   const [startTime, setStartTime] = useState(initialTimeSlot);
   const [endTime, setEndTime] = useState("");
   const [price, setPrice] = useState("");
-  const [services, setServices] = useState<ServiceItem[]>([]);
   const [customLabels, setCustomLabels] = useState<string[]>([]);
   const [newLabel, setNewLabel] = useState("");
   const [observations, setObservations] = useState("");
 
-  const { getServicesByProfessional } = useServices();
   const { professionals } = useProfessionals();
+  const {
+    services,
+    availableServices,
+    handleAddService,
+    handleRemoveLastService,
+    handleUpdateService,
+    handleRemoveService,
+    calculateTotalPrice,
+    resetServices
+  } = useAppointmentServices(selectedProfessionalId);
   
   const selectedProfessional = professionals.find(p => p.id === selectedProfessionalId);
-  const availableServices = getServicesByProfessional(selectedProfessionalId);
-
-  const convertTimeToMinutes = (time: string) => {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
-  };
-
-  const convertMinutesToTime = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-  };
 
   const handleServiceChange = (serviceId: string) => {
     const service = availableServices.find(s => s.id.toString() === serviceId);
     if (service) {
       setSelectedService(serviceId);
       setPrice(service.price.toString());
-      
-      const startMinutes = convertTimeToMinutes(startTime);
-      const endMinutes = startMinutes + service.duration;
-      setEndTime(convertMinutesToTime(endMinutes));
+      setEndTime(calculateServiceEndTime(startTime, service.duration));
     }
   };
 
@@ -72,60 +51,6 @@ export const useAppointmentForm = ({
     setEndTime("");
   };
 
-  const handleAddService = () => {
-    const newService: ServiceItem = {
-      id: Date.now().toString(),
-      serviceId: "",
-      professionalId: "",
-      startTime: services.length === 0 ? startTime : "",
-      endTime: "",
-      price: ""
-    };
-    
-    setServices(prev => [...prev, newService]);
-  };
-
-  const handleRemoveLastService = () => {
-    setServices(prev => prev.slice(0, -1));
-  };
-
-  const handleUpdateService = (serviceId: string, field: keyof ServiceItem, value: string) => {
-    setServices(prev => prev.map(service => 
-      service.id === serviceId ? { ...service, [field]: value } : service
-    ));
-
-    if (field === 'serviceId') {
-      const service = availableServices.find(s => s.id.toString() === value);
-      if (service) {
-        const serviceItem = services.find(s => s.id === serviceId);
-        if (serviceItem && serviceItem.startTime) {
-          const startMinutes = convertTimeToMinutes(serviceItem.startTime);
-          const endMinutes = startMinutes + service.duration;
-          const endTime = convertMinutesToTime(endMinutes);
-          
-          setServices(prev => prev.map(s => 
-            s.id === serviceId 
-              ? { ...s, endTime, price: service.price.toString() }
-              : s
-          ));
-        }
-      }
-    }
-  };
-
-  const handleRemoveService = (serviceId: string) => {
-    setServices(prev => prev.filter(s => s.id !== serviceId));
-  };
-
-  const calculateTotalPrice = () => {
-    const servicesTotal = services.reduce((total, service) => {
-      const servicePrice = service.price ? parseFloat(service.price) : 0;
-      return total + servicePrice;
-    }, 0);
-    const currentPrice = price ? parseFloat(price) : 0;
-    return servicesTotal + currentPrice;
-  };
-
   const resetForm = () => {
     setClientName("");
     setSelectedService("");
@@ -133,7 +58,7 @@ export const useAppointmentForm = ({
     setStartTime(initialTimeSlot);
     setEndTime("");
     setPrice("");
-    setServices([]);
+    resetServices();
     setCustomLabels([]);
     setNewLabel("");
     setObservations("");
@@ -154,7 +79,7 @@ export const useAppointmentForm = ({
 
     const validServices = allServices.filter(service => service.serviceId);
 
-    const appointmentData = {
+    const appointmentData: AppointmentFormData = {
       clientName,
       services: validServices.map(service => ({
         name: availableServices.find(s => s.id.toString() === service.serviceId)?.name || "",
@@ -165,11 +90,14 @@ export const useAppointmentForm = ({
       })),
       time: validServices[0]?.startTime || startTime,
       endTime: validServices[validServices.length - 1]?.endTime || endTime,
-      duration: `${convertTimeToMinutes(validServices[validServices.length - 1]?.endTime || endTime) - convertTimeToMinutes(validServices[0]?.startTime || startTime)}min`,
-      status: "confirmed" as const,
+      duration: calculateTotalDuration(
+        validServices[0]?.startTime || startTime,
+        validServices[validServices.length - 1]?.endTime || endTime
+      ),
+      status: "confirmed",
       date: selectedDate,
       professionalId: selectedProfessionalId,
-      totalPrice: calculateTotalPrice(),
+      totalPrice: calculateTotalPrice(price),
       labels: customLabels,
       observations
     };
@@ -204,11 +132,11 @@ export const useAppointmentForm = ({
     // Actions
     handleServiceChange,
     handleProfessionalChange,
-    handleAddService,
+    handleAddService: () => handleAddService(startTime),
     handleRemoveService,
     handleRemoveLastService,
     handleUpdateService,
-    calculateTotalPrice,
+    calculateTotalPrice: () => calculateTotalPrice(price),
     resetForm,
     handleSave,
     isFormValid

@@ -1,21 +1,12 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, X } from "lucide-react";
 import { Service } from "@/contexts/ServicesContext";
-import { Professional } from "@/types/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
-
-interface ServiceItem {
-  id: string;
-  serviceId: string;
-  professionalId: string;
-  startTime: string;
-  endTime: string;
-  price: string;
-}
+import { ServiceItem } from "@/types/appointment";
+import { calculateServiceEndTime } from "@/utils/appointmentUtils";
 
 interface MultipleServicesSectionProps {
   services: ServiceItem[];
@@ -39,17 +30,6 @@ const MultipleServicesSection = ({
   const { professionals } = useProfessionals();
   const availableProfessionals = professionals.filter(prof => prof.hasAgenda);
 
-  const convertTimeToMinutes = (time: string) => {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
-  };
-
-  const convertMinutesToTime = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-  };
-
   const handleServiceChange = (serviceId: string, selectedServiceId: string) => {
     onUpdateService(serviceId, 'serviceId', selectedServiceId);
     
@@ -61,9 +41,7 @@ const MultipleServicesSection = ({
       // Update end time based on duration if start time exists
       const serviceItem = services.find(s => s.id === serviceId);
       if (serviceItem && serviceItem.startTime) {
-        const startMinutes = convertTimeToMinutes(serviceItem.startTime);
-        const endMinutes = startMinutes + service.duration;
-        const endTime = convertMinutesToTime(endMinutes);
+        const endTime = calculateServiceEndTime(serviceItem.startTime, service.duration);
         onUpdateService(serviceId, 'endTime', endTime);
       }
     }
@@ -77,9 +55,7 @@ const MultipleServicesSection = ({
       if (service && service.serviceId) {
         const selectedService = availableServices.find(s => s.id.toString() === service.serviceId);
         if (selectedService) {
-          const startMinutes = convertTimeToMinutes(value);
-          const endMinutes = startMinutes + selectedService.duration;
-          const endTime = convertMinutesToTime(endMinutes);
+          const endTime = calculateServiceEndTime(value, selectedService.duration);
           onUpdateService(serviceId, 'endTime', endTime);
         }
       }
