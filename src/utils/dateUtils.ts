@@ -1,4 +1,3 @@
-
 export const formatDate = (date: Date): string => {
   return date.toISOString().split('T')[0];
 };
@@ -36,10 +35,8 @@ export const getTimeSlots = (startHour = 7, endHour = 22, intervalMinutes = 10) 
   return slots;
 };
 
-export const getDisplayTimeSlots = (intervalMinutes = 30) => {
-  const allSlots = getTimeSlots();
-  const step = Math.floor(intervalMinutes / 10);
-  return allSlots.filter((_, index) => index % step === 0);
+export const getDisplayTimeSlots = (intervalMinutes = 10) => {
+  return getTimeSlots(7, 22, intervalMinutes);
 };
 
 export const addDays = (date: Date, days: number): Date => {

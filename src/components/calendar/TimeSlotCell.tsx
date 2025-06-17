@@ -29,15 +29,15 @@ const TimeSlotCell = ({
       onAddAppointment={onAddAppointment}
     >
       <div 
-        className={`border-r border-b border-gray-400 last:border-r-0 min-h-[60px] p-1 cursor-pointer hover:bg-gray-100 ${
+        className={`border-r border-b border-gray-400 last:border-r-0 min-h-[40px] p-1 cursor-pointer hover:bg-gray-100 ${
           appointment ? getProfessionalColor(professional.color) : 'bg-white'
         }`}
       >
         {appointment ? (
           <AppointmentCell appointment={appointment} />
         ) : (
-          <div className="h-full rounded transition-opacity flex items-center justify-center">
-            {/* Célula vazia de planilha */}
+          <div className="h-full rounded transition-opacity flex items-center justify-center border-dashed border border-gray-200">
+            {/* Célula vazia de planilha com borda interna */}
           </div>
         )}
       </div>

@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
@@ -11,7 +10,7 @@ interface DayViewProps {
 }
 
 const DayView = ({ selectedDate, professionals }: DayViewProps) => {
-  const displayTimeSlots = useMemo(() => getDisplayTimeSlots(30), []);
+  const displayTimeSlots = useMemo(() => getDisplayTimeSlots(10), []);
   const [savedAppointments, setSavedAppointments] = useState<{ [key: string]: Appointment[] }>({});
 
   const getAppointmentForTimeSlot = (professional: Professional, timeSlot: string): Appointment | undefined => {
@@ -86,7 +85,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     <div className="h-full flex flex-col bg-background">
       {/* Header fixo com profissionais */}
       <div className="sticky top-0 bg-white border-b border-gray-400 z-20 shadow-sm">
-        <div className="grid gap-0" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
+        <div className="grid gap-0 border-l border-gray-400" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
           <div className="p-3 border-r border-gray-400 bg-gray-100">
             <div className="text-xs text-muted-foreground font-medium">Horário</div>
           </div>
