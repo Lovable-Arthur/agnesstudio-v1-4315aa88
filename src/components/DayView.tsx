@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
@@ -15,25 +16,27 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   const [savedAppointments, setSavedAppointments] = useState<{ [key: string]: Appointment[] }>({});
 
   const getAppointmentForTimeSlot = (professional: Professional, timeSlot: string): Appointment | undefined => {
-    // Primeiro, verifica os agendamentos originais do profissional
+    // Verificar agendamentos originais do profissional
     const originalAppointments = professional.appointments.filter(apt => apt.date === selectedDate);
     
-    // Depois, verifica os agendamentos salvos dinamicamente
+    // Verificar agendamentos salvos dinamicamente
     const dayKey = `${selectedDate}-${professional.id}`;
     const savedDayAppointments = savedAppointments[dayKey] || [];
     
+    // Combinar todos os agendamentos
     const allAppointments = [...originalAppointments, ...savedDayAppointments];
     
-    // Encontrar o agendamento que começa neste slot ou que está em andamento
+    // Converter horário do slot atual para minutos
     const currentSlotMinutes = convertTimeToMinutes(timeSlot);
     
+    // Procurar agendamento que se sobrepõe com este slot
     for (const apt of allAppointments) {
       const appointmentStartMinutes = convertTimeToMinutes(apt.time);
       const durationMatch = apt.duration.match(/(\d+)/);
       const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
       const appointmentEndMinutes = appointmentStartMinutes + durationMinutes;
       
-      // Se este slot está dentro do período do agendamento
+      // Verificar se o slot atual está dentro do período do agendamento
       if (currentSlotMinutes >= appointmentStartMinutes && currentSlotMinutes < appointmentEndMinutes) {
         return apt;
       }
@@ -47,8 +50,8 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     
     // Criar agendamentos individuais para cada serviço
     appointmentData.services.forEach((service: any, index: number) => {
-      // Calcular duração com base nos horários de início e fim do serviço
-      let calculatedDuration = "30min"; // valor padrão
+      // Calcular duração baseada nos horários de início e fim
+      let calculatedDuration = "30min";
       if (service.startTime && service.endTime) {
         const startDate = new Date(`1970-01-01T${service.startTime}:00`);
         const endDate = new Date(`1970-01-01T${service.endTime}:00`);
@@ -64,15 +67,15 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         id: Date.now() + index,
         clientName: appointmentData.clientName,
         service: service.name,
-        time: service.startTime, // Usar o horário de início específico do serviço
-        duration: calculatedDuration, // Usar a duração calculada do serviço
+        time: service.startTime,
+        duration: calculatedDuration,
         status: appointmentData.status,
         date: appointmentData.date,
         labels: appointmentData.labels || [],
         observations: appointmentData.observations
       };
 
-      // Adicionar aos agendamentos salvos do profissional correto
+      // Adicionar ao estado correto
       const dayKey = `${appointmentData.date}-${service.professionalId}`;
       setSavedAppointments(prev => ({
         ...prev,
@@ -103,12 +106,18 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     <div className="h-full flex flex-col bg-background">
       {/* Header fixo com profissionais */}
       <div className="sticky top-0 bg-white border-b-2 border-gray-400 z-20 shadow-sm">
-        <div className="grid gap-0 border-l border-r border-gray-400" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
+        <div 
+          className="grid gap-0 border-l border-r border-gray-400" 
+          style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}
+        >
           <div className="p-3 border-r border-gray-400 bg-gray-100">
             <div className="text-xs text-muted-foreground font-medium">Horário</div>
           </div>
           {professionals.map((professional, index) => (
-            <div key={professional.id} className={`${index < professionals.length - 1 ? 'border-r-2 border-r-gray-400' : ''}`}>
+            <div 
+              key={professional.id} 
+              className={index < professionals.length - 1 ? 'border-r-2 border-r-gray-400' : ''}
+            >
               <ProfessionalHeader professional={professional} />
             </div>
           ))}
@@ -117,7 +126,10 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
 
       {/* Grade de horários com scroll */}
       <div className="flex-1 overflow-auto">
-        <div className="grid gap-0 border-l border-r border-gray-400" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
+        <div 
+          className="grid gap-0 border-l border-r border-gray-400" 
+          style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}
+        >
           {displayTimeSlots.map((timeSlot) => (
             <div key={timeSlot} className="contents">
               {/* Coluna de horário */}
@@ -128,7 +140,9 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
               </div>
               
               {/* Colunas dos profissionais */}
-              {professionals.map((professional, index) => renderTimeSlot(timeSlot, professional, index))}
+              {professionals.map((professional, index) => 
+                renderTimeSlot(timeSlot, professional, index)
+              )}
             </div>
           ))}
         </div>

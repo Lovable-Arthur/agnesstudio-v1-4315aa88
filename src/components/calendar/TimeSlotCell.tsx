@@ -24,30 +24,31 @@ const TimeSlotCell = ({
   selectedDate, 
   onAddAppointment,
   professionalIndex = 0,
-  totalProfessionals = 1,
-  allTimeSlots = []
+  totalProfessionals = 1
 }: TimeSlotCellProps) => {
+  
+  // Verificar se há borda direita
   const shouldHaveRightBorder = professionalIndex < totalProfessionals - 1;
   
   // Verificar se este slot é o início de um agendamento
   const isAppointmentStart = appointment && appointment.time === timeSlot;
   
-  // Calcular quantos slots o agendamento deve ocupar baseado na duração exata
+  // Calcular altura do agendamento baseado na duração
   const calculateAppointmentHeight = () => {
     if (!appointment || !isAppointmentStart) return 1;
     
-    // Extrair duração em minutos do campo duration
+    // Extrair duração em minutos
     const durationMatch = appointment.duration.match(/(\d+)/);
     const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
     
-    // Calcular altura baseada na duração (cada slot tem 30 minutos e 40px de altura)
+    // Calcular quantos slots de 30 minutos o agendamento ocupa
     const slotsOccupied = Math.ceil(durationMinutes / 30);
     return slotsOccupied;
   };
   
   const appointmentHeight = calculateAppointmentHeight();
   
-  // Se este slot não é o início do agendamento mas está ocupado por um agendamento em andamento
+  // Verificar se este slot está ocupado por um agendamento em andamento
   const isOccupiedByOngoingAppointment = () => {
     if (!appointment || isAppointmentStart) return false;
     
@@ -62,7 +63,7 @@ const TimeSlotCell = ({
   
   const isOccupied = isOccupiedByOngoingAppointment();
   
-  // Se o slot está ocupado por um agendamento em andamento, não renderiza nada
+  // Se o slot está ocupado por um agendamento em andamento, não renderizar
   if (isOccupied) {
     return null;
   }
@@ -91,7 +92,7 @@ const TimeSlotCell = ({
           <AppointmentCell appointment={appointment} />
         ) : (
           <div className="h-full rounded transition-opacity flex items-center justify-center border-dashed border border-gray-200">
-            {/* Célula vazia de planilha com borda interna */}
+            {/* Célula vazia */}
           </div>
         )}
       </div>
