@@ -23,23 +23,23 @@ const WeekView = ({ selectedDate, professionals }: WeekViewProps) => {
   };
 
   const getLabelColors = () => {
-    const labelColors = [
-      "bg-green-500",
-      "bg-blue-500", 
-      "bg-purple-500",
-      "bg-pink-500",
-      "bg-yellow-500",
-      "bg-red-500",
-      "bg-indigo-500",
-      "bg-teal-500"
-    ];
-
     const predefinedLabels = [
-      { name: "Química", color: "bg-green-500" },
+      { name: "Química", color: "bg-emerald-500" },
       { name: "Preferência", color: "bg-blue-500" },
       { name: "Maquiagem", color: "bg-pink-500" },
       { name: "Nova", color: "bg-purple-500" },
       { name: "Pé e Mão", color: "bg-indigo-500" }
+    ];
+
+    const labelColors = [
+      "bg-emerald-500",
+      "bg-blue-500", 
+      "bg-purple-500",
+      "bg-pink-500",
+      "bg-amber-500",
+      "bg-red-500",
+      "bg-indigo-500",
+      "bg-teal-500"
     ];
 
     return { labelColors, predefinedLabels };
@@ -62,32 +62,32 @@ const WeekView = ({ selectedDate, professionals }: WeekViewProps) => {
     const { labelColors, predefinedLabels } = getLabelColors();
     
     return (
-      <div key={appointment.id} className={`p-1 rounded text-xs border ${getStatusBadgeColor(appointment.status)}`}>
-        <div className="font-medium truncate">
+      <div key={appointment.id} className={`p-2 rounded text-xs border-l-4 ${getStatusBadgeColor(appointment.status)} bg-white shadow-sm`}>
+        <div className="font-medium truncate mb-1">
           {appointment.time} - {appointment.clientName}
         </div>
-        <div className="text-xs opacity-75 truncate">
+        <div className="text-xs opacity-75 truncate mb-2">
           {appointment.service}
         </div>
         {appointment.labels && appointment.labels.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-1">
-            {appointment.labels.slice(0, 3).map((label, index) => {
+          <div className="flex flex-wrap gap-1">
+            {appointment.labels.slice(0, 2).map((label, index) => {
               const predefinedLabel = predefinedLabels.find(pl => pl.name === label);
               const color = predefinedLabel?.color || labelColors[index % labelColors.length];
               
               return (
-                <Badge
+                <span
                   key={label}
-                  className={`${color} text-white text-[8px] px-1 py-0 h-3`}
+                  className={`${color} text-white text-[8px] px-1.5 py-0.5 rounded-full font-medium inline-block`}
                 >
                   {label}
-                </Badge>
+                </span>
               );
             })}
-            {appointment.labels.length > 3 && (
-              <Badge className="bg-gray-500 text-white text-[8px] px-1 py-0 h-3">
-                +{appointment.labels.length - 3}
-              </Badge>
+            {appointment.labels.length > 2 && (
+              <span className="bg-gray-500 text-white text-[8px] px-1.5 py-0.5 rounded-full font-medium">
+                +{appointment.labels.length - 2}
+              </span>
             )}
           </div>
         )}

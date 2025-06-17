@@ -32,25 +32,27 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   const handleAddAppointment = (appointmentData: any) => {
     console.log("Novo agendamento:", appointmentData);
     
-    // Criar o agendamento formatado
-    const newAppointment: Appointment = {
-      id: Date.now(),
-      clientName: appointmentData.clientName,
-      service: appointmentData.services.map((s: any) => s.name).join(", "),
-      time: appointmentData.time,
-      duration: appointmentData.duration,
-      status: appointmentData.status,
-      date: appointmentData.date,
-      labels: appointmentData.labels || [],
-      observations: appointmentData.observations
-    };
+    // Criar agendamentos para cada serviço
+    appointmentData.services.forEach((service: any, index: number) => {
+      const newAppointment: Appointment = {
+        id: Date.now() + index,
+        clientName: appointmentData.clientName,
+        service: service.name,
+        time: service.startTime,
+        duration: `${Math.round((new Date(`1970-01-01T${service.endTime}:00`) - new Date(`1970-01-01T${service.startTime}:00`)) / 60000)}min`,
+        status: appointmentData.status,
+        date: appointmentData.date,
+        labels: appointmentData.labels || [],
+        observations: appointmentData.observations
+      };
 
-    // Adicionar aos agendamentos salvos
-    const dayKey = `${appointmentData.date}-${appointmentData.professionalId}`;
-    setSavedAppointments(prev => ({
-      ...prev,
-      [dayKey]: [...(prev[dayKey] || []), newAppointment]
-    }));
+      // Adicionar aos agendamentos salvos do profissional correto
+      const dayKey = `${appointmentData.date}-${service.professionalId}`;
+      setSavedAppointments(prev => ({
+        ...prev,
+        [dayKey]: [...(prev[dayKey] || []), newAppointment]
+      }));
+    });
   };
 
   const renderProfessionalHeader = (professional: Professional) => (
@@ -72,23 +74,23 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   );
 
   const getLabelColors = () => {
-    const labelColors = [
-      "bg-green-500",
-      "bg-blue-500", 
-      "bg-purple-500",
-      "bg-pink-500",
-      "bg-yellow-500",
-      "bg-red-500",
-      "bg-indigo-500",
-      "bg-teal-500"
-    ];
-
     const predefinedLabels = [
-      { name: "Química", color: "bg-green-500" },
+      { name: "Química", color: "bg-emerald-500" },
       { name: "Preferência", color: "bg-blue-500" },
       { name: "Maquiagem", color: "bg-pink-500" },
       { name: "Nova", color: "bg-purple-500" },
       { name: "Pé e Mão", color: "bg-indigo-500" }
+    ];
+
+    const labelColors = [
+      "bg-emerald-500",
+      "bg-blue-500", 
+      "bg-purple-500",
+      "bg-pink-500",
+      "bg-amber-500",
+      "bg-red-500",
+      "bg-indigo-500",
+      "bg-teal-500"
     ];
 
     return { labelColors, predefinedLabels };
@@ -111,34 +113,34 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         >
           {appointment ? (
             <div className={`h-full p-2 rounded text-xs border-2 ${getStatusColor(appointment.status)}`}>
-              <div className="font-medium truncate text-white">
+              <div className="font-medium truncate text-white mb-1">
                 {appointment.time}
               </div>
-              <div className="font-semibold truncate text-white">
+              <div className="font-semibold truncate text-white mb-1">
                 {appointment.clientName}
               </div>
-              <div className="text-xs opacity-90 truncate">
+              <div className="text-xs opacity-90 truncate mb-2">
                 {appointment.service}
               </div>
               {appointment.labels && appointment.labels.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {appointment.labels.slice(0, 2).map((label, index) => {
+                <div className="flex flex-wrap gap-1">
+                  {appointment.labels.slice(0, 3).map((label, index) => {
                     const predefinedLabel = predefinedLabels.find(pl => pl.name === label);
                     const color = predefinedLabel?.color || labelColors[index % labelColors.length];
                     
                     return (
-                      <Badge
+                      <span
                         key={label}
-                        className={`${color} text-white text-[8px] px-1 py-0 h-3 truncate max-w-[40px]`}
+                        className={`${color} text-white text-[9px] px-1.5 py-0.5 rounded-full font-medium inline-block`}
                       >
                         {label}
-                      </Badge>
+                      </span>
                     );
                   })}
-                  {appointment.labels.length > 2 && (
-                    <Badge className="bg-gray-500 text-white text-[8px] px-1 py-0 h-3">
-                      +{appointment.labels.length - 2}
-                    </Badge>
+                  {appointment.labels.length > 3 && (
+                    <span className="bg-gray-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-medium">
+                      +{appointment.labels.length - 3}
+                    </span>
                   )}
                 </div>
               )}

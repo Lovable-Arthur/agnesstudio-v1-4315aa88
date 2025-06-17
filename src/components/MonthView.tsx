@@ -38,23 +38,23 @@ const MonthView = ({ selectedDate, professionals }: MonthViewProps) => {
   };
 
   const getLabelColors = () => {
-    const labelColors = [
-      "bg-green-500",
-      "bg-blue-500", 
-      "bg-purple-500",
-      "bg-pink-500",
-      "bg-yellow-500",
-      "bg-red-500",
-      "bg-indigo-500",
-      "bg-teal-500"
-    ];
-
     const predefinedLabels = [
-      { name: "Química", color: "bg-green-500" },
+      { name: "Química", color: "bg-emerald-500" },
       { name: "Preferência", color: "bg-blue-500" },
       { name: "Maquiagem", color: "bg-pink-500" },
       { name: "Nova", color: "bg-purple-500" },
       { name: "Pé e Mão", color: "bg-indigo-500" }
+    ];
+
+    const labelColors = [
+      "bg-emerald-500",
+      "bg-blue-500", 
+      "bg-purple-500",
+      "bg-pink-500",
+      "bg-amber-500",
+      "bg-red-500",
+      "bg-indigo-500",
+      "bg-teal-500"
     ];
 
     return { labelColors, predefinedLabels };
@@ -106,44 +106,44 @@ const MonthView = ({ selectedDate, professionals }: MonthViewProps) => {
     const { labelColors, predefinedLabels } = getLabelColors();
     
     return (
-      <div key={appointment.id} className="border rounded p-2 text-xs">
-        <div className="flex justify-between items-start">
-          <div>
-            <div className="font-medium">{appointment.time}</div>
-            <div className="text-muted-foreground">{appointment.clientName}</div>
-            <div className="text-muted-foreground">{appointment.service}</div>
-            {appointment.labels && appointment.labels.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-1">
-                {appointment.labels.slice(0, 2).map((label, index) => {
-                  const predefinedLabel = predefinedLabels.find(pl => pl.name === label);
-                  const color = predefinedLabel?.color || labelColors[index % labelColors.length];
-                  
-                  return (
-                    <Badge
-                      key={label}
-                      className={`${color} text-white text-[8px] px-1 py-0 h-3`}
-                    >
-                      {label}
-                    </Badge>
-                  );
-                })}
-                {appointment.labels.length > 2 && (
-                  <Badge className="bg-gray-500 text-white text-[8px] px-1 py-0 h-3">
-                    +{appointment.labels.length - 2}
-                  </Badge>
-                )}
-              </div>
-            )}
+      <div key={appointment.id} className="border rounded-lg p-3 text-xs bg-white shadow-sm">
+        <div className="flex justify-between items-start mb-2">
+          <div className="flex-1">
+            <div className="font-medium mb-1">{appointment.time}</div>
+            <div className="text-muted-foreground mb-1">{appointment.clientName}</div>
+            <div className="text-muted-foreground text-xs">{appointment.service}</div>
           </div>
           <Badge 
             variant="secondary" 
-            className={getStatusBadgeColor(appointment.status)}
+            className={`${getStatusBadgeColor(appointment.status)} text-xs`}
           >
             {appointment.status === "confirmed" && "Confirmado"}
             {appointment.status === "pending" && "Pendente"}
             {appointment.status === "completed" && "Concluído"}
           </Badge>
         </div>
+        {appointment.labels && appointment.labels.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {appointment.labels.slice(0, 2).map((label, index) => {
+              const predefinedLabel = predefinedLabels.find(pl => pl.name === label);
+              const color = predefinedLabel?.color || labelColors[index % labelColors.length];
+              
+              return (
+                <span
+                  key={label}
+                  className={`${color} text-white text-[9px] px-2 py-1 rounded-full font-medium inline-block`}
+                >
+                  {label}
+                </span>
+              );
+            })}
+            {appointment.labels.length > 2 && (
+              <span className="bg-gray-500 text-white text-[9px] px-2 py-1 rounded-full font-medium">
+                +{appointment.labels.length - 2}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -154,14 +154,14 @@ const MonthView = ({ selectedDate, professionals }: MonthViewProps) => {
     );
     
     return (
-      <div key={professional.id} className="space-y-2">
+      <div key={professional.id} className="space-y-3">
         <div className="flex items-center space-x-2">
           <div className={`w-3 h-3 rounded-full ${professional.color}`}></div>
           <span className="font-medium text-sm">{professional.socialName || professional.name}</span>
         </div>
         
         {dayAppointments.length > 0 ? (
-          <div className="space-y-1 ml-5">
+          <div className="space-y-2 ml-5">
             {dayAppointments.map(renderAppointment)}
           </div>
         ) : (

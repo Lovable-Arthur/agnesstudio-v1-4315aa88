@@ -41,23 +41,23 @@ const ProfessionalSchedule = ({ professional, selectedDate }: ProfessionalSchedu
   };
 
   const getLabelColors = () => {
-    const labelColors = [
-      "bg-green-500",
-      "bg-blue-500", 
-      "bg-purple-500",
-      "bg-pink-500",
-      "bg-yellow-500",
-      "bg-red-500",
-      "bg-indigo-500",
-      "bg-teal-500"
-    ];
-
     const predefinedLabels = [
-      { name: "Química", color: "bg-green-500" },
+      { name: "Química", color: "bg-emerald-500" },
       { name: "Preferência", color: "bg-blue-500" },
       { name: "Maquiagem", color: "bg-pink-500" },
       { name: "Nova", color: "bg-purple-500" },
       { name: "Pé e Mão", color: "bg-indigo-500" }
+    ];
+
+    const labelColors = [
+      "bg-emerald-500",
+      "bg-blue-500", 
+      "bg-purple-500",
+      "bg-pink-500",
+      "bg-amber-500",
+      "bg-red-500",
+      "bg-indigo-500",
+      "bg-teal-500"
     ];
 
     return { labelColors, predefinedLabels };
@@ -98,7 +98,7 @@ const ProfessionalSchedule = ({ professional, selectedDate }: ProfessionalSchedu
                     {appointment.status === "completed" && "Concluído"}
                   </Badge>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
+                <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
                   <div className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     {appointment.time}
@@ -114,12 +114,12 @@ const ProfessionalSchedule = ({ professional, selectedDate }: ProfessionalSchedu
                       const color = predefinedLabel?.color || labelColors[index % labelColors.length];
                       
                       return (
-                        <Badge
+                        <span
                           key={label}
-                          className={`${color} text-white text-xs px-2 py-0`}
+                          className={`${color} text-white text-xs px-2 py-1 rounded-full font-medium inline-block`}
                         >
                           {label}
-                        </Badge>
+                        </span>
                       );
                     })}
                   </div>
