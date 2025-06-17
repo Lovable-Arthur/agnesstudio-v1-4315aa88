@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
@@ -68,7 +69,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   };
 
   const renderProfessionalHeader = (professional: Professional) => (
-    <div key={professional.id} className="p-3 border-r last:border-r-0 text-center">
+    <div key={professional.id} className="p-3 border-r last:border-r-0 text-center bg-white">
       <div className={`${professional.color} text-white p-2 rounded-lg text-sm font-medium mb-1`}>
         <div className="flex items-center justify-center space-x-2">
           <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
@@ -121,7 +122,16 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         onAddAppointment={handleAddAppointment}
       >
         <div 
-          className={`border-r border-b last:border-r-0 min-h-[60px] p-1 cursor-pointer hover:bg-gray-50 ${getProfessionalColor(professional.color)}`}
+          className={`border-r border-b last:border-r-0 min-h-[60px] p-1 cursor-pointer hover:bg-gray-50 ${
+            appointment ? getProfessionalColor(professional.color) : 'bg-gray-50 border-gray-200'
+          }`}
+          style={!appointment ? {
+            backgroundImage: `
+              linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+              linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
+            `,
+            backgroundSize: '20px 20px'
+          } : undefined}
         >
           {appointment ? (
             <div className={`h-full p-2 rounded text-xs border-2 ${getStatusColor(appointment.status)}`}>
@@ -159,7 +169,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
             </div>
           ) : (
             <div className="h-full rounded transition-opacity flex items-center justify-center">
-              {/* Slot vazio - clique para adicionar agendamento */}
+              {/* Slot vazio com grid - clique para adicionar agendamento */}
             </div>
           )}
         </div>
@@ -168,9 +178,9 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   };
 
   return (
-    <div className="h-full overflow-auto bg-background">
-      {/* Header com profissionais */}
-      <div className="sticky top-0 bg-card border-b z-10">
+    <div className="h-full flex flex-col bg-background">
+      {/* Header fixo com profissionais */}
+      <div className="sticky top-0 bg-white border-b z-20 shadow-sm">
         <div className="grid gap-0" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
           <div className="p-3 border-r bg-muted">
             <div className="text-xs text-muted-foreground font-medium">Horário</div>
@@ -179,21 +189,23 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         </div>
       </div>
 
-      {/* Grade de horários */}
-      <div className="grid gap-0" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
-        {displayTimeSlots.map((timeSlot) => (
-          <React.Fragment key={timeSlot}>
-            {/* Coluna de horário */}
-            <div className="p-2 border-r border-b bg-muted text-center">
-              <div className="text-xs text-muted-foreground font-medium">
-                {timeSlot}
+      {/* Grade de horários com scroll */}
+      <div className="flex-1 overflow-auto">
+        <div className="grid gap-0" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
+          {displayTimeSlots.map((timeSlot) => (
+            <React.Fragment key={timeSlot}>
+              {/* Coluna de horário */}
+              <div className="p-2 border-r border-b bg-muted text-center sticky left-0 z-10">
+                <div className="text-xs text-muted-foreground font-medium">
+                  {timeSlot}
+                </div>
               </div>
-            </div>
-            
-            {/* Colunas dos profissionais */}
-            {professionals.map((professional) => renderTimeSlot(timeSlot, professional))}
-          </React.Fragment>
-        ))}
+              
+              {/* Colunas dos profissionais */}
+              {professionals.map((professional) => renderTimeSlot(timeSlot, professional))}
+            </React.Fragment>
+          ))}
+        </div>
       </div>
     </div>
   );
