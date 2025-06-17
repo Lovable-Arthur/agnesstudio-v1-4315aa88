@@ -125,13 +125,6 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
           className={`border-r border-b border-gray-300 last:border-r-0 min-h-[60px] p-1 cursor-pointer hover:bg-gray-100 ${
             appointment ? getProfessionalColor(professional.color) : 'bg-white'
           }`}
-          style={!appointment ? {
-            backgroundImage: `
-              linear-gradient(to right, #d1d5db 1px, transparent 1px),
-              linear-gradient(to bottom, #d1d5db 1px, transparent 1px)
-            `,
-            backgroundSize: '10px 10px'
-          } : undefined}
         >
           {appointment ? (
             <div className={`h-full p-2 rounded text-xs border-2 ${getStatusColor(appointment.status)}`}>
@@ -169,7 +162,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
             </div>
           ) : (
             <div className="h-full rounded transition-opacity flex items-center justify-center">
-              {/* Célula vazia com grid de planilha */}
+              {/* Célula vazia de planilha */}
             </div>
           )}
         </div>
