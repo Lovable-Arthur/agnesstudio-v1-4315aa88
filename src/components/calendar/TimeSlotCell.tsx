@@ -62,6 +62,11 @@ const TimeSlotCell = ({
   
   const isOccupied = isOccupiedByOngoingAppointment();
   
+  // Se o slot está ocupado por um agendamento em andamento, não renderiza nada
+  if (isOccupied) {
+    return null;
+  }
+  
   return (
     <AppointmentContextMenu
       key={`${timeSlot}-${professional.id}`}
@@ -74,9 +79,8 @@ const TimeSlotCell = ({
         className={`border-b-2 border-b-gray-400 min-h-[40px] p-1 cursor-pointer hover:bg-gray-100 ${
           shouldHaveRightBorder ? 'border-r-2 border-r-gray-400' : 'border-r border-gray-400'
         } ${
-          appointment && isAppointmentStart ? getProfessionalColor(professional.color) : 
-          isOccupied ? 'bg-gray-200 opacity-50' : 'bg-white'
-        } ${isOccupied ? 'pointer-events-none' : ''}`}
+          appointment && isAppointmentStart ? getProfessionalColor(professional.color) : 'bg-white'
+        }`}
         style={{
           height: isAppointmentStart ? `${appointmentHeight * 40}px` : '40px',
           zIndex: isAppointmentStart ? 10 : 1,
@@ -85,10 +89,6 @@ const TimeSlotCell = ({
       >
         {appointment && isAppointmentStart ? (
           <AppointmentCell appointment={appointment} />
-        ) : isOccupied ? (
-          <div className="h-full flex items-center justify-center text-xs text-gray-500">
-            {/* Slot ocupado por agendamento em andamento */}
-          </div>
         ) : (
           <div className="h-full rounded transition-opacity flex items-center justify-center border-dashed border border-gray-200">
             {/* Célula vazia de planilha com borda interna */}
