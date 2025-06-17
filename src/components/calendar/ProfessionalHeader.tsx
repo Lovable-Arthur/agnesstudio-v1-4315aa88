@@ -8,7 +8,7 @@ interface ProfessionalHeaderProps {
 }
 
 const ProfessionalHeader = ({ professional }: ProfessionalHeaderProps) => (
-  <div key={professional.id} className="p-3 border-r border-gray-400 last:border-r-0 text-center bg-white">
+  <div key={professional.id} className="p-3 border-r border-gray-400 border-t border-gray-400 last:border-r-0 text-center bg-white">
     <div className={`${professional.color} text-white p-2 rounded-lg text-sm font-medium mb-1`}>
       <div className="flex items-center justify-center space-x-2">
         <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">

@@ -37,7 +37,7 @@ const TimeSlotCell = ({
     >
       <div 
         className={`border-b border-gray-400 min-h-[40px] p-1 cursor-pointer hover:bg-gray-100 ${
-          shouldHaveRightBorder ? 'border-r-2 border-r-gray-500' : 'border-r border-gray-400'
+          shouldHaveRightBorder ? 'border-r border-gray-400' : 'border-r border-gray-400'
         } ${
           appointment ? getProfessionalColor(professional.color) : 'bg-white'
         }`}
