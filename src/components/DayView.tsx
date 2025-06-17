@@ -1,8 +1,10 @@
+
 import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
 import ProfessionalHeader from "./calendar/ProfessionalHeader";
 import TimeSlotCell from "./calendar/TimeSlotCell";
+import { convertTimeToMinutes } from "@/utils/appointmentUtils";
 
 interface DayViewProps {
   selectedDate: string;
@@ -15,16 +17,30 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
 
   const getAppointmentForTimeSlot = (professional: Professional, timeSlot: string): Appointment | undefined => {
     // Primeiro, verifica os agendamentos originais do profissional
-    const originalAppointment = professional.appointments.find(apt => 
-      apt.date === selectedDate && apt.time === timeSlot
-    );
+    const originalAppointments = professional.appointments.filter(apt => apt.date === selectedDate);
     
-    if (originalAppointment) return originalAppointment;
-
     // Depois, verifica os agendamentos salvos dinamicamente
     const dayKey = `${selectedDate}-${professional.id}`;
-    const dayAppointments = savedAppointments[dayKey] || [];
-    return dayAppointments.find(apt => apt.time === timeSlot);
+    const savedDayAppointments = savedAppointments[dayKey] || [];
+    
+    const allAppointments = [...originalAppointments, ...savedDayAppointments];
+    
+    // Encontrar o agendamento que começa neste slot ou que está em andamento
+    const currentSlotMinutes = convertTimeToMinutes(timeSlot);
+    
+    for (const apt of allAppointments) {
+      const appointmentStartMinutes = convertTimeToMinutes(apt.time);
+      const durationMatch = apt.duration.match(/(\d+)/);
+      const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
+      const appointmentEndMinutes = appointmentStartMinutes + durationMinutes;
+      
+      // Se este slot está dentro do período do agendamento
+      if (currentSlotMinutes >= appointmentStartMinutes && currentSlotMinutes < appointmentEndMinutes) {
+        return apt;
+      }
+    }
+    
+    return undefined;
   };
 
   const handleAddAppointment = (appointmentData: any) => {
@@ -79,6 +95,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         onAddAppointment={handleAddAppointment}
         professionalIndex={professionalIndex}
         totalProfessionals={professionals.length}
+        allTimeSlots={displayTimeSlots}
       />
     );
   };

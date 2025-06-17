@@ -4,6 +4,7 @@ import { Professional, Appointment } from "@/types/calendar";
 import { getProfessionalColor } from "@/utils/styleUtils";
 import AppointmentContextMenu from "../AppointmentContextMenu";
 import AppointmentCell from "./AppointmentCell";
+import { convertTimeToMinutes } from "@/utils/appointmentUtils";
 
 interface TimeSlotCellProps {
   timeSlot: string;
@@ -13,6 +14,7 @@ interface TimeSlotCellProps {
   onAddAppointment?: (appointmentData: any) => void;
   professionalIndex?: number;
   totalProfessionals?: number;
+  allTimeSlots?: string[];
 }
 
 const TimeSlotCell = ({ 
@@ -22,10 +24,44 @@ const TimeSlotCell = ({
   selectedDate, 
   onAddAppointment,
   professionalIndex = 0,
-  totalProfessionals = 1
+  totalProfessionals = 1,
+  allTimeSlots = []
 }: TimeSlotCellProps) => {
-  // Aplicar borda direita mais forte para separar entre profissionais (exceto o último)
   const shouldHaveRightBorder = professionalIndex < totalProfessionals - 1;
+  
+  // Verificar se este slot é o início de um agendamento
+  const isAppointmentStart = appointment && appointment.time === timeSlot;
+  
+  // Calcular quantos slots o agendamento deve ocupar
+  const calculateAppointmentHeight = () => {
+    if (!appointment || !isAppointmentStart) return 1;
+    
+    const startMinutes = convertTimeToMinutes(appointment.time);
+    const durationMatch = appointment.duration.match(/(\d+)/);
+    const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
+    const endMinutes = startMinutes + durationMinutes;
+    
+    // Calcular quantos slots de 30 minutos o agendamento ocupa
+    const slotsOccupied = Math.ceil(durationMinutes / 30);
+    return slotsOccupied;
+  };
+  
+  const appointmentHeight = calculateAppointmentHeight();
+  
+  // Se este slot não é o início do agendamento mas está ocupado por um agendamento em andamento
+  const isOccupiedByOngoingAppointment = () => {
+    if (!appointment || isAppointmentStart) return false;
+    
+    const currentSlotMinutes = convertTimeToMinutes(timeSlot);
+    const appointmentStartMinutes = convertTimeToMinutes(appointment.time);
+    const durationMatch = appointment.duration.match(/(\d+)/);
+    const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
+    const appointmentEndMinutes = appointmentStartMinutes + durationMinutes;
+    
+    return currentSlotMinutes >= appointmentStartMinutes && currentSlotMinutes < appointmentEndMinutes;
+  };
+  
+  const isOccupied = isOccupiedByOngoingAppointment();
   
   return (
     <AppointmentContextMenu
@@ -39,11 +75,21 @@ const TimeSlotCell = ({
         className={`border-b-2 border-b-gray-400 min-h-[40px] p-1 cursor-pointer hover:bg-gray-100 ${
           shouldHaveRightBorder ? 'border-r-2 border-r-gray-400' : 'border-r border-gray-400'
         } ${
-          appointment ? getProfessionalColor(professional.color) : 'bg-white'
-        }`}
+          appointment && isAppointmentStart ? getProfessionalColor(professional.color) : 
+          isOccupied ? 'bg-gray-200 opacity-50' : 'bg-white'
+        } ${isOccupied ? 'pointer-events-none' : ''}`}
+        style={{
+          height: isAppointmentStart ? `${appointmentHeight * 40}px` : '40px',
+          zIndex: isAppointmentStart ? 10 : 1,
+          position: 'relative'
+        }}
       >
-        {appointment ? (
+        {appointment && isAppointmentStart ? (
           <AppointmentCell appointment={appointment} />
+        ) : isOccupied ? (
+          <div className="h-full flex items-center justify-center text-xs text-gray-500">
+            {/* Slot ocupado por agendamento em andamento */}
+          </div>
         ) : (
           <div className="h-full rounded transition-opacity flex items-center justify-center border-dashed border border-gray-200">
             {/* Célula vazia de planilha com borda interna */}
