@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
@@ -34,12 +33,25 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     
     // Criar agendamentos para cada serviço
     appointmentData.services.forEach((service: any, index: number) => {
+      // Calcular duração com verificação de tipos
+      let calculatedDuration = "30min"; // valor padrão
+      if (service.startTime && service.endTime) {
+        const startDate = new Date(`1970-01-01T${service.startTime}:00`);
+        const endDate = new Date(`1970-01-01T${service.endTime}:00`);
+        
+        if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+          const durationMs = endDate.getTime() - startDate.getTime();
+          const durationMinutes = Math.round(durationMs / 60000);
+          calculatedDuration = `${durationMinutes}min`;
+        }
+      }
+
       const newAppointment: Appointment = {
         id: Date.now() + index,
         clientName: appointmentData.clientName,
         service: service.name,
         time: service.startTime,
-        duration: `${Math.round((new Date(`1970-01-01T${service.endTime}:00`) - new Date(`1970-01-01T${service.startTime}:00`)) / 60000)}min`,
+        duration: calculatedDuration,
         status: appointmentData.status,
         date: appointmentData.date,
         labels: appointmentData.labels || [],
