@@ -69,7 +69,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   };
 
   const renderProfessionalHeader = (professional: Professional) => (
-    <div key={professional.id} className="p-3 border-r last:border-r-0 text-center bg-white">
+    <div key={professional.id} className="p-3 border-r border-gray-400 last:border-r-0 text-center bg-white">
       <div className={`${professional.color} text-white p-2 rounded-lg text-sm font-medium mb-1`}>
         <div className="flex items-center justify-center space-x-2">
           <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
@@ -122,7 +122,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         onAddAppointment={handleAddAppointment}
       >
         <div 
-          className={`border-r border-b border-gray-300 last:border-r-0 min-h-[60px] p-1 cursor-pointer hover:bg-gray-100 ${
+          className={`border-r border-b border-gray-400 last:border-r-0 min-h-[60px] p-1 cursor-pointer hover:bg-gray-100 ${
             appointment ? getProfessionalColor(professional.color) : 'bg-white'
           }`}
         >
@@ -173,9 +173,9 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header fixo com profissionais */}
-      <div className="sticky top-0 bg-white border-b border-gray-300 z-20 shadow-sm">
+      <div className="sticky top-0 bg-white border-b border-gray-400 z-20 shadow-sm">
         <div className="grid gap-0" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
-          <div className="p-3 border-r border-gray-300 bg-gray-100">
+          <div className="p-3 border-r border-gray-400 bg-gray-100">
             <div className="text-xs text-muted-foreground font-medium">Horário</div>
           </div>
           {professionals.map(renderProfessionalHeader)}
@@ -184,11 +184,11 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
 
       {/* Grade de horários com scroll */}
       <div className="flex-1 overflow-auto">
-        <div className="grid gap-0 border-l border-gray-300" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
+        <div className="grid gap-0 border-l border-gray-400" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
           {displayTimeSlots.map((timeSlot) => (
             <React.Fragment key={timeSlot}>
               {/* Coluna de horário */}
-              <div className="p-2 border-r border-b border-gray-300 bg-gray-100 text-center sticky left-0 z-10">
+              <div className="p-2 border-r border-b border-gray-400 bg-gray-100 text-center sticky left-0 z-10">
                 <div className="text-xs text-muted-foreground font-medium">
                   {timeSlot}
                 </div>
