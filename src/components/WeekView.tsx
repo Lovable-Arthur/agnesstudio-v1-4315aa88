@@ -1,5 +1,7 @@
+
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Professional, Appointment } from "@/types/calendar";
 import { getWeekDays } from "@/utils/dateUtils";
 import { getStatusBadgeColor } from "@/utils/styleUtils";
@@ -20,6 +22,29 @@ const WeekView = ({ selectedDate, professionals }: WeekViewProps) => {
     return dayAppointments;
   };
 
+  const getLabelColors = () => {
+    const labelColors = [
+      "bg-green-500",
+      "bg-blue-500", 
+      "bg-purple-500",
+      "bg-pink-500",
+      "bg-yellow-500",
+      "bg-red-500",
+      "bg-indigo-500",
+      "bg-teal-500"
+    ];
+
+    const predefinedLabels = [
+      { name: "Química", color: "bg-green-500" },
+      { name: "Preferência", color: "bg-blue-500" },
+      { name: "Maquiagem", color: "bg-pink-500" },
+      { name: "Nova", color: "bg-purple-500" },
+      { name: "Pé e Mão", color: "bg-indigo-500" }
+    ];
+
+    return { labelColors, predefinedLabels };
+  };
+
   const renderDayHeader = (day: typeof weekDays[0]) => (
     <div key={day.date} className="text-center">
       <div className={`p-2 rounded-lg text-sm font-medium ${
@@ -33,16 +58,42 @@ const WeekView = ({ selectedDate, professionals }: WeekViewProps) => {
     </div>
   );
 
-  const renderAppointment = (appointment: Appointment) => (
-    <div key={appointment.id} className={`p-1 rounded text-xs border ${getStatusBadgeColor(appointment.status)}`}>
-      <div className="font-medium truncate">
-        {appointment.time} - {appointment.clientName}
+  const renderAppointment = (appointment: Appointment) => {
+    const { labelColors, predefinedLabels } = getLabelColors();
+    
+    return (
+      <div key={appointment.id} className={`p-1 rounded text-xs border ${getStatusBadgeColor(appointment.status)}`}>
+        <div className="font-medium truncate">
+          {appointment.time} - {appointment.clientName}
+        </div>
+        <div className="text-xs opacity-75 truncate">
+          {appointment.service}
+        </div>
+        {appointment.labels && appointment.labels.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1">
+            {appointment.labels.slice(0, 3).map((label, index) => {
+              const predefinedLabel = predefinedLabels.find(pl => pl.name === label);
+              const color = predefinedLabel?.color || labelColors[index % labelColors.length];
+              
+              return (
+                <Badge
+                  key={label}
+                  className={`${color} text-white text-[8px] px-1 py-0 h-3`}
+                >
+                  {label}
+                </Badge>
+              );
+            })}
+            {appointment.labels.length > 3 && (
+              <Badge className="bg-gray-500 text-white text-[8px] px-1 py-0 h-3">
+                +{appointment.labels.length - 3}
+              </Badge>
+            )}
+          </div>
+        )}
       </div>
-      <div className="text-xs opacity-75 truncate">
-        {appointment.service}
-      </div>
-    </div>
-  );
+    );
+  };
 
   const renderProfessionalRow = (professional: Professional) => (
     <div key={professional.id} className="grid grid-cols-8 gap-2">

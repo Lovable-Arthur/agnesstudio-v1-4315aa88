@@ -1,4 +1,3 @@
-
 export interface Appointment {
   id: number;
   clientName: string;
@@ -7,6 +6,8 @@ export interface Appointment {
   duration: string;
   status: "confirmed" | "pending" | "completed";
   date: string;
+  labels?: string[];
+  observations?: string;
 }
 
 export interface Professional {

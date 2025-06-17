@@ -3,6 +3,7 @@ import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
 import { getStatusColor, getProfessionalColor, getProfessionalInitials } from "@/utils/styleUtils";
+import { Badge } from "@/components/ui/badge";
 import AppointmentContextMenu from "./AppointmentContextMenu";
 
 interface DayViewProps {
@@ -39,7 +40,9 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
       time: appointmentData.time,
       duration: appointmentData.duration,
       status: appointmentData.status,
-      date: appointmentData.date
+      date: appointmentData.date,
+      labels: appointmentData.labels || [],
+      observations: appointmentData.observations
     };
 
     // Adicionar aos agendamentos salvos
@@ -68,8 +71,32 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     </div>
   );
 
+  const getLabelColors = () => {
+    const labelColors = [
+      "bg-green-500",
+      "bg-blue-500", 
+      "bg-purple-500",
+      "bg-pink-500",
+      "bg-yellow-500",
+      "bg-red-500",
+      "bg-indigo-500",
+      "bg-teal-500"
+    ];
+
+    const predefinedLabels = [
+      { name: "Química", color: "bg-green-500" },
+      { name: "Preferência", color: "bg-blue-500" },
+      { name: "Maquiagem", color: "bg-pink-500" },
+      { name: "Nova", color: "bg-purple-500" },
+      { name: "Pé e Mão", color: "bg-indigo-500" }
+    ];
+
+    return { labelColors, predefinedLabels };
+  };
+
   const renderTimeSlot = (timeSlot: string, professional: Professional) => {
     const appointment = getAppointmentForTimeSlot(professional, timeSlot);
+    const { labelColors, predefinedLabels } = getLabelColors();
     
     return (
       <AppointmentContextMenu
@@ -93,6 +120,28 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
               <div className="text-xs opacity-90 truncate">
                 {appointment.service}
               </div>
+              {appointment.labels && appointment.labels.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {appointment.labels.slice(0, 2).map((label, index) => {
+                    const predefinedLabel = predefinedLabels.find(pl => pl.name === label);
+                    const color = predefinedLabel?.color || labelColors[index % labelColors.length];
+                    
+                    return (
+                      <Badge
+                        key={label}
+                        className={`${color} text-white text-[8px] px-1 py-0 h-3 truncate max-w-[40px]`}
+                      >
+                        {label}
+                      </Badge>
+                    );
+                  })}
+                  {appointment.labels.length > 2 && (
+                    <Badge className="bg-gray-500 text-white text-[8px] px-1 py-0 h-3">
+                      +{appointment.labels.length - 2}
+                    </Badge>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             <div className="h-full rounded transition-opacity flex items-center justify-center">

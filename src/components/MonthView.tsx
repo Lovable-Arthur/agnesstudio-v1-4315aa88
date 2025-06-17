@@ -37,6 +37,29 @@ const MonthView = ({ selectedDate, professionals }: MonthViewProps) => {
     return stats;
   };
 
+  const getLabelColors = () => {
+    const labelColors = [
+      "bg-green-500",
+      "bg-blue-500", 
+      "bg-purple-500",
+      "bg-pink-500",
+      "bg-yellow-500",
+      "bg-red-500",
+      "bg-indigo-500",
+      "bg-teal-500"
+    ];
+
+    const predefinedLabels = [
+      { name: "Química", color: "bg-green-500" },
+      { name: "Preferência", color: "bg-blue-500" },
+      { name: "Maquiagem", color: "bg-pink-500" },
+      { name: "Nova", color: "bg-purple-500" },
+      { name: "Pé e Mão", color: "bg-indigo-500" }
+    ];
+
+    return { labelColors, predefinedLabels };
+  };
+
   const modifiers = useMemo(() => ({
     hasAppointments: (date: Date) => getAppointmentsForDate(date) > 0
   }), [professionals]);
@@ -79,25 +102,51 @@ const MonthView = ({ selectedDate, professionals }: MonthViewProps) => {
     );
   };
 
-  const renderAppointment = (appointment: Appointment) => (
-    <div key={appointment.id} className="border rounded p-2 text-xs">
-      <div className="flex justify-between items-start">
-        <div>
-          <div className="font-medium">{appointment.time}</div>
-          <div className="text-muted-foreground">{appointment.clientName}</div>
-          <div className="text-muted-foreground">{appointment.service}</div>
+  const renderAppointment = (appointment: Appointment) => {
+    const { labelColors, predefinedLabels } = getLabelColors();
+    
+    return (
+      <div key={appointment.id} className="border rounded p-2 text-xs">
+        <div className="flex justify-between items-start">
+          <div>
+            <div className="font-medium">{appointment.time}</div>
+            <div className="text-muted-foreground">{appointment.clientName}</div>
+            <div className="text-muted-foreground">{appointment.service}</div>
+            {appointment.labels && appointment.labels.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {appointment.labels.slice(0, 2).map((label, index) => {
+                  const predefinedLabel = predefinedLabels.find(pl => pl.name === label);
+                  const color = predefinedLabel?.color || labelColors[index % labelColors.length];
+                  
+                  return (
+                    <Badge
+                      key={label}
+                      className={`${color} text-white text-[8px] px-1 py-0 h-3`}
+                    >
+                      {label}
+                    </Badge>
+                  );
+                })}
+                {appointment.labels.length > 2 && (
+                  <Badge className="bg-gray-500 text-white text-[8px] px-1 py-0 h-3">
+                    +{appointment.labels.length - 2}
+                  </Badge>
+                )}
+              </div>
+            )}
+          </div>
+          <Badge 
+            variant="secondary" 
+            className={getStatusBadgeColor(appointment.status)}
+          >
+            {appointment.status === "confirmed" && "Confirmado"}
+            {appointment.status === "pending" && "Pendente"}
+            {appointment.status === "completed" && "Concluído"}
+          </Badge>
         </div>
-        <Badge 
-          variant="secondary" 
-          className={getStatusBadgeColor(appointment.status)}
-        >
-          {appointment.status === "confirmed" && "Confirmado"}
-          {appointment.status === "pending" && "Pendente"}
-          {appointment.status === "completed" && "Concluído"}
-        </Badge>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderProfessionalSchedule = (professional: Professional) => {
     const dayAppointments = professional.appointments.filter(

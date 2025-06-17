@@ -10,6 +10,8 @@ interface Appointment {
   time: string;
   duration: string;
   status: "confirmed" | "pending" | "completed";
+  labels?: string[];
+  observations?: string;
 }
 
 interface Professional {
@@ -38,6 +40,29 @@ const ProfessionalSchedule = ({ professional, selectedDate }: ProfessionalSchedu
     }
   };
 
+  const getLabelColors = () => {
+    const labelColors = [
+      "bg-green-500",
+      "bg-blue-500", 
+      "bg-purple-500",
+      "bg-pink-500",
+      "bg-yellow-500",
+      "bg-red-500",
+      "bg-indigo-500",
+      "bg-teal-500"
+    ];
+
+    const predefinedLabels = [
+      { name: "Química", color: "bg-green-500" },
+      { name: "Preferência", color: "bg-blue-500" },
+      { name: "Maquiagem", color: "bg-pink-500" },
+      { name: "Nova", color: "bg-purple-500" },
+      { name: "Pé e Mão", color: "bg-indigo-500" }
+    ];
+
+    return { labelColors, predefinedLabels };
+  };
+
   return (
     <Card className="h-fit">
       <CardHeader>
@@ -54,33 +79,54 @@ const ProfessionalSchedule = ({ professional, selectedDate }: ProfessionalSchedu
             <p className="text-sm">Nenhum agendamento para hoje</p>
           </div>
         ) : (
-          professional.appointments.map((appointment) => (
-            <div
-              key={appointment.id}
-              className="border rounded-lg p-3 bg-card hover:bg-accent/50 transition-colors"
-            >
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h4 className="font-medium text-sm">{appointment.clientName}</h4>
-                  <p className="text-xs text-muted-foreground">{appointment.service}</p>
+          professional.appointments.map((appointment) => {
+            const { labelColors, predefinedLabels } = getLabelColors();
+            
+            return (
+              <div
+                key={appointment.id}
+                className="border rounded-lg p-3 bg-card hover:bg-accent/50 transition-colors"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h4 className="font-medium text-sm">{appointment.clientName}</h4>
+                    <p className="text-xs text-muted-foreground">{appointment.service}</p>
+                  </div>
+                  <Badge className={getStatusColor(appointment.status)} variant="secondary">
+                    {appointment.status === "confirmed" && "Confirmado"}
+                    {appointment.status === "pending" && "Pendente"}
+                    {appointment.status === "completed" && "Concluído"}
+                  </Badge>
                 </div>
-                <Badge className={getStatusColor(appointment.status)} variant="secondary">
-                  {appointment.status === "confirmed" && "Confirmado"}
-                  {appointment.status === "pending" && "Pendente"}
-                  {appointment.status === "completed" && "Concluído"}
-                </Badge>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {appointment.time}
+                  </div>
+                  <div>
+                    Duração: {appointment.duration}
+                  </div>
+                </div>
+                {appointment.labels && appointment.labels.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {appointment.labels.map((label, index) => {
+                      const predefinedLabel = predefinedLabels.find(pl => pl.name === label);
+                      const color = predefinedLabel?.color || labelColors[index % labelColors.length];
+                      
+                      return (
+                        <Badge
+                          key={label}
+                          className={`${color} text-white text-xs px-2 py-0`}
+                        >
+                          {label}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {appointment.time}
-                </div>
-                <div>
-                  Duração: {appointment.duration}
-                </div>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </CardContent>
     </Card>
