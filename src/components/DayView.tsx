@@ -122,15 +122,15 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         onAddAppointment={handleAddAppointment}
       >
         <div 
-          className={`border-r border-b last:border-r-0 min-h-[60px] p-1 cursor-pointer hover:bg-gray-50 ${
-            appointment ? getProfessionalColor(professional.color) : 'bg-gray-50 border-gray-200'
+          className={`border-r border-b border-gray-300 last:border-r-0 min-h-[60px] p-1 cursor-pointer hover:bg-gray-100 ${
+            appointment ? getProfessionalColor(professional.color) : 'bg-white'
           }`}
           style={!appointment ? {
             backgroundImage: `
-              linear-gradient(to right, #e5e7eb 1px, transparent 1px),
-              linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
+              linear-gradient(to right, #d1d5db 1px, transparent 1px),
+              linear-gradient(to bottom, #d1d5db 1px, transparent 1px)
             `,
-            backgroundSize: '20px 20px'
+            backgroundSize: '10px 10px'
           } : undefined}
         >
           {appointment ? (
@@ -169,7 +169,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
             </div>
           ) : (
             <div className="h-full rounded transition-opacity flex items-center justify-center">
-              {/* Slot vazio com grid - clique para adicionar agendamento */}
+              {/* Célula vazia com grid de planilha */}
             </div>
           )}
         </div>
@@ -180,9 +180,9 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header fixo com profissionais */}
-      <div className="sticky top-0 bg-white border-b z-20 shadow-sm">
+      <div className="sticky top-0 bg-white border-b border-gray-300 z-20 shadow-sm">
         <div className="grid gap-0" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
-          <div className="p-3 border-r bg-muted">
+          <div className="p-3 border-r border-gray-300 bg-gray-100">
             <div className="text-xs text-muted-foreground font-medium">Horário</div>
           </div>
           {professionals.map(renderProfessionalHeader)}
@@ -191,11 +191,11 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
 
       {/* Grade de horários com scroll */}
       <div className="flex-1 overflow-auto">
-        <div className="grid gap-0" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
+        <div className="grid gap-0 border-l border-gray-300" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
           {displayTimeSlots.map((timeSlot) => (
             <React.Fragment key={timeSlot}>
               {/* Coluna de horário */}
-              <div className="p-2 border-r border-b bg-muted text-center sticky left-0 z-10">
+              <div className="p-2 border-r border-b border-gray-300 bg-gray-100 text-center sticky left-0 z-10">
                 <div className="text-xs text-muted-foreground font-medium">
                   {timeSlot}
                 </div>
