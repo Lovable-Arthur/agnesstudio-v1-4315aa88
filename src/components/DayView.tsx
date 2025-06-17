@@ -2,9 +2,8 @@
 import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
-import { getStatusColor, getProfessionalColor, getProfessionalInitials } from "@/utils/styleUtils";
-import { Badge } from "@/components/ui/badge";
-import AppointmentContextMenu from "./AppointmentContextMenu";
+import ProfessionalHeader from "./calendar/ProfessionalHeader";
+import TimeSlotCell from "./calendar/TimeSlotCell";
 
 interface DayViewProps {
   selectedDate: string;
@@ -68,105 +67,18 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     });
   };
 
-  const renderProfessionalHeader = (professional: Professional) => (
-    <div key={professional.id} className="p-3 border-r border-gray-400 last:border-r-0 text-center bg-white">
-      <div className={`${professional.color} text-white p-2 rounded-lg text-sm font-medium mb-1`}>
-        <div className="flex items-center justify-center space-x-2">
-          <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-            <span className="text-xs font-bold">
-              {getProfessionalInitials(professional.socialName || professional.name)}
-            </span>
-          </div>
-          <span className="truncate">{professional.socialName || professional.name}</span>
-        </div>
-      </div>
-      <div className="text-xs text-muted-foreground truncate">
-        {professional.specialty}
-      </div>
-    </div>
-  );
-
-  const getLabelColors = () => {
-    const predefinedLabels = [
-      { name: "Química", color: "bg-emerald-500" },
-      { name: "Preferência", color: "bg-blue-500" },
-      { name: "Maquiagem", color: "bg-pink-500" },
-      { name: "Nova", color: "bg-purple-500" },
-      { name: "Pé e Mão", color: "bg-indigo-500" }
-    ];
-
-    const labelColors = [
-      "bg-emerald-500",
-      "bg-blue-500", 
-      "bg-purple-500",
-      "bg-pink-500",
-      "bg-amber-500",
-      "bg-red-500",
-      "bg-indigo-500",
-      "bg-teal-500"
-    ];
-
-    return { labelColors, predefinedLabels };
-  };
-
   const renderTimeSlot = (timeSlot: string, professional: Professional) => {
     const appointment = getAppointmentForTimeSlot(professional, timeSlot);
-    const { labelColors, predefinedLabels } = getLabelColors();
     
     return (
-      <AppointmentContextMenu
+      <TimeSlotCell
         key={`${timeSlot}-${professional.id}`}
         timeSlot={timeSlot}
-        professionalId={professional.id}
+        professional={professional}
+        appointment={appointment}
         selectedDate={selectedDate}
         onAddAppointment={handleAddAppointment}
-      >
-        <div 
-          className={`border-r border-b border-gray-400 last:border-r-0 min-h-[60px] p-1 cursor-pointer hover:bg-gray-100 ${
-            appointment ? getProfessionalColor(professional.color) : 'bg-white'
-          }`}
-        >
-          {appointment ? (
-            <div className={`h-full p-2 rounded text-xs border-2 ${getStatusColor(appointment.status)}`}>
-              <div className="font-medium truncate text-white mb-1">
-                {appointment.time}
-              </div>
-              <div className="font-semibold truncate text-white mb-1">
-                {appointment.clientName}
-              </div>
-              <div className="text-xs opacity-90 truncate mb-2">
-                {appointment.service}
-              </div>
-              {appointment.labels && appointment.labels.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {appointment.labels.slice(0, 3).map((label, index) => {
-                    const predefinedLabel = predefinedLabels.find(pl => pl.name === label);
-                    const color = predefinedLabel?.color || labelColors[index % labelColors.length];
-                    
-                    return (
-                      <span
-                        key={label}
-                        className={`${color} text-white text-[9px] px-1.5 py-0.5 rounded-full font-medium inline-block`}
-                      >
-                        {label}
-                      </span>
-                    );
-                  })}
-                  {appointment.labels.length > 3 && (
-                    <span className="bg-gray-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-medium">
-                      +{appointment.labels.length - 3}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="h-full rounded transition-opacity flex items-center justify-center">
-              {/* Célula vazia de planilha */}
-            </div>
-          )}
-        </div>
-      </AppointmentContextMenu>
+      />
     );
   };
 
@@ -178,7 +90,9 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
           <div className="p-3 border-r border-gray-400 bg-gray-100">
             <div className="text-xs text-muted-foreground font-medium">Horário</div>
           </div>
-          {professionals.map(renderProfessionalHeader)}
+          {professionals.map(professional => (
+            <ProfessionalHeader key={professional.id} professional={professional} />
+          ))}
         </div>
       </div>
 
