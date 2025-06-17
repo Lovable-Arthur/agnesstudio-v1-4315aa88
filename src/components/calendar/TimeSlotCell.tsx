@@ -32,15 +32,15 @@ const TimeSlotCell = ({
   // Verificar se este slot é o início de um agendamento
   const isAppointmentStart = appointment && appointment.time === timeSlot;
   
-  // Calcular quantos slots o agendamento deve ocupar
+  // Calcular quantos slots o agendamento deve ocupar baseado na duração exata
   const calculateAppointmentHeight = () => {
     if (!appointment || !isAppointmentStart) return 1;
     
-    const startMinutes = convertTimeToMinutes(appointment.time);
+    // Extrair duração em minutos do campo duration
     const durationMatch = appointment.duration.match(/(\d+)/);
     const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
     
-    // Calcular quantos slots de 30 minutos o agendamento ocupa
+    // Calcular altura baseada na duração (cada slot tem 30 minutos e 40px de altura)
     const slotsOccupied = Math.ceil(durationMinutes / 30);
     return slotsOccupied;
   };

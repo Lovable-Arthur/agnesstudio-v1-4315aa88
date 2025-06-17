@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
@@ -46,9 +45,9 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   const handleAddAppointment = (appointmentData: any) => {
     console.log("Novo agendamento:", appointmentData);
     
-    // Criar agendamentos para cada serviço
+    // Criar agendamentos individuais para cada serviço
     appointmentData.services.forEach((service: any, index: number) => {
-      // Calcular duração com verificação de tipos
+      // Calcular duração com base nos horários de início e fim do serviço
       let calculatedDuration = "30min"; // valor padrão
       if (service.startTime && service.endTime) {
         const startDate = new Date(`1970-01-01T${service.startTime}:00`);
@@ -65,8 +64,8 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         id: Date.now() + index,
         clientName: appointmentData.clientName,
         service: service.name,
-        time: service.startTime,
-        duration: calculatedDuration,
+        time: service.startTime, // Usar o horário de início específico do serviço
+        duration: calculatedDuration, // Usar a duração calculada do serviço
         status: appointmentData.status,
         date: appointmentData.date,
         labels: appointmentData.labels || [],
