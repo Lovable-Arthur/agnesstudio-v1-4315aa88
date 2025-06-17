@@ -10,6 +10,7 @@ interface TimeSlotCellProps {
   timeSlot: string;
   professional: Professional;
   appointment?: Appointment;
+  isAppointmentStart: boolean;
   selectedDate: string;
   onAddAppointment?: (appointmentData: any) => void;
   professionalIndex?: number;
@@ -21,17 +22,16 @@ const TimeSlotCell = ({
   timeSlot, 
   professional, 
   appointment, 
+  isAppointmentStart,
   selectedDate, 
   onAddAppointment,
   professionalIndex = 0,
-  totalProfessionals = 1
+  totalProfessionals = 1,
+  allTimeSlots = []
 }: TimeSlotCellProps) => {
   
   // Verificar se há borda direita
   const shouldHaveRightBorder = professionalIndex < totalProfessionals - 1;
-  
-  // Verificar se este slot é o início de um agendamento
-  const isAppointmentStart = appointment && appointment.time === timeSlot;
   
   // Calcular altura do agendamento baseado na duração
   const calculateAppointmentHeight = () => {
@@ -41,30 +41,15 @@ const TimeSlotCell = ({
     const durationMatch = appointment.duration.match(/(\d+)/);
     const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
     
-    // Calcular quantos slots de 30 minutos o agendamento ocupa
-    const slotsOccupied = Math.ceil(durationMinutes / 30);
+    // Calcular quantos slots de 10 minutos o agendamento ocupa
+    const slotsOccupied = Math.ceil(durationMinutes / 10);
     return slotsOccupied;
   };
   
   const appointmentHeight = calculateAppointmentHeight();
   
-  // Verificar se este slot está ocupado por um agendamento em andamento
-  const isOccupiedByOngoingAppointment = () => {
-    if (!appointment || isAppointmentStart) return false;
-    
-    const currentSlotMinutes = convertTimeToMinutes(timeSlot);
-    const appointmentStartMinutes = convertTimeToMinutes(appointment.time);
-    const durationMatch = appointment.duration.match(/(\d+)/);
-    const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
-    const appointmentEndMinutes = appointmentStartMinutes + durationMinutes;
-    
-    return currentSlotMinutes >= appointmentStartMinutes && currentSlotMinutes < appointmentEndMinutes;
-  };
-  
-  const isOccupied = isOccupiedByOngoingAppointment();
-  
-  // Se o slot está ocupado por um agendamento em andamento, não renderizar
-  if (isOccupied) {
+  // Se o slot está ocupado por um agendamento em andamento (mas não é o início), não renderizar
+  if (appointment && !isAppointmentStart) {
     return null;
   }
   
