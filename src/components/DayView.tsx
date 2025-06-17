@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
@@ -67,7 +66,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     });
   };
 
-  const renderTimeSlot = (timeSlot: string, professional: Professional) => {
+  const renderTimeSlot = (timeSlot: string, professional: Professional, professionalIndex: number) => {
     const appointment = getAppointmentForTimeSlot(professional, timeSlot);
     
     return (
@@ -78,6 +77,8 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         appointment={appointment}
         selectedDate={selectedDate}
         onAddAppointment={handleAddAppointment}
+        professionalIndex={professionalIndex}
+        totalProfessionals={professionals.length}
       />
     );
   };
@@ -90,8 +91,10 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
           <div className="p-3 border-r border-gray-400 bg-gray-100">
             <div className="text-xs text-muted-foreground font-medium">Horário</div>
           </div>
-          {professionals.map(professional => (
-            <ProfessionalHeader key={professional.id} professional={professional} />
+          {professionals.map((professional, index) => (
+            <div key={professional.id} className={`${index < professionals.length - 1 ? 'border-r-2 border-r-gray-500' : ''}`}>
+              <ProfessionalHeader professional={professional} />
+            </div>
           ))}
         </div>
       </div>
@@ -109,7 +112,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
               </div>
               
               {/* Colunas dos profissionais */}
-              {professionals.map((professional) => renderTimeSlot(timeSlot, professional))}
+              {professionals.map((professional, index) => renderTimeSlot(timeSlot, professional, index))}
             </React.Fragment>
           ))}
         </div>

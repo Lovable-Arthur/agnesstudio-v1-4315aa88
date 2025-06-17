@@ -11,6 +11,8 @@ interface TimeSlotCellProps {
   appointment?: Appointment;
   selectedDate: string;
   onAddAppointment?: (appointmentData: any) => void;
+  professionalIndex?: number;
+  totalProfessionals?: number;
 }
 
 const TimeSlotCell = ({ 
@@ -18,8 +20,14 @@ const TimeSlotCell = ({
   professional, 
   appointment, 
   selectedDate, 
-  onAddAppointment 
+  onAddAppointment,
+  professionalIndex = 0,
+  totalProfessionals = 1
 }: TimeSlotCellProps) => {
+  // Adicionar borda direita para separar entre profissionais específicos
+  // Lorena (index 0) e Carlos (index 1), Carlos (index 1) e Fernanda (index 2)
+  const shouldHaveRightBorder = professionalIndex < totalProfessionals - 1;
+  
   return (
     <AppointmentContextMenu
       key={`${timeSlot}-${professional.id}`}
@@ -29,7 +37,7 @@ const TimeSlotCell = ({
       onAddAppointment={onAddAppointment}
     >
       <div 
-        className={`border-r border-b border-gray-400 last:border-r-0 min-h-[40px] p-1 cursor-pointer hover:bg-gray-100 ${
+        className={`border-r border-b border-gray-400 ${shouldHaveRightBorder ? 'border-r-2 border-r-gray-500' : ''} last:border-r-0 min-h-[40px] p-1 cursor-pointer hover:bg-gray-100 ${
           appointment ? getProfessionalColor(professional.color) : 'bg-white'
         }`}
       >
