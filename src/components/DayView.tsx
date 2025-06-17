@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
@@ -85,7 +86,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     <div className="h-full flex flex-col bg-background">
       {/* Header fixo com profissionais */}
       <div className="sticky top-0 bg-white border-b border-gray-400 z-20 shadow-sm">
-        <div className="grid gap-0 border-l border-gray-400" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
+        <div className="grid gap-0 border-l border-r border-gray-400" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
           <div className="p-3 border-r border-gray-400 bg-gray-100">
             <div className="text-xs text-muted-foreground font-medium">Horário</div>
           </div>
@@ -97,7 +98,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
 
       {/* Grade de horários com scroll */}
       <div className="flex-1 overflow-auto">
-        <div className="grid gap-0 border-l border-gray-400" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
+        <div className="grid gap-0 border-l border-r border-gray-400" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
           {displayTimeSlots.map((timeSlot) => (
             <React.Fragment key={timeSlot}>
               {/* Coluna de horário */}
