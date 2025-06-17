@@ -103,13 +103,13 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header fixo com profissionais */}
-      <div className="sticky top-0 bg-white border-b border-gray-400 z-20 shadow-sm">
+      <div className="sticky top-0 bg-white border-b-2 border-gray-400 z-20 shadow-sm">
         <div className="grid gap-0 border-l border-r border-gray-400" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
           <div className="p-3 border-r border-gray-400 bg-gray-100">
             <div className="text-xs text-muted-foreground font-medium">Horário</div>
           </div>
           {professionals.map((professional, index) => (
-            <div key={professional.id} className={`${index < professionals.length - 1 ? 'border-r-2 border-r-gray-500' : ''}`}>
+            <div key={professional.id} className={`${index < professionals.length - 1 ? 'border-r-2 border-r-gray-400' : ''}`}>
               <ProfessionalHeader professional={professional} />
             </div>
           ))}
@@ -120,9 +120,9 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
       <div className="flex-1 overflow-auto">
         <div className="grid gap-0 border-l border-r border-gray-400" style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}>
           {displayTimeSlots.map((timeSlot) => (
-            <React.Fragment key={timeSlot}>
+            <div key={timeSlot} className="contents">
               {/* Coluna de horário */}
-              <div className="p-2 border-r border-b border-gray-400 bg-gray-100 text-center sticky left-0 z-10">
+              <div className="p-2 border-r border-b-2 border-gray-400 bg-gray-100 text-center sticky left-0 z-10">
                 <div className="text-xs text-muted-foreground font-medium">
                   {timeSlot}
                 </div>
@@ -130,7 +130,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
               
               {/* Colunas dos profissionais */}
               {professionals.map((professional, index) => renderTimeSlot(timeSlot, professional, index))}
-            </React.Fragment>
+            </div>
           ))}
         </div>
       </div>

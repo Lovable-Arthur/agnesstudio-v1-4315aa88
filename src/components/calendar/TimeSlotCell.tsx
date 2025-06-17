@@ -39,7 +39,6 @@ const TimeSlotCell = ({
     const startMinutes = convertTimeToMinutes(appointment.time);
     const durationMatch = appointment.duration.match(/(\d+)/);
     const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
-    const endMinutes = startMinutes + durationMinutes;
     
     // Calcular quantos slots de 30 minutos o agendamento ocupa
     const slotsOccupied = Math.ceil(durationMinutes / 30);
