@@ -4,7 +4,6 @@ import { Professional, Appointment } from "@/types/calendar";
 import { getProfessionalColor } from "@/utils/styleUtils";
 import AppointmentContextMenu from "../AppointmentContextMenu";
 import AppointmentCell from "./AppointmentCell";
-import { convertTimeToMinutes } from "@/utils/appointmentUtils";
 
 interface TimeSlotCellProps {
   timeSlot: string;
@@ -30,20 +29,18 @@ const TimeSlotCell = ({
   allTimeSlots = []
 }: TimeSlotCellProps) => {
   
-  // Verificar se há borda direita
   const shouldHaveRightBorder = professionalIndex < totalProfessionals - 1;
   
   // Calcular altura do agendamento baseado na duração
   const calculateAppointmentHeight = () => {
-    if (!appointment || !isAppointmentStart) return 1;
+    if (!appointment || !isAppointmentStart) return 40;
     
-    // Extrair duração em minutos
     const durationMatch = appointment.duration.match(/(\d+)/);
     const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
     
-    // Calcular quantos slots de 10 minutos o agendamento ocupa
+    // Cada slot de 10 minutos = 40px de altura
     const slotsOccupied = Math.ceil(durationMinutes / 10);
-    return slotsOccupied;
+    return slotsOccupied * 40;
   };
   
   const appointmentHeight = calculateAppointmentHeight();
@@ -55,20 +52,20 @@ const TimeSlotCell = ({
   
   return (
     <AppointmentContextMenu
-      key={`${timeSlot}-${professional.id}`}
       timeSlot={timeSlot}
       professionalId={professional.id}
       selectedDate={selectedDate}
       onAddAppointment={onAddAppointment}
     >
       <div 
-        className={`border-b-2 border-b-gray-400 min-h-[40px] p-1 cursor-pointer hover:bg-gray-100 ${
+        className={`border-b-2 border-b-gray-400 p-1 cursor-pointer hover:bg-gray-100 ${
           shouldHaveRightBorder ? 'border-r-2 border-r-gray-400' : 'border-r border-gray-400'
         } ${
           appointment && isAppointmentStart ? getProfessionalColor(professional.color) : 'bg-white'
         }`}
         style={{
-          height: isAppointmentStart ? `${appointmentHeight * 40}px` : '40px',
+          height: `${appointmentHeight}px`,
+          minHeight: '40px',
           zIndex: isAppointmentStart ? 10 : 1,
           position: 'relative'
         }}

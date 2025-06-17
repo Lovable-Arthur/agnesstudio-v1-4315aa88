@@ -16,13 +16,9 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   const [savedAppointments, setSavedAppointments] = useState<{ [key: string]: Appointment[] }>({});
 
   const getAllAppointmentsForProfessional = (professional: Professional): Appointment[] => {
-    // Agendamentos originais do profissional para a data selecionada
     const originalAppointments = professional.appointments.filter(apt => apt.date === selectedDate);
-    
-    // Agendamentos salvos dinamicamente para a data selecionada
     const dayKey = `${selectedDate}-${professional.id}`;
     const savedDayAppointments = savedAppointments[dayKey] || [];
-    
     return [...originalAppointments, ...savedDayAppointments];
   };
 
@@ -30,14 +26,12 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     const allAppointments = getAllAppointmentsForProfessional(professional);
     const currentSlotMinutes = convertTimeToMinutes(timeSlot);
     
-    // Procurar agendamento que se sobrepõe com este slot
     for (const apt of allAppointments) {
       const appointmentStartMinutes = convertTimeToMinutes(apt.time);
       const durationMatch = apt.duration.match(/(\d+)/);
       const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
       const appointmentEndMinutes = appointmentStartMinutes + durationMinutes;
       
-      // Verificar se o slot atual está dentro do período do agendamento
       if (currentSlotMinutes >= appointmentStartMinutes && currentSlotMinutes < appointmentEndMinutes) {
         return apt;
       }
@@ -54,9 +48,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   const handleAddAppointment = (appointmentData: any) => {
     console.log("Novo agendamento:", appointmentData);
     
-    // Criar agendamentos individuais para cada serviço
     appointmentData.services.forEach((service: any, index: number) => {
-      // Calcular duração baseada nos horários de início e fim
       let calculatedDuration = "30min";
       if (service.startTime && service.endTime) {
         const startDate = new Date(`1970-01-01T${service.startTime}:00`);
@@ -81,33 +73,12 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         observations: appointmentData.observations
       };
 
-      // Adicionar ao estado correto
       const dayKey = `${appointmentData.date}-${service.professionalId}`;
       setSavedAppointments(prev => ({
         ...prev,
         [dayKey]: [...(prev[dayKey] || []), newAppointment]
       }));
     });
-  };
-
-  const renderTimeSlot = (timeSlot: string, professional: Professional, professionalIndex: number) => {
-    const appointment = getAppointmentForTimeSlot(professional, timeSlot);
-    const isStart = isAppointmentStart(professional, timeSlot);
-    
-    return (
-      <TimeSlotCell
-        key={`${timeSlot}-${professional.id}`}
-        timeSlot={timeSlot}
-        professional={professional}
-        appointment={appointment}
-        isAppointmentStart={isStart}
-        selectedDate={selectedDate}
-        onAddAppointment={handleAddAppointment}
-        professionalIndex={professionalIndex}
-        totalProfessionals={professionals.length}
-        allTimeSlots={displayTimeSlots}
-      />
-    );
   };
 
   return (
@@ -139,19 +110,35 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
           style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}
         >
           {displayTimeSlots.map((timeSlot) => (
-            <div key={timeSlot} className="contents">
+            <React.Fragment key={timeSlot}>
               {/* Coluna de horário */}
-              <div className="p-2 border-r border-b-2 border-gray-400 bg-gray-100 text-center sticky left-0 z-10">
+              <div className="p-2 border-r border-b-2 border-gray-400 bg-gray-100 text-center min-h-[40px] flex items-center justify-center">
                 <div className="text-xs text-muted-foreground font-medium">
                   {timeSlot}
                 </div>
               </div>
               
               {/* Colunas dos profissionais */}
-              {professionals.map((professional, index) => 
-                renderTimeSlot(timeSlot, professional, index)
-              )}
-            </div>
+              {professionals.map((professional, index) => {
+                const appointment = getAppointmentForTimeSlot(professional, timeSlot);
+                const isStart = isAppointmentStart(professional, timeSlot);
+                
+                return (
+                  <TimeSlotCell
+                    key={`${timeSlot}-${professional.id}`}
+                    timeSlot={timeSlot}
+                    professional={professional}
+                    appointment={appointment}
+                    isAppointmentStart={isStart}
+                    selectedDate={selectedDate}
+                    onAddAppointment={handleAddAppointment}
+                    professionalIndex={index}
+                    totalProfessionals={professionals.length}
+                    allTimeSlots={displayTimeSlots}
+                  />
+                );
+              })}
+            </React.Fragment>
           ))}
         </div>
       </div>
