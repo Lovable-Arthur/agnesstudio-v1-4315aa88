@@ -4,6 +4,7 @@ import { Professional, Appointment } from "@/types/calendar";
 import { getProfessionalColor } from "@/utils/styleUtils";
 import AppointmentContextMenu from "../AppointmentContextMenu";
 import AppointmentCell from "./AppointmentCell";
+import { convertTimeToMinutes } from "@/utils/appointmentUtils";
 
 interface TimeSlotCellProps {
   timeSlot: string;
@@ -31,19 +32,19 @@ const TimeSlotCell = ({
   
   const shouldHaveRightBorder = professionalIndex < totalProfessionals - 1;
   
-  // Calcular altura do agendamento baseado na duração
-  const calculateAppointmentHeight = () => {
-    if (!appointment || !isAppointmentStart) return 40;
+  // Calcular quantos slots o agendamento ocupa
+  const calculateRowSpan = () => {
+    if (!appointment || !isAppointmentStart) return 1;
     
     const durationMatch = appointment.duration.match(/(\d+)/);
     const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
     
-    // Cada slot de 10 minutos = 40px de altura
+    // Cada slot de 10 minutos = 1 linha
     const slotsOccupied = Math.ceil(durationMinutes / 10);
-    return slotsOccupied * 40;
+    return slotsOccupied;
   };
   
-  const appointmentHeight = calculateAppointmentHeight();
+  const rowSpan = calculateRowSpan();
   
   // Se o slot está ocupado por um agendamento em andamento (mas não é o início), não renderizar
   if (appointment && !isAppointmentStart) {
@@ -64,10 +65,11 @@ const TimeSlotCell = ({
           appointment && isAppointmentStart ? getProfessionalColor(professional.color) : 'bg-white'
         }`}
         style={{
-          height: `${appointmentHeight}px`,
+          height: `${rowSpan * 40}px`,
           minHeight: '40px',
           zIndex: isAppointmentStart ? 10 : 1,
-          position: 'relative'
+          position: 'relative',
+          gridRowEnd: `span ${rowSpan}`
         }}
       >
         {appointment && isAppointmentStart ? (
