@@ -21,6 +21,9 @@ interface ServiceDetailsSectionProps {
   setEndTime: (time: string) => void;
   price: string;
   setPrice: (price: string) => void;
+  duration: number;
+  onDurationChange: (duration: number) => void;
+  onStartTimeChange: (time: string) => void;
 }
 
 const ServiceDetailsSection = ({
@@ -34,8 +37,16 @@ const ServiceDetailsSection = ({
   endTime,
   setEndTime,
   price,
-  setPrice
+  setPrice,
+  duration,
+  onDurationChange,
+  onStartTimeChange
 }: ServiceDetailsSectionProps) => {
+  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDuration = parseInt(e.target.value) || 0;
+    onDurationChange(newDuration);
+  };
+
   return (
     <div className="grid grid-cols-7 gap-4 p-4 bg-gray-50 rounded-lg items-end">
       <ServiceSelect
@@ -51,17 +62,22 @@ const ServiceDetailsSection = ({
 
       <div className="space-y-2">
         <Label className="text-xs font-medium text-gray-700">Tempo</Label>
-        <Input 
-          value={selectedService ? availableServices.find(s => s.id.toString() === selectedService)?.duration + "min" : ""} 
-          readOnly 
-          className="h-8"
-        />
+        <div className="relative">
+          <Input 
+            type="number"
+            value={duration || ""} 
+            onChange={handleDurationChange}
+            className="h-8 pr-8"
+            placeholder="0"
+          />
+          <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">min</span>
+        </div>
       </div>
 
       <TimeInput
         label="Início"
         value={startTime}
-        onChange={setStartTime}
+        onChange={onStartTimeChange}
       />
 
       <TimeInput

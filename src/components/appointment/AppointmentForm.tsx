@@ -1,4 +1,3 @@
-
 import React from "react";
 import AppointmentFormHeader from "./AppointmentFormHeader";
 import ClientSection from "./ClientSection";
@@ -36,6 +35,7 @@ const AppointmentForm = ({
     setEndTime,
     price,
     setPrice,
+    duration,
     services,
     customLabels,
     setCustomLabels,
@@ -46,6 +46,8 @@ const AppointmentForm = ({
     availableServices,
     handleServiceChange,
     handleProfessionalChange,
+    handleDurationChange,
+    handleStartTimeChange,
     handleAddService,
     handleRemoveService,
     handleRemoveLastService,
@@ -97,6 +99,9 @@ const AppointmentForm = ({
         setEndTime={setEndTime}
         price={price}
         setPrice={setPrice}
+        duration={duration}
+        onDurationChange={handleDurationChange}
+        onStartTimeChange={handleStartTimeChange}
       />
 
       <MultipleServicesSection

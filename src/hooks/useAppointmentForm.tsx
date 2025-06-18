@@ -1,9 +1,8 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
 import { useAppointmentServices } from "./useAppointmentServices";
 import { UseAppointmentFormProps, AppointmentFormData } from "@/types/appointment";
-import { calculateServiceEndTime, calculateTotalDuration } from "@/utils/appointmentUtils";
+import { calculateServiceEndTime, calculateTotalDuration, convertTimeToMinutes } from "@/utils/appointmentUtils";
 
 export const useAppointmentForm = ({
   initialTimeSlot,
@@ -17,6 +16,7 @@ export const useAppointmentForm = ({
   const [startTime, setStartTime] = useState(initialTimeSlot);
   const [endTime, setEndTime] = useState("");
   const [price, setPrice] = useState("");
+  const [duration, setDuration] = useState(0);
   const [customLabels, setCustomLabels] = useState<string[]>([]);
   const [newLabel, setNewLabel] = useState("");
   const [observations, setObservations] = useState("");
@@ -35,11 +35,20 @@ export const useAppointmentForm = ({
   
   const selectedProfessional = professionals.find(p => p.id === selectedProfessionalId);
 
+  // Recalcula o horário de fim quando a duração ou horário de início mudam
+  useEffect(() => {
+    if (startTime && duration > 0) {
+      const newEndTime = calculateServiceEndTime(startTime, duration);
+      setEndTime(newEndTime);
+    }
+  }, [startTime, duration]);
+
   const handleServiceChange = (serviceId: string) => {
     const service = availableServices.find(s => s.id.toString() === serviceId);
     if (service) {
       setSelectedService(serviceId);
       setPrice(service.price.toString());
+      setDuration(service.duration);
       setEndTime(calculateServiceEndTime(startTime, service.duration));
     }
   };
@@ -49,6 +58,15 @@ export const useAppointmentForm = ({
     setSelectedService("");
     setPrice("");
     setEndTime("");
+    setDuration(0);
+  };
+
+  const handleDurationChange = (newDuration: number) => {
+    setDuration(newDuration);
+  };
+
+  const handleStartTimeChange = (time: string) => {
+    setStartTime(time);
   };
 
   const resetForm = () => {
@@ -58,6 +76,7 @@ export const useAppointmentForm = ({
     setStartTime(initialTimeSlot);
     setEndTime("");
     setPrice("");
+    setDuration(0);
     resetServices();
     setCustomLabels([]);
     setNewLabel("");
@@ -80,7 +99,7 @@ export const useAppointmentForm = ({
         }],
         time: startTime,
         endTime: endTime,
-        duration: serviceInfo ? `${serviceInfo.duration}min` : calculateTotalDuration(startTime, endTime),
+        duration: duration ? `${duration}min` : calculateTotalDuration(startTime, endTime),
         status: "confirmed",
         date: selectedDate,
         professionalId: selectedProfessionalId,
@@ -139,6 +158,7 @@ export const useAppointmentForm = ({
     setEndTime,
     price,
     setPrice,
+    duration,
     services,
     customLabels,
     setCustomLabels,
@@ -151,6 +171,8 @@ export const useAppointmentForm = ({
     // Actions
     handleServiceChange,
     handleProfessionalChange,
+    handleDurationChange,
+    handleStartTimeChange,
     handleAddService: () => handleAddService(startTime, endTime),
     handleRemoveService,
     handleRemoveLastService,
