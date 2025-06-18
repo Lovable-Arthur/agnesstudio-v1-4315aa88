@@ -101,7 +101,6 @@ const ServiceRow = ({
         selectedService={service.serviceId}
         onServiceChange={handleServiceChange}
         availableServices={servicesToShow}
-        professionalId={service.professionalId}
       />
 
       <ProfessionalSelect
