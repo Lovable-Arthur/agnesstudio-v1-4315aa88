@@ -5,6 +5,7 @@ import { Plus, X } from "lucide-react";
 import { Service } from "@/contexts/ServicesContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
 import { ServiceItem } from "@/types/appointment";
 import { calculateServiceEndTime } from "@/utils/appointmentUtils";
@@ -48,6 +49,14 @@ const MultipleServicesSection = ({
     }
   };
 
+  const handleDurationChange = (serviceId: string, duration: number) => {
+    const serviceItem = services.find(s => s.id === serviceId);
+    if (serviceItem && serviceItem.startTime) {
+      const endTime = calculateServiceEndTime(serviceItem.startTime, duration);
+      onUpdateService(serviceId, 'endTime', endTime);
+    }
+  };
+
   const handleTimeChange = (serviceId: string, field: 'startTime' | 'endTime', value: string) => {
     onUpdateService(serviceId, field, value);
     
@@ -70,6 +79,11 @@ const MultipleServicesSection = ({
     );
   };
 
+  const getServiceDuration = (serviceId: string) => {
+    const service = availableServices.find(s => s.id.toString() === serviceId);
+    return service ? service.duration : 0;
+  };
+
   return (
     <div className="space-y-4">
       {services.length > 0 && (
@@ -77,7 +91,7 @@ const MultipleServicesSection = ({
           {services.map((service, index) => (
             <div key={service.id} className="grid grid-cols-7 gap-4 p-4 bg-gray-50 rounded-lg items-end">
               <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-700">Serviço</label>
+                <Label className="text-xs font-medium text-gray-700">Serviço</Label>
                 <Select 
                   value={service.serviceId} 
                   onValueChange={(value) => handleServiceChange(service.id, value)}
@@ -96,7 +110,7 @@ const MultipleServicesSection = ({
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-700">Profissional</label>
+                <Label className="text-xs font-medium text-gray-700">Profissional</Label>
                 <Select 
                   value={service.professionalId} 
                   onValueChange={(value) => onUpdateService(service.id, 'professionalId', value)}
@@ -115,16 +129,21 @@ const MultipleServicesSection = ({
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-700">Tempo</label>
-                <Input 
-                  value={service.serviceId ? availableServices.find(s => s.id.toString() === service.serviceId)?.duration + "min" : ""} 
-                  readOnly 
-                  className="h-8"
-                />
+                <Label className="text-xs font-medium text-gray-700">Tempo</Label>
+                <div className="relative">
+                  <Input 
+                    type="number"
+                    value={service.serviceId ? getServiceDuration(service.serviceId) : ""} 
+                    onChange={(e) => handleDurationChange(service.id, parseInt(e.target.value) || 0)}
+                    className="h-8 pr-8"
+                    placeholder="0"
+                  />
+                  <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">min</span>
+                </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-700">Início</label>
+                <Label className="text-xs font-medium text-gray-700">Início</Label>
                 <Input 
                   type="time" 
                   value={service.startTime} 
@@ -134,7 +153,7 @@ const MultipleServicesSection = ({
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-700">Fim</label>
+                <Label className="text-xs font-medium text-gray-700">Fim</Label>
                 <Input 
                   type="time" 
                   value={service.endTime} 
@@ -144,7 +163,7 @@ const MultipleServicesSection = ({
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-700">Valor (R$)</label>
+                <Label className="text-xs font-medium text-gray-700">Valor (R$)</Label>
                 <Input 
                   type="number" 
                   value={service.price} 
