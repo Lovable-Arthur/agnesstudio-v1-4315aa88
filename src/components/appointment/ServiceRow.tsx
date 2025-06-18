@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -86,22 +87,10 @@ const ServiceRow = ({
     return "";
   };
 
-  const getServicesByProfessional = (professionalId: string) => {
-    // Se não há profissional selecionado, retorna lista vazia
-    if (!professionalId) return [];
-    
-    // Converte para número para comparação
-    const profId = parseInt(professionalId);
-    if (isNaN(profId)) return [];
-    
-    // Filtra serviços pelo profissional selecionado
-    return availableServices.filter(service => 
-      service.allowedProfessionals.includes(profId)
-    );
-  };
-
-  // Obter os serviços filtrados para exibição
-  const servicesToShow = getServicesByProfessional(service.professionalId);
+  // Obter os serviços filtrados para exibição usando a função do contexto
+  const servicesToShow = service.professionalId 
+    ? getServicesByProfessional(parseInt(service.professionalId))
+    : [];
 
   return (
     <div className="grid grid-cols-7 gap-4 p-4 bg-gray-50 rounded-lg items-end">
