@@ -1,4 +1,3 @@
-
 export interface ServiceItem {
   id: string;
   serviceId: string;
@@ -6,6 +5,7 @@ export interface ServiceItem {
   startTime: string;
   endTime: string;
   price: string;
+  duration?: string;
 }
 
 export interface AppointmentFormData {

@@ -34,6 +34,9 @@ const ServiceRow = ({
     if (selectedService) {
       onUpdateService(service.id, 'price', selectedService.price.toString());
       
+      // Update duration field with the service's default duration
+      onUpdateService(service.id, 'duration', selectedService.duration.toString());
+      
       // Update end time based on duration if start time exists
       if (service.startTime) {
         const endTime = calculateServiceEndTime(service.startTime, selectedService.duration);
@@ -42,9 +45,14 @@ const ServiceRow = ({
     }
   };
 
-  const handleDurationChange = (duration: number) => {
+  const handleDurationChange = (newDuration: string) => {
+    const duration = parseInt(newDuration) || 0;
     console.log('Changing duration for service:', service.id, 'to:', duration);
-    if (service.startTime) {
+    
+    // Update duration in service state
+    onUpdateService(service.id, 'duration', duration.toString());
+    
+    if (service.startTime && duration > 0) {
       const endTime = calculateServiceEndTime(service.startTime, duration);
       console.log('Calculated end time:', endTime);
       onUpdateService(service.id, 'endTime', endTime);
@@ -54,10 +62,10 @@ const ServiceRow = ({
   const handleTimeChange = (field: 'startTime' | 'endTime', value: string) => {
     onUpdateService(service.id, field, value);
     
-    if (field === 'startTime' && service.serviceId) {
-      const selectedService = availableServices.find(s => s.id.toString() === service.serviceId);
-      if (selectedService) {
-        const endTime = calculateServiceEndTime(value, selectedService.duration);
+    if (field === 'startTime' && service.duration) {
+      const duration = parseInt(service.duration) || 0;
+      if (duration > 0) {
+        const endTime = calculateServiceEndTime(value, duration);
         onUpdateService(service.id, 'endTime', endTime);
       }
     }
@@ -70,9 +78,18 @@ const ServiceRow = ({
     );
   };
 
-  const getServiceDuration = (serviceId: string) => {
-    const selectedService = availableServices.find(s => s.id.toString() === serviceId);
-    return selectedService ? selectedService.duration : 0;
+  const getCurrentDuration = () => {
+    // Return the stored duration or the default service duration
+    if (service.duration) {
+      return service.duration;
+    }
+    
+    if (service.serviceId) {
+      const selectedService = availableServices.find(s => s.id.toString() === service.serviceId);
+      return selectedService ? selectedService.duration.toString() : "";
+    }
+    
+    return "";
   };
 
   return (
@@ -120,9 +137,9 @@ const ServiceRow = ({
         <div className="relative">
           <Input 
             type="number"
-            value={service.serviceId ? getServiceDuration(service.serviceId) : ""} 
+            value={getCurrentDuration()} 
             onChange={(e) => {
-              const newDuration = parseInt(e.target.value) || 0;
+              const newDuration = e.target.value;
               console.log('Duration input changed:', newDuration);
               handleDurationChange(newDuration);
             }}

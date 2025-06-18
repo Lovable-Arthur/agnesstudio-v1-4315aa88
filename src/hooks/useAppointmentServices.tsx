@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useServices } from "@/contexts/ServicesContext";
 import { ServiceItem } from "@/types/appointment";
@@ -29,7 +30,8 @@ export const useAppointmentServices = (selectedProfessionalId: number) => {
       professionalId: selectedProfessionalId.toString(),
       startTime: defaultStartTime,
       endTime: "",
-      price: ""
+      price: "",
+      duration: ""
     };
     
     setServices(prev => [...prev, newService]);
@@ -53,7 +55,7 @@ export const useAppointmentServices = (selectedProfessionalId: number) => {
           
           setServices(prev => prev.map(s => 
             s.id === serviceId 
-              ? { ...s, endTime, price: service.price.toString() }
+              ? { ...s, endTime, price: service.price.toString(), duration: service.duration.toString() }
               : s
           ));
         }
