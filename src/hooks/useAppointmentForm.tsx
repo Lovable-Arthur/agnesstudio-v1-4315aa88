@@ -16,41 +16,9 @@ export const useAppointmentForm = ({
 }: UseAppointmentFormProps) => {
   const { professionals } = useProfessionals();
   
-  const {
-    clientName,
-    setClientName,
-    selectedService,
-    setSelectedService,
-    selectedProfessionalId,
-    setSelectedProfessionalId,
-    startTime,
-    setStartTime,
-    endTime,
-    setEndTime,
-    price,
-    setPrice,
-    duration,
-    setDuration,
-    customLabels,
-    setCustomLabels,
-    newLabel,
-    setNewLabel,
-    observations,
-    setObservations,
-    resetState
-  } = useAppointmentFormState(initialTimeSlot, initialProfessionalId);
-
-  const {
-    services,
-    availableServices,
-    handleAddService,
-    handleRemoveLastService,
-    handleUpdateService,
-    handleRemoveService,
-    calculateTotalPrice,
-    resetServices
-  } = useAppointmentServices(selectedProfessionalId);
-
+  const formState = useAppointmentFormState(initialTimeSlot, initialProfessionalId);
+  const appointmentServices = useAppointmentServices(formState.selectedProfessionalId);
+  
   const {
     handleServiceChange,
     handleProfessionalChange,
@@ -58,76 +26,42 @@ export const useAppointmentForm = ({
     handleStartTimeChange,
     handleSave
   } = useAppointmentFormActions({
-    selectedProfessionalId,
-    selectedService,
-    setSelectedService,
-    setPrice,
-    setDuration,
-    setEndTime,
-    setSelectedProfessionalId,
-    startTime,
-    clientName,
-    endTime,
-    duration,
-    price,
+    ...formState,
+    ...appointmentServices,
     selectedDate,
-    customLabels,
-    observations,
-    services,
-    availableServices,
     onAddAppointment
   });
 
-  const { isFormValid } = useAppointmentFormValidation(clientName, selectedService, services);
+  const { isFormValid } = useAppointmentFormValidation(
+    formState.clientName, 
+    formState.selectedService, 
+    appointmentServices.services
+  );
   
-  const selectedProfessional = professionals.find(p => p.id === selectedProfessionalId);
+  const selectedProfessional = professionals.find(p => p.id === formState.selectedProfessionalId);
 
-  // Recalcula o horário de fim quando a duração ou horário de início mudam
   useEffect(() => {
-    if (startTime && duration > 0) {
-      const newEndTime = calculateServiceEndTime(startTime, duration);
-      setEndTime(newEndTime);
+    if (formState.startTime && formState.duration > 0) {
+      const newEndTime = calculateServiceEndTime(formState.startTime, formState.duration);
+      formState.setEndTime(newEndTime);
     }
-  }, [startTime, duration, setEndTime]);
+  }, [formState.startTime, formState.duration, formState.setEndTime]);
 
   const resetForm = () => {
-    resetState();
-    resetServices();
+    formState.resetState();
+    appointmentServices.resetServices();
   };
 
   return {
-    // State
-    clientName,
-    setClientName,
-    selectedService,
+    ...formState,
+    ...appointmentServices,
     selectedProfessional,
-    selectedProfessionalId,
-    startTime,
-    setStartTime,
-    endTime,
-    setEndTime,
-    price,
-    setPrice,
-    duration,
-    services,
-    customLabels,
-    setCustomLabels,
-    newLabel,
-    setNewLabel,
-    observations,
-    setObservations,
-    availableServices,
-    
-    // Actions
     handleServiceChange,
     handleProfessionalChange,
     handleDurationChange,
-    handleStartTimeChange: setStartTime,
-    handleAddService: () => handleAddService(startTime, endTime),
-    handleRemoveService,
-    handleRemoveLastService,
-    handleUpdateService,
-    calculateTotalPrice: () => calculateTotalPrice(price),
+    handleStartTimeChange: formState.setStartTime,
+    handleAddService: () => appointmentServices.handleAddService(formState.startTime, formState.endTime),
+    calculateTotalPrice: () => appointmentServices.calculateTotalPrice(formState.price),
     resetForm,
     handleSave,
     isFormValid

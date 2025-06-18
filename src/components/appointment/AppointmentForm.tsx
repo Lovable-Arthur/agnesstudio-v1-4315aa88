@@ -1,3 +1,4 @@
+
 import React from "react";
 import AppointmentFormHeader from "./AppointmentFormHeader";
 import ClientSection from "./ClientSection";
@@ -55,7 +56,8 @@ const AppointmentForm = ({
     calculateTotalPrice,
     resetForm,
     handleSave,
-    isFormValid
+    isFormValid,
+    getDurationForService
   } = useAppointmentForm({
     initialTimeSlot: timeSlot,
     initialProfessionalId: professionalId,
@@ -112,6 +114,7 @@ const AppointmentForm = ({
         onRemoveLastService={handleRemoveLastService}
         onUpdateService={handleUpdateService}
         canAddService={true}
+        getDurationForService={getDurationForService}
       />
 
       <LabelsSection

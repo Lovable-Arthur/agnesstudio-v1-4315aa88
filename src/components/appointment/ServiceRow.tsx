@@ -6,56 +6,39 @@ import { Service } from "@/contexts/ServicesContext";
 import { ServiceItem } from "@/types/appointment";
 import { calculateServiceEndTime } from "@/utils/appointmentUtils";
 import { useServices } from "@/contexts/ServicesContext";
+import { useProfessionals } from "@/contexts/ProfessionalsContext";
 import ServiceSelect from "./ServiceSelect";
 import ProfessionalSelect from "./ProfessionalSelect";
 import DurationInput from "./DurationInput";
 import TimeInput from "./TimeInput";
 import PriceInput from "./PriceInput";
-import { useProfessionals } from "@/contexts/ProfessionalsContext";
 
 interface ServiceRowProps {
   service: ServiceItem;
   availableServices: Service[];
   onRemoveService: (serviceId: string) => void;
   onUpdateService: (serviceId: string, field: keyof ServiceItem, value: string) => void;
+  getDurationForService?: (service: ServiceItem) => string;
 }
 
 const ServiceRow = ({
   service,
   availableServices,
   onRemoveService,
-  onUpdateService
+  onUpdateService,
+  getDurationForService
 }: ServiceRowProps) => {
   const { professionals } = useProfessionals();
   const { getServicesByProfessional } = useServices();
 
   const handleServiceChange = (selectedServiceId: string) => {
     onUpdateService(service.id, 'serviceId', selectedServiceId);
-    
-    // Update price and duration when service changes
-    const selectedService = availableServices.find(s => s.id.toString() === selectedServiceId);
-    if (selectedService) {
-      console.log('Service selected:', selectedService.name, 'Duration:', selectedService.duration);
-      
-      // Update price
-      onUpdateService(service.id, 'price', selectedService.price.toString());
-      
-      // Update duration - ensure it's stored as string
-      onUpdateService(service.id, 'duration', selectedService.duration.toString());
-      
-      // Update end time based on duration if start time exists
-      if (service.startTime) {
-        const endTime = calculateServiceEndTime(service.startTime, selectedService.duration);
-        onUpdateService(service.id, 'endTime', endTime);
-      }
-    }
   };
 
   const handleDurationChange = (newDuration: string) => {
     const duration = parseInt(newDuration) || 0;
     console.log('Changing duration for service:', service.id, 'to:', duration);
     
-    // Update duration in service state
     onUpdateService(service.id, 'duration', duration.toString());
     
     if (service.startTime && duration > 0) {
@@ -78,14 +61,16 @@ const ServiceRow = ({
   };
 
   const getCurrentDuration = () => {
+    if (getDurationForService) {
+      return getDurationForService(service);
+    }
+    
     console.log('Getting current duration for service:', service.id, 'stored duration:', service.duration, 'serviceId:', service.serviceId);
     
-    // First priority: use the stored duration if it exists
     if (service.duration) {
       return service.duration;
     }
     
-    // Second priority: if a service is selected, use its default duration
     if (service.serviceId) {
       const selectedService = availableServices.find(s => s.id.toString() === service.serviceId);
       if (selectedService) {
@@ -98,8 +83,6 @@ const ServiceRow = ({
   };
 
   const selectedProfessional = professionals.find(p => p.id.toString() === service.professionalId);
-
-  // Obter os serviços filtrados para exibição usando a função do contexto
   const servicesToShow = service.professionalId 
     ? getServicesByProfessional(parseInt(service.professionalId))
     : [];

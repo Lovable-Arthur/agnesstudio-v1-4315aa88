@@ -13,6 +13,7 @@ interface MultipleServicesSectionProps {
   onRemoveLastService: () => void;
   onUpdateService: (serviceId: string, field: keyof ServiceItem, value: string) => void;
   canAddService: boolean;
+  getDurationForService?: (service: ServiceItem) => string;
 }
 
 const MultipleServicesSection = ({
@@ -22,7 +23,8 @@ const MultipleServicesSection = ({
   onRemoveService,
   onRemoveLastService,
   onUpdateService,
-  canAddService
+  canAddService,
+  getDurationForService
 }: MultipleServicesSectionProps) => {
   return (
     <div className="space-y-4">
@@ -35,6 +37,7 @@ const MultipleServicesSection = ({
               availableServices={availableServices}
               onRemoveService={onRemoveService}
               onUpdateService={onUpdateService}
+              getDurationForService={getDurationForService}
             />
           ))}
         </div>
