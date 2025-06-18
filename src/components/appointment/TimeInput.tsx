@@ -2,7 +2,6 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Clock } from "lucide-react";
 
 interface TimeInputProps {
   label: string;
@@ -26,9 +25,8 @@ const TimeInput = ({
           value={value}
           onChange={onChange ? (e) => onChange(e.target.value) : undefined}
           readOnly={readOnly}
-          className="h-8 pr-8"
+          className="h-8"
         />
-        <Clock className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
       </div>
     </div>
   );
