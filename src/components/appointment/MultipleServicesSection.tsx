@@ -50,9 +50,11 @@ const MultipleServicesSection = ({
   };
 
   const handleDurationChange = (serviceId: string, duration: number) => {
+    console.log('Changing duration for service:', serviceId, 'to:', duration);
     const serviceItem = services.find(s => s.id === serviceId);
     if (serviceItem && serviceItem.startTime) {
       const endTime = calculateServiceEndTime(serviceItem.startTime, duration);
+      console.log('Calculated end time:', endTime);
       onUpdateService(serviceId, 'endTime', endTime);
     }
   };
@@ -134,7 +136,11 @@ const MultipleServicesSection = ({
                   <Input 
                     type="number"
                     value={service.serviceId ? getServiceDuration(service.serviceId) : ""} 
-                    onChange={(e) => handleDurationChange(service.id, parseInt(e.target.value) || 0)}
+                    onChange={(e) => {
+                      const newDuration = parseInt(e.target.value) || 0;
+                      console.log('Duration input changed:', newDuration);
+                      handleDurationChange(service.id, newDuration);
+                    }}
                     className="h-8 pr-8"
                     placeholder="0"
                   />
