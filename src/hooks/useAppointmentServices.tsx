@@ -55,29 +55,28 @@ export const useAppointmentServices = (selectedProfessionalId: number) => {
     if (field === 'serviceId') {
       const selectedService = availableServices.find(s => s.id.toString() === value);
       if (selectedService) {
+        console.log('Found selected service:', selectedService.name, 'duration:', selectedService.duration);
+        
+        setServices(prev => prev.map(s => 
+          s.id === serviceId 
+            ? { 
+                ...s, 
+                serviceId: value,
+                price: selectedService.price.toString(), 
+                duration: selectedService.duration.toString()
+              }
+            : s
+        ));
+
+        // Calculate end time if start time exists
         const serviceItem = services.find(s => s.id === serviceId);
         if (serviceItem && serviceItem.startTime) {
           const endTime = calculateServiceEndTime(serviceItem.startTime, selectedService.duration);
+          console.log('Calculated end time for service:', endTime);
           
           setServices(prev => prev.map(s => 
             s.id === serviceId 
-              ? { 
-                  ...s, 
-                  endTime, 
-                  price: selectedService.price.toString(), 
-                  duration: selectedService.duration.toString() 
-                }
-              : s
-          ));
-        } else {
-          // Se não há startTime ainda, apenas atualizar preço e duração
-          setServices(prev => prev.map(s => 
-            s.id === serviceId 
-              ? { 
-                  ...s, 
-                  price: selectedService.price.toString(), 
-                  duration: selectedService.duration.toString() 
-                }
+              ? { ...s, endTime }
               : s
           ));
         }

@@ -32,12 +32,15 @@ const ServiceRow = ({
   const handleServiceChange = (selectedServiceId: string) => {
     onUpdateService(service.id, 'serviceId', selectedServiceId);
     
-    // Update price when service changes
+    // Update price and duration when service changes
     const selectedService = availableServices.find(s => s.id.toString() === selectedServiceId);
     if (selectedService) {
+      console.log('Service selected:', selectedService.name, 'Duration:', selectedService.duration);
+      
+      // Update price
       onUpdateService(service.id, 'price', selectedService.price.toString());
       
-      // Update duration field with the service's default duration
+      // Update duration - ensure it's stored as string
       onUpdateService(service.id, 'duration', selectedService.duration.toString());
       
       // Update end time based on duration if start time exists
@@ -75,14 +78,20 @@ const ServiceRow = ({
   };
 
   const getCurrentDuration = () => {
-    // Return the stored duration or the default service duration
+    console.log('Getting current duration for service:', service.id, 'stored duration:', service.duration, 'serviceId:', service.serviceId);
+    
+    // First priority: use the stored duration if it exists
     if (service.duration) {
       return service.duration;
     }
     
+    // Second priority: if a service is selected, use its default duration
     if (service.serviceId) {
       const selectedService = availableServices.find(s => s.id.toString() === service.serviceId);
-      return selectedService ? selectedService.duration.toString() : "";
+      if (selectedService) {
+        console.log('Using service default duration:', selectedService.duration);
+        return selectedService.duration.toString();
+      }
     }
     
     return "";
