@@ -28,10 +28,20 @@ const ServiceSelect = ({
     console.log("Adicionar novo serviço");
   };
 
+  const handleServiceSelect = (serviceId: string) => {
+    console.log('ServiceSelect: Service selected:', serviceId);
+    onServiceChange(serviceId);
+  };
+
+  const selectedServiceData = availableServices.find(s => s.id.toString() === selectedService);
+
+  console.log('ServiceSelect: Rendering with', availableServices.length, 'available services');
+  console.log('ServiceSelect: Selected service:', selectedService, 'found:', !!selectedServiceData);
+
   return (
     <div className="space-y-2">
       <Label className="text-xs font-medium text-gray-700">Serviço</Label>
-      <Select value={selectedService} onValueChange={onServiceChange}>
+      <Select value={selectedService} onValueChange={handleServiceSelect}>
         <SelectTrigger className="h-8">
           <SelectValue placeholder="Selecionar" />
         </SelectTrigger>
@@ -60,7 +70,12 @@ const ServiceSelect = ({
           {filteredServices.length > 0 ? (
             filteredServices.map((service) => (
               <SelectItem key={service.id} value={service.id.toString()}>
-                {service.name}
+                <div className="flex justify-between items-center w-full">
+                  <span>{service.name}</span>
+                  <span className="text-xs text-muted-foreground ml-2">
+                    R$ {service.price} • {service.duration}min
+                  </span>
+                </div>
               </SelectItem>
             ))
           ) : (

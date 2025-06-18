@@ -2,6 +2,7 @@
 import { useServices } from "@/contexts/ServicesContext";
 import { useServiceManagement } from "./useServiceManagement";
 import { useServiceSelection } from "./useServiceSelection";
+import { ServiceItem } from "@/types/appointment";
 
 export const useAppointmentServices = (selectedProfessionalId: number) => {
   const { getServicesByProfessional, getActiveServices } = useServices();
@@ -27,6 +28,7 @@ export const useAppointmentServices = (selectedProfessionalId: number) => {
   } = useServiceSelection({ 
     availableServices,
     onServiceUpdate: (serviceId, updates) => {
+      console.log('Updating service in useAppointmentServices:', serviceId, updates);
       updateService(serviceId, updates);
       
       if (updates.serviceId) {
@@ -43,6 +45,8 @@ export const useAppointmentServices = (selectedProfessionalId: number) => {
   });
 
   const handleUpdateService = (serviceId: string, field: keyof ServiceItem, value: string) => {
+    console.log('handleUpdateService called:', serviceId, field, value);
+    
     if (field === 'serviceId') {
       handleServiceChange(serviceId, value);
     } else {

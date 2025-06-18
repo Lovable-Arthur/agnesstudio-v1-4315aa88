@@ -17,7 +17,10 @@ export const useServiceSelection = ({
   const handleServiceChange = useCallback((serviceId: string, selectedServiceId: string) => {
     const selectedService = availableServices.find(s => s.id.toString() === selectedServiceId);
     
-    if (!selectedService) return;
+    if (!selectedService) {
+      console.log('Service not found:', selectedServiceId);
+      return;
+    }
 
     console.log('Service selected:', selectedService.name, 'Duration:', selectedService.duration);
     
@@ -41,10 +44,13 @@ export const useServiceSelection = ({
   const getDurationForService = useCallback((serviceItem: ServiceItem): string => {
     console.log('Getting duration for service:', serviceItem.id, 'stored:', serviceItem.duration, 'serviceId:', serviceItem.serviceId);
     
+    // Prioriza a duração armazenada no serviceItem
     if (serviceItem.duration) {
+      console.log('Using stored duration:', serviceItem.duration);
       return serviceItem.duration;
     }
     
+    // Se não tem duração mas tem serviceId, busca na lista de serviços
     if (serviceItem.serviceId) {
       const selectedService = availableServices.find(s => s.id.toString() === serviceItem.serviceId);
       if (selectedService) {
@@ -53,6 +59,7 @@ export const useServiceSelection = ({
       }
     }
     
+    console.log('No duration found, returning empty');
     return "";
   }, [availableServices]);
 

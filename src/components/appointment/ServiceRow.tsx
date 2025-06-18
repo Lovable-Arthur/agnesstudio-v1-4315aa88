@@ -32,18 +32,19 @@ const ServiceRow = ({
   const { getServicesByProfessional } = useServices();
 
   const handleServiceChange = (selectedServiceId: string) => {
+    console.log('ServiceRow: handleServiceChange called with:', selectedServiceId);
     onUpdateService(service.id, 'serviceId', selectedServiceId);
   };
 
   const handleDurationChange = (newDuration: string) => {
     const duration = parseInt(newDuration) || 0;
-    console.log('Changing duration for service:', service.id, 'to:', duration);
+    console.log('ServiceRow: Changing duration for service:', service.id, 'to:', duration);
     
     onUpdateService(service.id, 'duration', duration.toString());
     
     if (service.startTime && duration > 0) {
       const endTime = calculateServiceEndTime(service.startTime, duration);
-      console.log('Calculated end time:', endTime);
+      console.log('ServiceRow: Calculated end time:', endTime);
       onUpdateService(service.id, 'endTime', endTime);
     }
   };
@@ -62,10 +63,12 @@ const ServiceRow = ({
 
   const getCurrentDuration = () => {
     if (getDurationForService) {
-      return getDurationForService(service);
+      const duration = getDurationForService(service);
+      console.log('ServiceRow: getCurrentDuration from hook:', duration);
+      return duration;
     }
     
-    console.log('Getting current duration for service:', service.id, 'stored duration:', service.duration, 'serviceId:', service.serviceId);
+    console.log('ServiceRow: Getting current duration for service:', service.id, 'stored duration:', service.duration, 'serviceId:', service.serviceId);
     
     if (service.duration) {
       return service.duration;
@@ -74,7 +77,7 @@ const ServiceRow = ({
     if (service.serviceId) {
       const selectedService = availableServices.find(s => s.id.toString() === service.serviceId);
       if (selectedService) {
-        console.log('Using service default duration:', selectedService.duration);
+        console.log('ServiceRow: Using service default duration:', selectedService.duration);
         return selectedService.duration.toString();
       }
     }
@@ -85,7 +88,9 @@ const ServiceRow = ({
   const selectedProfessional = professionals.find(p => p.id.toString() === service.professionalId);
   const servicesToShow = service.professionalId 
     ? getServicesByProfessional(parseInt(service.professionalId))
-    : [];
+    : availableServices;
+
+  console.log('ServiceRow: Rendering with services:', servicesToShow.length, 'for professional:', service.professionalId);
 
   return (
     <div className="grid grid-cols-7 gap-4 p-4 bg-gray-50 rounded-lg items-end">
