@@ -5,10 +5,12 @@ import { calculateServiceEndTime } from "@/utils/appointmentUtils";
 
 export const useAppointmentServices = (selectedProfessionalId: number) => {
   const [services, setServices] = useState<ServiceItem[]>([]);
-  const { getActiveServices } = useServices();
+  const { getServicesByProfessional, getActiveServices } = useServices();
   
-  // Usar todos os serviços ativos em vez de filtrar por profissional
-  const availableServices = getActiveServices();
+  // Filtrar serviços por profissional quando há um profissional selecionado
+  const availableServices = selectedProfessionalId 
+    ? getServicesByProfessional(selectedProfessionalId)
+    : getActiveServices();
 
   const handleAddService = (startTime: string, mainServiceEndTime?: string) => {
     // Se já existem serviços, pegar o horário de fim do último serviço

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
 import { ServiceItem } from "@/types/appointment";
 import { calculateServiceEndTime } from "@/utils/appointmentUtils";
+import { useServices } from "@/contexts/ServicesContext";
 
 interface ServiceRowProps {
   service: ServiceItem;
@@ -23,6 +24,7 @@ const ServiceRow = ({
   onUpdateService
 }: ServiceRowProps) => {
   const { professionals } = useProfessionals();
+  const { getServicesByProfessional } = useServices();
   const availableProfessionals = professionals.filter(prof => prof.hasAgenda);
 
   const handleServiceChange = (selectedServiceId: string) => {
@@ -70,20 +72,6 @@ const ServiceRow = ({
     }
   };
 
-  const getServicesByProfessional = (professionalId: string) => {
-    // Se não há profissional selecionado, retorna lista vazia
-    if (!professionalId) return [];
-    
-    // Converte para número para comparação
-    const profId = parseInt(professionalId);
-    if (isNaN(profId)) return [];
-    
-    // Filtra serviços pelo profissional selecionado
-    return availableServices.filter(service => 
-      service.allowedProfessionals.includes(profId)
-    );
-  };
-
   const getCurrentDuration = () => {
     // Return the stored duration or the default service duration
     if (service.duration) {
@@ -96,6 +84,20 @@ const ServiceRow = ({
     }
     
     return "";
+  };
+
+  const getServicesByProfessional = (professionalId: string) => {
+    // Se não há profissional selecionado, retorna lista vazia
+    if (!professionalId) return [];
+    
+    // Converte para número para comparação
+    const profId = parseInt(professionalId);
+    if (isNaN(profId)) return [];
+    
+    // Filtra serviços pelo profissional selecionado
+    return availableServices.filter(service => 
+      service.allowedProfessionals.includes(profId)
+    );
   };
 
   // Obter os serviços filtrados para exibição
