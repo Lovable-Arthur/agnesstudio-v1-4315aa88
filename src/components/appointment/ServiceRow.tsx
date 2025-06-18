@@ -72,10 +72,20 @@ const ServiceRow = ({
   };
 
   const getServicesByProfessional = (professionalId: string) => {
+    // Se não há profissional selecionado, retorna todos os serviços disponíveis
     if (!professionalId) return availableServices;
-    return availableServices.filter(service => 
-      service.allowedProfessionals.includes(Number(professionalId))
+    
+    // Converte para número para comparação
+    const profId = parseInt(professionalId);
+    if (isNaN(profId)) return availableServices;
+    
+    // Filtra serviços pelo profissional selecionado
+    const filteredServices = availableServices.filter(service => 
+      service.allowedProfessionals.includes(profId)
     );
+    
+    // Se não encontrou serviços para este profissional, retorna todos os disponíveis
+    return filteredServices.length > 0 ? filteredServices : availableServices;
   };
 
   const getCurrentDuration = () => {
@@ -92,6 +102,9 @@ const ServiceRow = ({
     return "";
   };
 
+  // Obter os serviços filtrados para exibição
+  const servicesToShow = getServicesByProfessional(service.professionalId);
+
   return (
     <div className="grid grid-cols-7 gap-4 p-4 bg-gray-50 rounded-lg items-end">
       <div className="space-y-2">
@@ -104,11 +117,17 @@ const ServiceRow = ({
             <SelectValue placeholder="Selecionar" />
           </SelectTrigger>
           <SelectContent>
-            {getServicesByProfessional(service.professionalId).map((availableService) => (
-              <SelectItem key={availableService.id} value={availableService.id.toString()}>
-                {availableService.name}
-              </SelectItem>
-            ))}
+            {servicesToShow.length > 0 ? (
+              servicesToShow.map((availableService) => (
+                <SelectItem key={availableService.id} value={availableService.id.toString()}>
+                  {availableService.name}
+                </SelectItem>
+              ))
+            ) : (
+              <div className="p-2 text-sm text-muted-foreground text-center">
+                Nenhum serviço disponível
+              </div>
+            )}
           </SelectContent>
         </Select>
       </div>
