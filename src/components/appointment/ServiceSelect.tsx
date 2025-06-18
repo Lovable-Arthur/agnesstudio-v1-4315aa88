@@ -70,12 +70,7 @@ const ServiceSelect = ({
           {filteredServices.length > 0 ? (
             filteredServices.map((service) => (
               <SelectItem key={service.id} value={service.id.toString()}>
-                <div className="flex justify-between items-center w-full">
-                  <span>{service.name}</span>
-                  <span className="text-xs text-muted-foreground ml-2">
-                    R$ {service.price} • {service.duration}min
-                  </span>
-                </div>
+                {service.name}
               </SelectItem>
             ))
           ) : (

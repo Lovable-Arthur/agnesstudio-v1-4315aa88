@@ -68,9 +68,13 @@ const ServiceRow = ({
       return duration;
     }
     
-    console.log('ServiceRow: Getting current duration for service:', service.id, 'stored duration:', service.duration, 'serviceId:', service.serviceId);
+    console.log('ServiceRow: Getting current duration for service:', {
+      id: service.id,
+      storedDuration: service.duration,
+      serviceId: service.serviceId
+    });
     
-    if (service.duration) {
+    if (service.duration && service.duration !== "") {
       return service.duration;
     }
     
@@ -86,11 +90,19 @@ const ServiceRow = ({
   };
 
   const selectedProfessional = professionals.find(p => p.id.toString() === service.professionalId);
+  
+  // Use all available services if no professional is selected, or filter by professional
   const servicesToShow = service.professionalId 
     ? getServicesByProfessional(parseInt(service.professionalId))
     : availableServices;
 
   console.log('ServiceRow: Rendering with services:', servicesToShow.length, 'for professional:', service.professionalId);
+  console.log('ServiceRow: Service data:', {
+    id: service.id,
+    serviceId: service.serviceId,
+    duration: service.duration,
+    price: service.price
+  });
 
   return (
     <div className="grid grid-cols-7 gap-4 p-4 bg-gray-50 rounded-lg items-end">

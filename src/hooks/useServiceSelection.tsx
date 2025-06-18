@@ -15,14 +15,18 @@ export const useServiceSelection = ({
 }: UseServiceSelectionProps) => {
   
   const handleServiceChange = useCallback((serviceId: string, selectedServiceId: string) => {
+    console.log('useServiceSelection: handleServiceChange called:', { serviceId, selectedServiceId });
+    
+    // Buscar o serviço selecionado na lista de serviços disponíveis
     const selectedService = availableServices.find(s => s.id.toString() === selectedServiceId);
     
     if (!selectedService) {
-      console.log('Service not found:', selectedServiceId);
+      console.log('useServiceSelection: Service not found in available services:', selectedServiceId);
+      console.log('useServiceSelection: Available services:', availableServices.map(s => s.id));
       return;
     }
 
-    console.log('Service selected:', selectedService.name, 'Duration:', selectedService.duration);
+    console.log('useServiceSelection: Service found:', selectedService.name, 'Duration:', selectedService.duration, 'Price:', selectedService.price);
     
     const updates: Partial<ServiceItem> = {
       serviceId: selectedServiceId,
@@ -30,6 +34,7 @@ export const useServiceSelection = ({
       duration: selectedService.duration.toString()
     };
     
+    console.log('useServiceSelection: Updating service with:', updates);
     onServiceUpdate(serviceId, updates);
   }, [availableServices, onServiceUpdate]);
 
@@ -37,16 +42,20 @@ export const useServiceSelection = ({
     if (!serviceItem.startTime || duration <= 0) return "";
     
     const endTime = calculateServiceEndTime(serviceItem.startTime, duration);
-    console.log('Calculated end time for service:', endTime);
+    console.log('useServiceSelection: Calculated end time for service:', endTime);
     return endTime;
   }, []);
 
   const getDurationForService = useCallback((serviceItem: ServiceItem): string => {
-    console.log('Getting duration for service:', serviceItem.id, 'stored:', serviceItem.duration, 'serviceId:', serviceItem.serviceId);
+    console.log('useServiceSelection: Getting duration for service:', {
+      id: serviceItem.id,
+      serviceId: serviceItem.serviceId,
+      storedDuration: serviceItem.duration
+    });
     
     // Prioriza a duração armazenada no serviceItem
-    if (serviceItem.duration) {
-      console.log('Using stored duration:', serviceItem.duration);
+    if (serviceItem.duration && serviceItem.duration !== "") {
+      console.log('useServiceSelection: Using stored duration:', serviceItem.duration);
       return serviceItem.duration;
     }
     
@@ -54,12 +63,12 @@ export const useServiceSelection = ({
     if (serviceItem.serviceId) {
       const selectedService = availableServices.find(s => s.id.toString() === serviceItem.serviceId);
       if (selectedService) {
-        console.log('Using service default duration:', selectedService.duration);
+        console.log('useServiceSelection: Using service default duration:', selectedService.duration);
         return selectedService.duration.toString();
       }
     }
     
-    console.log('No duration found, returning empty');
+    console.log('useServiceSelection: No duration found, returning empty');
     return "";
   }, [availableServices]);
 
