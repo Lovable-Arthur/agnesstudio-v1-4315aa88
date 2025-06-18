@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useServices } from "@/contexts/ServicesContext";
 import { ServiceItem } from "@/types/appointment";
@@ -44,20 +45,39 @@ export const useAppointmentServices = (selectedProfessionalId: number) => {
   };
 
   const handleUpdateService = (serviceId: string, field: keyof ServiceItem, value: string) => {
+    console.log('Updating service:', serviceId, 'field:', field, 'value:', value);
+    
     setServices(prev => prev.map(service => 
       service.id === serviceId ? { ...service, [field]: value } : service
     ));
 
+    // Se o serviço foi alterado, atualizar preço, duração e horário de fim
     if (field === 'serviceId') {
-      const service = availableServices.find(s => s.id.toString() === value);
-      if (service) {
+      const selectedService = availableServices.find(s => s.id.toString() === value);
+      if (selectedService) {
         const serviceItem = services.find(s => s.id === serviceId);
         if (serviceItem && serviceItem.startTime) {
-          const endTime = calculateServiceEndTime(serviceItem.startTime, service.duration);
+          const endTime = calculateServiceEndTime(serviceItem.startTime, selectedService.duration);
           
           setServices(prev => prev.map(s => 
             s.id === serviceId 
-              ? { ...s, endTime, price: service.price.toString(), duration: service.duration.toString() }
+              ? { 
+                  ...s, 
+                  endTime, 
+                  price: selectedService.price.toString(), 
+                  duration: selectedService.duration.toString() 
+                }
+              : s
+          ));
+        } else {
+          // Se não há startTime ainda, apenas atualizar preço e duração
+          setServices(prev => prev.map(s => 
+            s.id === serviceId 
+              ? { 
+                  ...s, 
+                  price: selectedService.price.toString(), 
+                  duration: selectedService.duration.toString() 
+                }
               : s
           ));
         }
