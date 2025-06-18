@@ -3,13 +3,15 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { Service } from "@/contexts/ServicesContext";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useProfessionals } from "@/contexts/ProfessionalsContext";
 import { ServiceItem } from "@/types/appointment";
 import { calculateServiceEndTime } from "@/utils/appointmentUtils";
 import { useServices } from "@/contexts/ServicesContext";
+import ServiceSelect from "./ServiceSelect";
+import ProfessionalSelect from "./ProfessionalSelect";
+import DurationInput from "./DurationInput";
+import TimeInput from "./TimeInput";
+import PriceInput from "./PriceInput";
+import { useProfessionals } from "@/contexts/ProfessionalsContext";
 
 interface ServiceRowProps {
   service: ServiceItem;
@@ -26,7 +28,6 @@ const ServiceRow = ({
 }: ServiceRowProps) => {
   const { professionals } = useProfessionals();
   const { getServicesByProfessional } = useServices();
-  const availableProfessionals = professionals.filter(prof => prof.hasAgenda);
 
   const handleServiceChange = (selectedServiceId: string) => {
     onUpdateService(service.id, 'serviceId', selectedServiceId);
@@ -87,6 +88,8 @@ const ServiceRow = ({
     return "";
   };
 
+  const selectedProfessional = professionals.find(p => p.id.toString() === service.professionalId);
+
   // Obter os serviços filtrados para exibição usando a função do contexto
   const servicesToShow = service.professionalId 
     ? getServicesByProfessional(parseInt(service.professionalId))
@@ -94,97 +97,39 @@ const ServiceRow = ({
 
   return (
     <div className="grid grid-cols-7 gap-4 p-4 bg-gray-50 rounded-lg items-end">
-      <div className="space-y-2">
-        <Label className="text-xs font-medium text-gray-700">Serviço</Label>
-        <Select 
-          value={service.serviceId} 
-          onValueChange={handleServiceChange}
-        >
-          <SelectTrigger className="h-8">
-            <SelectValue placeholder="Selecionar" />
-          </SelectTrigger>
-          <SelectContent>
-            {servicesToShow.length > 0 ? (
-              servicesToShow.map((availableService) => (
-                <SelectItem key={availableService.id} value={availableService.id.toString()}>
-                  {availableService.name}
-                </SelectItem>
-              ))
-            ) : (
-              <div className="p-2 text-sm text-muted-foreground text-center">
-                {service.professionalId ? "Nenhum serviço disponível para este profissional" : "Selecione um profissional primeiro"}
-              </div>
-            )}
-          </SelectContent>
-        </Select>
-      </div>
+      <ServiceSelect
+        selectedService={service.serviceId}
+        onServiceChange={handleServiceChange}
+        availableServices={servicesToShow}
+        professionalId={service.professionalId}
+      />
 
-      <div className="space-y-2">
-        <Label className="text-xs font-medium text-gray-700">Profissional</Label>
-        <Select 
-          value={service.professionalId} 
-          onValueChange={(value) => onUpdateService(service.id, 'professionalId', value)}
-        >
-          <SelectTrigger className="h-8">
-            <SelectValue placeholder="Selecionar" />
-          </SelectTrigger>
-          <SelectContent>
-            {availableProfessionals.map((professional) => (
-              <SelectItem key={professional.id} value={professional.id.toString()}>
-                {professional.socialName || professional.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <ProfessionalSelect
+        selectedProfessional={selectedProfessional}
+        onProfessionalChange={(professionalId) => onUpdateService(service.id, 'professionalId', professionalId.toString())}
+      />
 
-      <div className="space-y-2">
-        <Label className="text-xs font-medium text-gray-700">Tempo</Label>
-        <div className="relative">
-          <Input 
-            type="number"
-            value={getCurrentDuration()} 
-            onChange={(e) => {
-              const newDuration = e.target.value;
-              console.log('Duration input changed:', newDuration);
-              handleDurationChange(newDuration);
-            }}
-            className="h-8 pr-8"
-            placeholder="0"
-          />
-          <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">min</span>
-        </div>
-      </div>
+      <DurationInput
+        value={getCurrentDuration()}
+        onChange={handleDurationChange}
+      />
 
-      <div className="space-y-2">
-        <Label className="text-xs font-medium text-gray-700">Início</Label>
-        <Input 
-          type="time" 
-          value={service.startTime} 
-          onChange={(e) => handleTimeChange('startTime', e.target.value)}
-          className="h-8"
-        />
-      </div>
+      <TimeInput
+        label="Início"
+        value={service.startTime}
+        onChange={(value) => handleTimeChange('startTime', value)}
+      />
 
-      <div className="space-y-2">
-        <Label className="text-xs font-medium text-gray-700">Fim</Label>
-        <Input 
-          type="time" 
-          value={service.endTime} 
-          onChange={(e) => handleTimeChange('endTime', e.target.value)}
-          className="h-8"
-        />
-      </div>
+      <TimeInput
+        label="Fim"
+        value={service.endTime}
+        onChange={(value) => handleTimeChange('endTime', value)}
+      />
 
-      <div className="space-y-2">
-        <Label className="text-xs font-medium text-gray-700">Valor (R$)</Label>
-        <Input 
-          type="number" 
-          value={service.price} 
-          onChange={(e) => onUpdateService(service.id, 'price', e.target.value)}
-          className="h-8"
-        />
-      </div>
+      <PriceInput
+        value={service.price}
+        onChange={(value) => onUpdateService(service.id, 'price', value)}
+      />
 
       <div className="flex justify-center items-end h-full pb-1">
         <Button
