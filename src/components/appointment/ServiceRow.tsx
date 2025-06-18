@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -72,20 +71,17 @@ const ServiceRow = ({
   };
 
   const getServicesByProfessional = (professionalId: string) => {
-    // Se não há profissional selecionado, retorna todos os serviços disponíveis
-    if (!professionalId) return availableServices;
+    // Se não há profissional selecionado, retorna lista vazia
+    if (!professionalId) return [];
     
     // Converte para número para comparação
     const profId = parseInt(professionalId);
-    if (isNaN(profId)) return availableServices;
+    if (isNaN(profId)) return [];
     
     // Filtra serviços pelo profissional selecionado
-    const filteredServices = availableServices.filter(service => 
+    return availableServices.filter(service => 
       service.allowedProfessionals.includes(profId)
     );
-    
-    // Se não encontrou serviços para este profissional, retorna todos os disponíveis
-    return filteredServices.length > 0 ? filteredServices : availableServices;
   };
 
   const getCurrentDuration = () => {
@@ -125,7 +121,7 @@ const ServiceRow = ({
               ))
             ) : (
               <div className="p-2 text-sm text-muted-foreground text-center">
-                Nenhum serviço disponível
+                {service.professionalId ? "Nenhum serviço disponível para este profissional" : "Selecione um profissional primeiro"}
               </div>
             )}
           </SelectContent>
