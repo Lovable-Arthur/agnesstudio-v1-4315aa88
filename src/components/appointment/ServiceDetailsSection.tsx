@@ -18,6 +18,7 @@ interface ServiceDetailsSectionProps {
   startTime: string;
   setStartTime: (time: string) => void;
   endTime: string;
+  setEndTime: (time: string) => void;
   price: string;
   setPrice: (price: string) => void;
 }
@@ -31,6 +32,7 @@ const ServiceDetailsSection = ({
   startTime,
   setStartTime,
   endTime,
+  setEndTime,
   price,
   setPrice
 }: ServiceDetailsSectionProps) => {
@@ -65,7 +67,7 @@ const ServiceDetailsSection = ({
       <TimeInput
         label="Fim"
         value={endTime}
-        readOnly
+        onChange={setEndTime}
       />
 
       <PriceInput

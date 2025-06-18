@@ -136,6 +136,7 @@ export const useAppointmentForm = ({
     startTime,
     setStartTime,
     endTime,
+    setEndTime,
     price,
     setPrice,
     services,

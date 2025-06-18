@@ -33,6 +33,7 @@ const AppointmentForm = ({
     startTime,
     setStartTime,
     endTime,
+    setEndTime,
     price,
     setPrice,
     services,
@@ -93,6 +94,7 @@ const AppointmentForm = ({
         startTime={startTime}
         setStartTime={setStartTime}
         endTime={endTime}
+        setEndTime={setEndTime}
         price={price}
         setPrice={setPrice}
       />
