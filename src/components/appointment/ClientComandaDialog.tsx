@@ -9,7 +9,15 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
 import { Appointment } from "@/types/calendar";
 import { getStatusColor } from "@/utils/styleUtils";
@@ -35,7 +43,10 @@ const ClientComandaDialog = ({
       const professionalAppointments = professional.appointments.filter(
         appointment => appointment.clientName === clientName
       );
-      allAppointments.push(...professionalAppointments);
+      allAppointments.push(...professionalAppointments.map(apt => ({
+        ...apt,
+        professionalName: professional.name
+      })));
     });
 
     // Ordenar por data e horário
@@ -61,106 +72,160 @@ const ClientComandaDialog = ({
   };
 
   const calculateTotal = () => {
-    // Aqui você pode implementar a lógica para calcular o total
-    // Por enquanto, vamos simular um cálculo básico
-    return clientAppointments.length * 50; // Exemplo: R$ 50 por serviço
+    // Simulação de cálculo - você pode implementar a lógica real aqui
+    return clientAppointments.length * 50;
+  };
+
+  const getComandaNumber = () => {
+    return Math.floor(Math.random() * 9000) + 1000; // Simula um número de comanda
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] w-[95vw]">
-        <DialogHeader>
-          <DialogTitle>Comanda - {clientName}</DialogTitle>
-          <DialogDescription>
-            Histórico de agendamentos do cliente
-          </DialogDescription>
+      <DialogContent className="max-w-6xl max-h-[90vh] w-[95vw]">
+        <DialogHeader className="border-b pb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <DialogTitle className="text-xl font-bold text-blue-700">
+                Comanda {getComandaNumber()} - {clientName}
+              </DialogTitle>
+              <DialogDescription>
+                Histórico completo de agendamentos do cliente
+              </DialogDescription>
+            </div>
+            <Button onClick={onClose} variant="ghost" size="sm">
+              ✕
+            </Button>
+          </div>
         </DialogHeader>
         
-        <ScrollArea className="h-[70vh] pr-4">
-          <div className="space-y-4">
-            {clientAppointments.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                Nenhum agendamento encontrado para este cliente.
-              </div>
-            ) : (
-              <>
+        <div className="bg-gray-50 p-4 rounded-lg mb-4">
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <span className="text-sm font-medium text-gray-600">Cliente:</span>
+              <p className="font-semibold">{clientName}</p>
+            </div>
+            <div>
+              <span className="text-sm font-medium text-gray-600">Data da Comanda:</span>
+              <p className="font-semibold">{new Date().toLocaleDateString('pt-BR')}</p>
+            </div>
+            <div>
+              <span className="text-sm font-medium text-gray-600">Nº:</span>
+              <p className="font-semibold">{getComandaNumber()}</p>
+            </div>
+          </div>
+        </div>
+        
+        <ScrollArea className="h-[60vh]">
+          {clientAppointments.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              Nenhum agendamento encontrado para este cliente.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-100">
+                  <TableHead className="font-semibold">Item</TableHead>
+                  <TableHead className="font-semibold">Profissional</TableHead>
+                  <TableHead className="font-semibold">Data</TableHead>
+                  <TableHead className="font-semibold">Horário</TableHead>
+                  <TableHead className="font-semibold">Duração</TableHead>
+                  <TableHead className="font-semibold">Valor (R$)</TableHead>
+                  <TableHead className="font-semibold">Status</TableHead>
+                  <TableHead className="font-semibold">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {clientAppointments.map((appointment, index) => (
-                  <Card key={`${appointment.id}-${index}`} className="w-full">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">
-                          {appointment.service}
-                        </CardTitle>
-                        <Badge 
-                          className={`${getStatusColor(appointment.status)} text-white`}
-                        >
-                          {getStatusText(appointment.status)}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div>
-                          <span className="font-medium text-gray-600">Data:</span>
-                          <p>{formatDate(appointment.date)}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-600">Horário:</span>
-                          <p>{appointment.time}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-600">Duração:</span>
-                          <p>{appointment.duration}</p>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-600">ID:</span>
-                          <p>#{appointment.id}</p>
-                        </div>
-                      </div>
-                      
-                      {appointment.labels && appointment.labels.length > 0 && (
-                        <div className="mt-3">
-                          <span className="font-medium text-gray-600 text-sm">Etiquetas:</span>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {appointment.labels.map((label, labelIndex) => (
+                  <TableRow key={`${appointment.id}-${index}`} className="hover:bg-gray-50">
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{appointment.service}</p>
+                        {appointment.labels && appointment.labels.length > 0 && (
+                          <div className="flex gap-1 mt-1">
+                            {appointment.labels.slice(0, 2).map((label, labelIndex) => (
                               <Badge key={labelIndex} variant="secondary" className="text-xs">
                                 {label}
                               </Badge>
                             ))}
                           </div>
-                        </div>
-                      )}
-                      
-                      {appointment.observations && (
-                        <div className="mt-3">
-                          <span className="font-medium text-gray-600 text-sm">Observações:</span>
-                          <p className="text-sm mt-1 text-gray-700">{appointment.observations}</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">{appointment.professionalName || 'N/A'}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">{formatDate(appointment.date)}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">{appointment.time}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">{appointment.duration}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm font-medium">50,00</span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
+                        className={`${getStatusColor(appointment.status)} text-white text-xs`}
+                      >
+                        {getStatusText(appointment.status)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-blue-600">
+                          ✏️
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-red-600">
+                          🗑️
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
                 ))}
-
-                <Card className="bg-gray-50 border-2 border-dashed">
-                  <CardContent className="pt-6">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="font-semibold text-lg">Total de Agendamentos</h3>
-                        <p className="text-gray-600">{clientAppointments.length} serviços realizados</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-bold text-green-600">
-                          R$ {calculateTotal().toFixed(2)}
-                        </p>
-                        <p className="text-sm text-gray-500">Valor estimado</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </>
-            )}
-          </div>
+              </TableBody>
+            </Table>
+          )}
         </ScrollArea>
+
+        <div className="border-t pt-4 mt-4">
+          <div className="flex justify-between items-center bg-blue-50 p-4 rounded-lg">
+            <div>
+              <h3 className="font-semibold text-lg">Total de Serviços: {clientAppointments.length}</h3>
+              <p className="text-sm text-gray-600">Valor total estimado</p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-blue-700">
+                R$ {calculateTotal().toFixed(2)}
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex justify-between mt-4">
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm">
+                🔄 Atualizar Comanda
+              </Button>
+              <Button variant="outline" size="sm">
+                🖨️ Imprimir
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={onClose}>
+                Cancelar
+              </Button>
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                Confirmar
+              </Button>
+              <Button className="bg-red-500 hover:bg-red-600">
+                Finalizar Comanda
+              </Button>
+            </div>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
