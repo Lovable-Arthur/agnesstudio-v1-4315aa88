@@ -5,9 +5,10 @@ import { getStatusColor } from "@/utils/styleUtils";
 
 interface AppointmentCellProps {
   appointment: Appointment;
+  onEditAppointment?: (appointment: Appointment) => void;
 }
 
-const AppointmentCell = ({ appointment }: AppointmentCellProps) => {
+const AppointmentCell = ({ appointment, onEditAppointment }: AppointmentCellProps) => {
   const getLabelColors = () => {
     const predefinedLabels = [
       { name: "Química", color: "bg-emerald-500" },
@@ -33,8 +34,16 @@ const AppointmentCell = ({ appointment }: AppointmentCellProps) => {
 
   const { labelColors, predefinedLabels } = getLabelColors();
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEditAppointment?.(appointment);
+  };
+
   return (
-    <div className={`h-full p-2 rounded text-xs border-2 ${getStatusColor(appointment.status)}`}>
+    <div 
+      className={`h-full p-2 rounded text-xs border-2 cursor-pointer hover:opacity-80 transition-opacity ${getStatusColor(appointment.status)}`}
+      onClick={handleClick}
+    >
       <div className="font-medium truncate text-white mb-1">
         {appointment.time}
       </div>

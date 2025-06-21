@@ -1,8 +1,10 @@
+
 import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
 import ProfessionalHeader from "./calendar/ProfessionalHeader";
 import TimeSlotCell from "./calendar/TimeSlotCell";
+import EditAppointmentDialog from "./appointment/EditAppointmentDialog";
 import { convertTimeToMinutes } from "@/utils/appointmentUtils";
 
 interface DayViewProps {
@@ -13,6 +15,8 @@ interface DayViewProps {
 const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   const displayTimeSlots = useMemo(() => getDisplayTimeSlots(10), []);
   const [savedAppointments, setSavedAppointments] = useState<{ [key: string]: Appointment[] }>({});
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [appointmentToEdit, setAppointmentToEdit] = useState<Appointment | null>(null);
 
   const getAllAppointmentsForProfessional = (professional: Professional): Appointment[] => {
     const originalAppointments = professional.appointments.filter(apt => apt.date === selectedDate);
@@ -78,6 +82,19 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
         [dayKey]: [...(prev[dayKey] || []), newAppointment]
       }));
     });
+  };
+
+  const handleEditAppointment = (appointment: Appointment) => {
+    setAppointmentToEdit(appointment);
+    setEditDialogOpen(true);
+  };
+
+  const handleUpdateAppointment = (updatedAppointmentData: any) => {
+    console.log("Agendamento atualizado:", updatedAppointmentData);
+    // Aqui você pode implementar a lógica para atualizar o agendamento
+    // Por exemplo, atualizar o estado dos agendamentos salvos
+    setEditDialogOpen(false);
+    setAppointmentToEdit(null);
   };
 
   return (
@@ -148,6 +165,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
                       isAppointmentStart={isStart}
                       selectedDate={selectedDate}
                       onAddAppointment={handleAddAppointment}
+                      onEditAppointment={handleEditAppointment}
                       professionalIndex={professionalIndex}
                       totalProfessionals={professionals.length}
                       allTimeSlots={displayTimeSlots}
@@ -159,6 +177,17 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
           ))}
         </div>
       </div>
+
+      {/* Diálogo de edição de agendamento */}
+      <EditAppointmentDialog
+        isOpen={editDialogOpen}
+        onClose={() => {
+          setEditDialogOpen(false);
+          setAppointmentToEdit(null);
+        }}
+        appointment={appointmentToEdit}
+        onUpdateAppointment={handleUpdateAppointment}
+      />
     </div>
   );
 };

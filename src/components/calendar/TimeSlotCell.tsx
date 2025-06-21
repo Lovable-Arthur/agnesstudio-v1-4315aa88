@@ -13,6 +13,7 @@ interface TimeSlotCellProps {
   isAppointmentStart: boolean;
   selectedDate: string;
   onAddAppointment?: (appointmentData: any) => void;
+  onEditAppointment?: (appointment: Appointment) => void;
   professionalIndex?: number;
   totalProfessionals?: number;
   allTimeSlots?: string[];
@@ -25,6 +26,7 @@ const TimeSlotCell = ({
   isAppointmentStart,
   selectedDate, 
   onAddAppointment,
+  onEditAppointment,
   professionalIndex = 0,
   totalProfessionals = 1,
   allTimeSlots = []
@@ -73,7 +75,10 @@ const TimeSlotCell = ({
         }}
       >
         {appointment && isAppointmentStart ? (
-          <AppointmentCell appointment={appointment} />
+          <AppointmentCell 
+            appointment={appointment} 
+            onEditAppointment={onEditAppointment}
+          />
         ) : (
           <div className="h-full rounded transition-opacity flex items-center justify-center border-dashed border border-gray-200">
             {/* Célula vazia */}
