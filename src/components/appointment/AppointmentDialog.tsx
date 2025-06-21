@@ -3,6 +3,7 @@ import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "lucide-react";
 import AppointmentForm from "./AppointmentForm";
 import AppointmentFormHeader from "./AppointmentFormHeader";
 
@@ -30,7 +31,10 @@ const AppointmentDialog = ({
           <div className="space-y-4 pb-20 pr-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold">Novo Agendamento</h2>
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
+                  <h2 className="text-lg font-semibold">Novo Agendamento</h2>
+                </div>
                 <p className="text-sm text-muted-foreground">Preencha os dados do agendamento</p>
               </div>
               
