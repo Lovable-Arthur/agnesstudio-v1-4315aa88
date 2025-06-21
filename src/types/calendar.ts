@@ -1,3 +1,4 @@
+
 export interface Appointment {
   id: number;
   clientName: string;
@@ -8,6 +9,7 @@ export interface Appointment {
   date: string;
   labels?: string[];
   observations?: string;
+  professionalName?: string;
 }
 
 export interface Professional {
