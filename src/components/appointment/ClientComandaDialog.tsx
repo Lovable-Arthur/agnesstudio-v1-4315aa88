@@ -100,7 +100,7 @@ const ClientComandaDialog = ({
           </div>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="items">📦 Itens</TabsTrigger>
             <TabsTrigger value="services">⭐ Serviços</TabsTrigger>
@@ -108,50 +108,65 @@ const ClientComandaDialog = ({
             <TabsTrigger value="payments">💳 Pagamentos</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="items" className="flex-1">
-            <ItemsTab
-              allItems={allItems}
-              availableServices={availableServices}
-              availableProducts={availableProducts}
-              onAddItem={addItem}
-              onUpdateItem={updateItem}
-              onRemoveItem={removeItem}
-            />
-          </TabsContent>
+          <div className="flex-1 flex flex-col">
+            <TabsContent value="items" className="flex-1 flex flex-col space-y-4">
+              <ItemsTab
+                allItems={allItems}
+                availableServices={availableServices}
+                availableProducts={availableProducts}
+                onAddItem={addItem}
+                onUpdateItem={updateItem}
+                onRemoveItem={removeItem}
+              />
+              
+              <div className="flex justify-between items-center bg-blue-50 p-4 rounded-lg">
+                <div>
+                  <h3 className="font-semibold text-lg">Total de Itens: {allItems.length}</h3>
+                  <p className="text-sm text-gray-600">Valor total da comanda</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-blue-700">
+                    {formatCurrency(calculations.finalTotal)}
+                  </p>
+                  {calculations.remaining > 0 && (
+                    <p className="text-sm text-red-600">Restante: {formatCurrency(calculations.remaining)}</p>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
 
-          <TabsContent value="services">
-            <ServiceManagement />
-          </TabsContent>
+            <TabsContent value="services" className="flex-1">
+              <ServiceManagement />
+            </TabsContent>
 
-          <TabsContent value="products">
-            <ProductManagement />
-          </TabsContent>
+            <TabsContent value="products" className="flex-1">
+              <ProductManagement />
+            </TabsContent>
 
-          <TabsContent value="payments">
-            <PaymentsTab
-              payments={comandaData.payments || []}
-              paymentMethods={paymentMethods}
-              calculations={calculations}
-              onAddPayment={handleAddPayment}
-              onRemovePayment={removePayment}
-            />
-          </TabsContent>
-        </Tabs>
-
-        <div className="border-t pt-4 mt-4">
-          <div className="flex justify-between items-center bg-blue-50 p-4 rounded-lg">
-            <div>
-              <h3 className="font-semibold text-lg">Total de Itens: {allItems.length}</h3>
-              <p className="text-sm text-gray-600">Valor total da comanda</p>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-blue-700">
-                {formatCurrency(calculations.finalTotal)}
-              </p>
-              {calculations.remaining > 0 && (
-                <p className="text-sm text-red-600">Restante: {formatCurrency(calculations.remaining)}</p>
-              )}
-            </div>
+            <TabsContent value="payments" className="flex-1 flex flex-col space-y-4">
+              <PaymentsTab
+                payments={comandaData.payments || []}
+                paymentMethods={paymentMethods}
+                calculations={calculations}
+                onAddPayment={handleAddPayment}
+                onRemovePayment={removePayment}
+              />
+              
+              <div className="flex justify-between items-center bg-blue-50 p-4 rounded-lg">
+                <div>
+                  <h3 className="font-semibold text-lg">Total de Itens: {allItems.length}</h3>
+                  <p className="text-sm text-gray-600">Valor total da comanda</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-blue-700">
+                    {formatCurrency(calculations.finalTotal)}
+                  </p>
+                  {calculations.remaining > 0 && (
+                    <p className="text-sm text-red-600">Restante: {formatCurrency(calculations.remaining)}</p>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
           </div>
           
           <div className="flex justify-between mt-4">
@@ -175,7 +190,7 @@ const ClientComandaDialog = ({
               </Button>
             </div>
           </div>
-        </div>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
