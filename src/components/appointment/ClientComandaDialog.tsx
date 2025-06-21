@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -9,13 +8,11 @@ import ItemsTab from "./comanda/ItemsTab";
 import PaymentsTab from "./comanda/PaymentsTab";
 import ServiceManagement from "./comanda/ServiceManagement";
 import ProductManagement from "./comanda/ProductManagement";
-
 interface ClientComandaDialogProps {
   isOpen: boolean;
   onClose: () => void;
   clientName: string;
 }
-
 const ClientComandaDialog = ({
   isOpen,
   onClose,
@@ -38,11 +35,9 @@ const ClientComandaDialog = ({
 
   // Combinar itens gerados automaticamente com itens adicionais
   const allItems = [...generateComandaItems, ...(comandaData.items || [])];
-  
   const getComandaNumber = () => {
     return Math.floor(Math.random() * 9000) + 1000;
   };
-  
   const handleAddPayment = () => {
     const remaining = calculations.remaining;
     if (remaining > 0) {
@@ -58,21 +53,17 @@ const ClientComandaDialog = ({
       });
     }
   };
-  
   const formatCurrency = (value: number) => {
     return value.toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL'
     });
   };
-  
   const formatDate = (dateString: string) => {
     const date = new Date(dateString + 'T00:00:00');
     return date.toLocaleDateString('pt-BR');
   };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+  return <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-7xl max-h-[95vh] w-[98vw] p-0 overflow-hidden">
         <div className="flex flex-col h-full">
           {/* Header fixo */}
@@ -111,18 +102,11 @@ const ClientComandaDialog = ({
               <div className="flex-1 overflow-hidden px-6">
                 <TabsContent value="items" className="h-full flex flex-col space-y-4 mt-4">
                   <div className="flex-1 overflow-hidden">
-                    <ItemsTab 
-                      allItems={allItems} 
-                      availableServices={availableServices} 
-                      availableProducts={availableProducts} 
-                      onAddItem={addItem} 
-                      onUpdateItem={updateItem} 
-                      onRemoveItem={removeItem} 
-                    />
+                    <ItemsTab allItems={allItems} availableServices={availableServices} availableProducts={availableProducts} onAddItem={addItem} onUpdateItem={updateItem} onRemoveItem={removeItem} />
                   </div>
                   
                   {/* Total fixo na parte inferior */}
-                  <div className="bg-blue-50 p-4 rounded-lg border-t">
+                  <div className="bg-blue-50 p-4 border-t rounded-lg my-[30px] mx-px">
                     <div className="flex justify-between items-center">
                       <div>
                         <h3 className="font-semibold text-lg">Total de Itens: {allItems.length}</h3>
@@ -132,9 +116,7 @@ const ClientComandaDialog = ({
                         <p className="text-2xl font-bold text-blue-700">
                           {formatCurrency(calculations.finalTotal)}
                         </p>
-                        {calculations.remaining > 0 && (
-                          <p className="text-sm text-red-600">Restante: {formatCurrency(calculations.remaining)}</p>
-                        )}
+                        {calculations.remaining > 0 && <p className="text-sm text-red-600">Restante: {formatCurrency(calculations.remaining)}</p>}
                       </div>
                     </div>
                   </div>
@@ -150,13 +132,7 @@ const ClientComandaDialog = ({
 
                 <TabsContent value="payments" className="h-full flex flex-col space-y-4 mt-4">
                   <div className="flex-1 overflow-hidden">
-                    <PaymentsTab 
-                      payments={comandaData.payments || []} 
-                      paymentMethods={paymentMethods} 
-                      calculations={calculations} 
-                      onAddPayment={handleAddPayment} 
-                      onRemovePayment={removePayment} 
-                    />
+                    <PaymentsTab payments={comandaData.payments || []} paymentMethods={paymentMethods} calculations={calculations} onAddPayment={handleAddPayment} onRemovePayment={removePayment} />
                   </div>
                   
                   {/* Total fixo na parte inferior */}
@@ -170,9 +146,7 @@ const ClientComandaDialog = ({
                         <p className="text-2xl font-bold text-blue-700">
                           {formatCurrency(calculations.finalTotal)}
                         </p>
-                        {calculations.remaining > 0 && (
-                          <p className="text-sm text-red-600">Restante: {formatCurrency(calculations.remaining)}</p>
-                        )}
+                        {calculations.remaining > 0 && <p className="text-sm text-red-600">Restante: {formatCurrency(calculations.remaining)}</p>}
                       </div>
                     </div>
                   </div>
@@ -207,8 +181,6 @@ const ClientComandaDialog = ({
           </div>
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
-
 export default ClientComandaDialog;
