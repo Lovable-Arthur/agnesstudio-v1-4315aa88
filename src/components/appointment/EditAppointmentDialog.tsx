@@ -3,9 +3,6 @@ import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -39,12 +36,10 @@ const EditAppointmentDialog = ({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-5xl max-h-[90vh] w-[95vw] flex flex-col">
           <div className="flex items-center justify-between">
-            <DialogHeader>
-              <DialogTitle>Agendamento</DialogTitle>
-              <DialogDescription>
-                Modifique os dados do agendamento
-              </DialogDescription>
-            </DialogHeader>
+            <div>
+              <h2 className="text-lg font-semibold">Agendamento</h2>
+              <p className="text-sm text-muted-foreground">Modifique os dados do agendamento</p>
+            </div>
             
             <Button 
               onClick={handleOpenComanda}

@@ -3,9 +3,6 @@ import React from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -32,12 +29,10 @@ const AppointmentDialog = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl max-h-[90vh] w-[95vw] flex flex-col">
         <div className="flex items-center justify-between">
-          <DialogHeader>
-            <DialogTitle>Novo Agendamento</DialogTitle>
-            <DialogDescription>
-              Preencha os dados do agendamento
-            </DialogDescription>
-          </DialogHeader>
+          <div>
+            <h2 className="text-lg font-semibold">Novo Agendamento</h2>
+            <p className="text-sm text-muted-foreground">Preencha os dados do agendamento</p>
+          </div>
           
           <Button 
             className="bg-purple-600 hover:bg-purple-700 text-white"
