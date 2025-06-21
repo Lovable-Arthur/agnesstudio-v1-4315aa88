@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "lucide-react";
 import EditAppointmentForm from "./EditAppointmentForm";
 import ClientComandaDialog from "./ClientComandaDialog";
 import { Appointment } from "@/types/calendar";
@@ -35,22 +36,25 @@ const EditAppointmentDialog = ({
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-5xl max-h-[90vh] w-[95vw] flex flex-col">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold">Agendamento</h2>
-              <p className="text-sm text-muted-foreground">Modifique os dados do agendamento</p>
-            </div>
-            
-            <Button 
-              onClick={handleOpenComanda}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              $ Abrir Comanda
-            </Button>
-          </div>
-          
           <ScrollArea className="flex-1 overflow-auto">
             <div className="space-y-4 pb-20 pr-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5" />
+                    <h2 className="text-lg font-semibold">Agendamento</h2>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Modifique os dados do agendamento</p>
+                </div>
+                
+                <Button 
+                  onClick={handleOpenComanda}
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  $ Abrir Comanda
+                </Button>
+              </div>
+              
               <EditAppointmentForm
                 appointment={appointment}
                 onUpdateAppointment={onUpdateAppointment}
