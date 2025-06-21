@@ -26,19 +26,19 @@ const AppointmentDialog = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl max-h-[90vh] w-[95vw] flex flex-col">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col">
-            <AppointmentFormHeader />
-            <p className="text-sm text-muted-foreground mt-1">Preencha os dados do agendamento</p>
-          </div>
-          
-          <Button className="bg-purple-600 hover:bg-purple-700 text-white">
-            $ Abrir Comanda
-          </Button>
-        </div>
-        
         <ScrollArea className="flex-1 overflow-auto">
           <div className="space-y-4 pb-20 pr-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold">Novo Agendamento</h2>
+                <p className="text-sm text-muted-foreground">Preencha os dados do agendamento</p>
+              </div>
+              
+              <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                $ Abrir Comanda
+              </Button>
+            </div>
+            
             <AppointmentForm 
               timeSlot={timeSlot} 
               professionalId={professionalId} 
