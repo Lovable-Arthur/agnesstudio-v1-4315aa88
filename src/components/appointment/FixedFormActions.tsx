@@ -11,7 +11,7 @@ interface FixedFormActionsProps {
 
 const FixedFormActions = ({ onCancel, onSave, disabled, price }: FixedFormActionsProps) => {
   return (
-    <div className="fixed bottom-4 right-4 bg-white border rounded-lg shadow-lg p-4 z-50">
+    <div className="fixed bottom-4 right-8 bg-white border rounded-lg shadow-lg p-4 z-50">
       <div className="flex items-center justify-between gap-6">
         <div className="text-lg font-semibold">
           Total (R$): {price || "0,00"}
