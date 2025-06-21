@@ -1,12 +1,5 @@
-
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useComanda } from "@/hooks/useComanda";
@@ -15,13 +8,11 @@ import ItemsTab from "./comanda/ItemsTab";
 import PaymentsTab from "./comanda/PaymentsTab";
 import ServiceManagement from "./comanda/ServiceManagement";
 import ProductManagement from "./comanda/ProductManagement";
-
 interface ClientComandaDialogProps {
   isOpen: boolean;
   onClose: () => void;
   clientName: string;
 }
-
 const ClientComandaDialog = ({
   isOpen,
   onClose,
@@ -40,19 +31,13 @@ const ClientComandaDialog = ({
     availableServices,
     availableProducts
   } = useComanda(clientName);
-
   const [activeTab, setActiveTab] = useState("items");
 
   // Combinar itens gerados automaticamente com itens adicionais
-  const allItems = [
-    ...generateComandaItems,
-    ...(comandaData.items || [])
-  ];
-
+  const allItems = [...generateComandaItems, ...(comandaData.items || [])];
   const getComandaNumber = () => {
     return Math.floor(Math.random() * 9000) + 1000;
   };
-
   const handleAddPayment = () => {
     const remaining = calculations.remaining;
     if (remaining > 0) {
@@ -60,23 +45,25 @@ const ClientComandaDialog = ({
         methodId: paymentMethods[0].id,
         amount: remaining,
         date: new Date().toISOString().split('T')[0],
-        time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        time: new Date().toLocaleTimeString('pt-BR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
         status: 'completed'
       });
     }
   };
-
   const formatCurrency = (value: number) => {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return value.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    });
   };
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString + 'T00:00:00');
     return date.toLocaleDateString('pt-BR');
   };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+  return <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-7xl max-h-[95vh] w-[98vw]">
         <DialogHeader className="border-b pb-4">
           <div className="flex items-center justify-between">
@@ -110,16 +97,9 @@ const ClientComandaDialog = ({
 
           <div className="flex-1 flex flex-col">
             <TabsContent value="items" className="flex-1 flex flex-col space-y-4">
-              <ItemsTab
-                allItems={allItems}
-                availableServices={availableServices}
-                availableProducts={availableProducts}
-                onAddItem={addItem}
-                onUpdateItem={updateItem}
-                onRemoveItem={removeItem}
-              />
+              <ItemsTab allItems={allItems} availableServices={availableServices} availableProducts={availableProducts} onAddItem={addItem} onUpdateItem={updateItem} onRemoveItem={removeItem} />
               
-              <div className="flex justify-between items-center bg-blue-50 p-4 rounded-lg">
+              <div className="flex justify-between items-center bg-blue-5 p-4 rounded-lg mx-[110px] my-0 py-px">
                 <div>
                   <h3 className="font-semibold text-lg">Total de Itens: {allItems.length}</h3>
                   <p className="text-sm text-gray-600">Valor total da comanda</p>
@@ -128,9 +108,7 @@ const ClientComandaDialog = ({
                   <p className="text-2xl font-bold text-blue-700">
                     {formatCurrency(calculations.finalTotal)}
                   </p>
-                  {calculations.remaining > 0 && (
-                    <p className="text-sm text-red-600">Restante: {formatCurrency(calculations.remaining)}</p>
-                  )}
+                  {calculations.remaining > 0 && <p className="text-sm text-red-600">Restante: {formatCurrency(calculations.remaining)}</p>}
                 </div>
               </div>
             </TabsContent>
@@ -144,13 +122,7 @@ const ClientComandaDialog = ({
             </TabsContent>
 
             <TabsContent value="payments" className="flex-1 flex flex-col space-y-4">
-              <PaymentsTab
-                payments={comandaData.payments || []}
-                paymentMethods={paymentMethods}
-                calculations={calculations}
-                onAddPayment={handleAddPayment}
-                onRemovePayment={removePayment}
-              />
+              <PaymentsTab payments={comandaData.payments || []} paymentMethods={paymentMethods} calculations={calculations} onAddPayment={handleAddPayment} onRemovePayment={removePayment} />
               
               <div className="flex justify-between items-center bg-blue-50 p-4 rounded-lg">
                 <div>
@@ -161,9 +133,7 @@ const ClientComandaDialog = ({
                   <p className="text-2xl font-bold text-blue-700">
                     {formatCurrency(calculations.finalTotal)}
                   </p>
-                  {calculations.remaining > 0 && (
-                    <p className="text-sm text-red-600">Restante: {formatCurrency(calculations.remaining)}</p>
-                  )}
+                  {calculations.remaining > 0 && <p className="text-sm text-red-600">Restante: {formatCurrency(calculations.remaining)}</p>}
                 </div>
               </div>
             </TabsContent>
@@ -192,8 +162,6 @@ const ClientComandaDialog = ({
           </div>
         </Tabs>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
-
 export default ClientComandaDialog;
