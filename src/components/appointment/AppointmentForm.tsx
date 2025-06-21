@@ -106,16 +106,20 @@ const AppointmentForm = ({
         onStartTimeChange={handleStartTimeChange}
       />
 
-      <MultipleServicesSection
-        services={services}
-        availableServices={availableServices}
-        onAddService={handleAddService}
-        onRemoveService={handleRemoveService}
-        onRemoveLastService={handleRemoveLastService}
-        onUpdateService={handleUpdateService}
-        canAddService={true}
-        getDurationForService={getDurationForService}
-      />
+      {/* Seção de Serviços Adicionais - MANTIDA */}
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <h3 className="text-lg font-semibold mb-3 text-gray-800">Serviços Adicionais</h3>
+        <MultipleServicesSection
+          services={services}
+          availableServices={availableServices}
+          onAddService={handleAddService}
+          onRemoveService={handleRemoveService}
+          onRemoveLastService={handleRemoveLastService}
+          onUpdateService={handleUpdateService}
+          canAddService={true}
+          getDurationForService={getDurationForService}
+        />
+      </div>
 
       <LabelsSection
         customLabels={customLabels}
