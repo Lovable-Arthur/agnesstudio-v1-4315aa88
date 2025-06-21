@@ -74,7 +74,8 @@ const ItemsTab = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="h-full flex flex-col space-y-4">
+      {/* Header com botões */}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Todos os Itens</h3>
         <div className="flex gap-2">
@@ -94,101 +95,104 @@ const ItemsTab = ({
         </div>
       </div>
 
-      <ScrollArea className="h-[50vh]">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-gray-100">
-              <TableHead>Item</TableHead>
-              <TableHead>Profissional</TableHead>
-              <TableHead>Data</TableHead>
-              <TableHead>Qtd.</TableHead>
-              <TableHead>Valor Unit.</TableHead>
-              <TableHead>Desc. (%)</TableHead>
-              <TableHead>Final</TableHead>
-              <TableHead>Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {allItems.map((item, index) => (
-              <TableRow key={`${item.id}-${index}`} className="hover:bg-gray-50">
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={item.type === 'service' ? 'default' : 'secondary'}>
-                      {item.type === 'service' ? '⭐' : '📦'}
-                    </Badge>
-                    <span className="font-medium">{item.name}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{item.professionalName || 'N/A'}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{formatDate(item.date)}</span>
-                </TableCell>
-                <TableCell>
-                  {editingItem === item.id ? (
-                    <Input
-                      type="number"
-                      value={item.quantity}
-                      onChange={(e) => onUpdateItem(item.id, { quantity: parseInt(e.target.value) || 1 })}
-                      className="w-16 h-8"
-                    />
-                  ) : (
-                    <span className="text-sm">{item.quantity}</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {editingItem === item.id ? (
-                    <Input
-                      type="number"
-                      value={item.unitPrice}
-                      onChange={(e) => onUpdateItem(item.id, { unitPrice: parseFloat(e.target.value) || 0 })}
-                      className="w-20 h-8"
-                    />
-                  ) : (
-                    <span className="text-sm">{formatCurrency(item.unitPrice)}</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {editingItem === item.id ? (
-                    <Input
-                      type="number"
-                      value={item.discount}
-                      onChange={(e) => onUpdateItem(item.id, { discount: parseFloat(e.target.value) || 0 })}
-                      className="w-16 h-8"
-                    />
-                  ) : (
-                    <span className="text-sm">{item.discount}%</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <span className="font-medium text-green-600">{formatCurrency(item.finalPrice)}</span>
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-6 px-2 text-xs text-blue-600"
-                      onClick={() => setEditingItem(editingItem === item.id ? null : item.id)}
-                    >
-                      <Pencil className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-6 px-2 text-xs text-red-600"
-                      onClick={() => onRemoveItem(item.id)}
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </TableCell>
+      {/* Tabela com scroll */}
+      <div className="flex-1 border rounded-lg">
+        <ScrollArea className="h-full">
+          <Table>
+            <TableHeader className="sticky top-0 bg-white">
+              <TableRow className="bg-gray-100">
+                <TableHead>Item</TableHead>
+                <TableHead>Profissional</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead>Qtd.</TableHead>
+                <TableHead>Valor Unit.</TableHead>
+                <TableHead>Desc. (%)</TableHead>
+                <TableHead>Final</TableHead>
+                <TableHead>Ações</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </ScrollArea>
+            </TableHeader>
+            <TableBody>
+              {allItems.map((item, index) => (
+                <TableRow key={`${item.id}-${index}`} className="hover:bg-gray-50">
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={item.type === 'service' ? 'default' : 'secondary'}>
+                        {item.type === 'service' ? '⭐' : '📦'}
+                      </Badge>
+                      <span className="font-medium">{item.name}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">{item.professionalName || 'N/A'}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">{formatDate(item.date)}</span>
+                  </TableCell>
+                  <TableCell>
+                    {editingItem === item.id ? (
+                      <Input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) => onUpdateItem(item.id, { quantity: parseInt(e.target.value) || 1 })}
+                        className="w-16 h-8"
+                      />
+                    ) : (
+                      <span className="text-sm">{item.quantity}</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {editingItem === item.id ? (
+                      <Input
+                        type="number"
+                        value={item.unitPrice}
+                        onChange={(e) => onUpdateItem(item.id, { unitPrice: parseFloat(e.target.value) || 0 })}
+                        className="w-20 h-8"
+                      />
+                    ) : (
+                      <span className="text-sm">{formatCurrency(item.unitPrice)}</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {editingItem === item.id ? (
+                      <Input
+                        type="number"
+                        value={item.discount}
+                        onChange={(e) => onUpdateItem(item.id, { discount: parseFloat(e.target.value) || 0 })}
+                        className="w-16 h-8"
+                      />
+                    ) : (
+                      <span className="text-sm">{item.discount}%</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-medium text-green-600">{formatCurrency(item.finalPrice)}</span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 px-2 text-xs text-blue-600"
+                        onClick={() => setEditingItem(editingItem === item.id ? null : item.id)}
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 px-2 text-xs text-red-600"
+                        onClick={() => onRemoveItem(item.id)}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </ScrollArea>
+      </div>
     </div>
   );
 };

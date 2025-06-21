@@ -47,7 +47,8 @@ const PaymentsTab = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="h-full flex flex-col space-y-4">
+      {/* Header */}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Pagamentos</h3>
         <Button onClick={onAddPayment} size="sm" disabled={calculations.remaining <= 0}>
@@ -56,6 +57,7 @@ const PaymentsTab = ({
         </Button>
       </div>
 
+      {/* Resumo dos cálculos */}
       <div className="grid grid-cols-2 gap-4 p-4 bg-blue-50 rounded-lg">
         <div>
           <Label className="text-sm font-medium text-gray-600">Subtotal</Label>
@@ -77,56 +79,59 @@ const PaymentsTab = ({
         </div>
       </div>
 
-      <ScrollArea className="h-[40vh]">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-gray-100">
-              <TableHead>Método</TableHead>
-              <TableHead>Valor</TableHead>
-              <TableHead>Data</TableHead>
-              <TableHead>Hora</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {payments.map((payment) => {
-              const method = paymentMethods.find(m => m.id === payment.methodId);
-              return (
-                <TableRow key={payment.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span>{method?.icon}</span>
-                      <span>{method?.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="font-medium text-green-600">{formatCurrency(payment.amount)}</span>
-                  </TableCell>
-                  <TableCell>{formatDate(payment.date)}</TableCell>
-                  <TableCell>{payment.time}</TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(payment.status)}>
-                      {payment.status === 'completed' ? 'Pago' : 
-                       payment.status === 'pending' ? 'Pendente' : 'Cancelado'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-6 px-2 text-xs text-red-600"
-                      onClick={() => onRemovePayment(payment.id)}
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </ScrollArea>
+      {/* Tabela de pagamentos com scroll */}
+      <div className="flex-1 border rounded-lg">
+        <ScrollArea className="h-full">
+          <Table>
+            <TableHeader className="sticky top-0 bg-white">
+              <TableRow className="bg-gray-100">
+                <TableHead>Método</TableHead>
+                <TableHead>Valor</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead>Hora</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {payments.map((payment) => {
+                const method = paymentMethods.find(m => m.id === payment.methodId);
+                return (
+                  <TableRow key={payment.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <span>{method?.icon}</span>
+                        <span>{method?.name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-medium text-green-600">{formatCurrency(payment.amount)}</span>
+                    </TableCell>
+                    <TableCell>{formatDate(payment.date)}</TableCell>
+                    <TableCell>{payment.time}</TableCell>
+                    <TableCell>
+                      <Badge className={getStatusColor(payment.status)}>
+                        {payment.status === 'completed' ? 'Pago' : 
+                         payment.status === 'pending' ? 'Pendente' : 'Cancelado'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 px-2 text-xs text-red-600"
+                        onClick={() => onRemovePayment(payment.id)}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </ScrollArea>
+      </div>
     </div>
   );
 };
