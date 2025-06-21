@@ -37,30 +37,31 @@ const EditAppointmentDialog = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-5xl max-h-[90vh] w-[95vw]">
+        <DialogContent className="max-w-5xl max-h-[90vh] w-[95vw] flex flex-col">
           <DialogHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <DialogTitle>Agendamento</DialogTitle>
-                <DialogDescription>
-                  Modifique os dados do agendamento
-                </DialogDescription>
-              </div>
-              <Button 
-                onClick={handleOpenComanda}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                $ Abrir Comanda
-              </Button>
-            </div>
+            <DialogTitle>Agendamento</DialogTitle>
+            <DialogDescription>
+              Modifique os dados do agendamento
+            </DialogDescription>
           </DialogHeader>
           
-          <ScrollArea className="h-[75vh] pr-4">
-            <EditAppointmentForm
-              appointment={appointment}
-              onUpdateAppointment={onUpdateAppointment}
-              onClose={onClose}
-            />
+          <ScrollArea className="flex-1 pr-4">
+            <div className="space-y-4">
+              <div className="flex justify-end">
+                <Button 
+                  onClick={handleOpenComanda}
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  $ Abrir Comanda
+                </Button>
+              </div>
+              
+              <EditAppointmentForm
+                appointment={appointment}
+                onUpdateAppointment={onUpdateAppointment}
+                onClose={onClose}
+              />
+            </div>
           </ScrollArea>
         </DialogContent>
       </Dialog>
