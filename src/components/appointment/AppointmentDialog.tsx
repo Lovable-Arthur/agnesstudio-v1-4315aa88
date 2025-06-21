@@ -39,7 +39,7 @@ const AppointmentDialog = ({
         </DialogHeader>
         
         <ScrollArea className="flex-1 pr-4">
-          <div className="space-y-4">
+          <div className="space-y-4 pb-20">
             <div className="flex justify-end">
               <Button 
                 className="bg-purple-600 hover:bg-purple-700 text-white"

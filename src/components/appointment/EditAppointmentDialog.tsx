@@ -46,7 +46,7 @@ const EditAppointmentDialog = ({
           </DialogHeader>
           
           <ScrollArea className="flex-1 pr-4">
-            <div className="space-y-4">
+            <div className="space-y-4 pb-20">
               <div className="flex justify-end">
                 <Button 
                   onClick={handleOpenComanda}
