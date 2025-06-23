@@ -38,22 +38,22 @@ const TimeSlotCell = ({
   
   console.log(`TimeSlotCell ${timeSlot}: ${appointmentsStartingHere.length} iniciando, ${appointmentsOngoing.length} em andamento`);
   
-  // Calcular rowSpan baseado nos agendamentos que iniciam aqui
-  const calculateMaxRowSpan = () => {
-    if (appointmentsStartingHere.length === 0) return 1;
-    
-    let maxSpan = 1;
-    appointmentsStartingHere.forEach(appointment => {
+  // Calcular posicionamento e altura para agendamentos que iniciam aqui
+  const calculateAppointmentSpans = () => {
+    return appointmentsStartingHere.map(appointment => {
       const durationMatch = appointment.duration.match(/(\d+)/);
       const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
       const slotsOccupied = Math.ceil(durationMinutes / 10);
-      maxSpan = Math.max(maxSpan, slotsOccupied);
+      return {
+        appointment,
+        rowSpan: slotsOccupied,
+        height: slotsOccupied * 40
+      };
     });
-    
-    return maxSpan;
   };
   
-  const rowSpan = calculateMaxRowSpan();
+  const appointmentSpans = calculateAppointmentSpans();
+  const maxRowSpan = appointmentSpans.length > 0 ? Math.max(...appointmentSpans.map(span => span.rowSpan)) : 1;
   
   // Se há apenas agendamentos em andamento (não iniciando aqui), mostrar célula simplificada
   if (appointmentsStartingHere.length === 0 && appointmentsOngoing.length > 0) {
@@ -91,29 +91,34 @@ const TimeSlotCell = ({
       onAddAppointment={onAddAppointment}
     >
       <div 
-        className={`border-b-2 border-b-gray-400 p-1 cursor-pointer hover:bg-gray-100 ${
+        className={`border-b-2 border-b-gray-400 p-1 cursor-pointer hover:bg-gray-100 relative ${
           shouldHaveRightBorder ? 'border-r-2 border-r-gray-400' : 'border-r border-gray-400'
         } ${
-          appointmentsStartingHere.length > 0 ? getProfessionalColor(professional.color) : 'bg-white'
+          appointmentsStartingHere.length > 0 ? '' : 'bg-white'
         }`}
         style={{
-          height: `${rowSpan * 40}px`,
+          height: `${maxRowSpan * 40}px`,
           minHeight: '40px',
           zIndex: appointmentsStartingHere.length > 0 ? 10 : 1,
-          position: 'relative',
-          gridRowEnd: `span ${rowSpan}`
+          gridRowEnd: `span ${maxRowSpan}`
         }}
       >
         {appointmentsStartingHere.length > 0 ? (
-          <div className={`h-full flex gap-1`}>
-            {appointmentsStartingHere.map((appointment, index) => (
+          <div className="h-full relative">
+            {appointmentSpans.map((span, index) => (
               <div 
-                key={appointment.id}
-                className="flex-1"
-                style={{ minWidth: `${100/appointmentsStartingHere.length}%` }}
+                key={span.appointment.id}
+                className={`absolute ${getProfessionalColor(professional.color)}`}
+                style={{
+                  left: `${(index * 100) / appointmentsStartingHere.length}%`,
+                  width: `${100 / appointmentsStartingHere.length}%`,
+                  height: `${span.height}px`,
+                  top: 0,
+                  zIndex: 10 + index
+                }}
               >
                 <AppointmentCell 
-                  appointment={appointment} 
+                  appointment={span.appointment} 
                   onEditAppointment={onEditAppointment}
                   isCompact={appointmentsStartingHere.length > 1}
                 />
