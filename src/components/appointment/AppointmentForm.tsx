@@ -81,6 +81,10 @@ const AppointmentForm = ({
     }
   };
 
+  const handleStatusChange = (newStatus: string) => {
+    setStatus(newStatus as "agendado" | "confirmado" | "aguardando" | "em-atendimento" | "finalizado" | "pago" | "cancelado" | "faltou");
+  };
+
   return (
     <div className="space-y-6">
       <AppointmentFormHeader />
@@ -126,7 +130,7 @@ const AppointmentForm = ({
 
       <StatusSection
         status={status}
-        onStatusChange={setStatus}
+        onStatusChange={handleStatusChange}
       />
 
       <LabelsSection
