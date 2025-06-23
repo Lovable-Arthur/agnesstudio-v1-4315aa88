@@ -30,7 +30,7 @@ const TimeGrid = ({
         }}
       >
         {displayTimeSlots.map((timeSlot, timeIndex) => (
-          <React.Fragment key={timeSlot}>
+          <div key={timeSlot} className="contents">
             {/* Coluna de horário */}
             <div 
               className="p-2 border-r border-b-2 border-gray-400 bg-gray-100 text-center min-h-[40px] flex items-center justify-center"
@@ -67,7 +67,7 @@ const TimeGrid = ({
                 </div>
               );
             })}
-          </React.Fragment>
+          </div>
         ))}
       </div>
     </div>
