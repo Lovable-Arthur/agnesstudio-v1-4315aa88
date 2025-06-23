@@ -9,8 +9,7 @@ import { convertTimeToMinutes } from "@/utils/appointmentUtils";
 interface TimeSlotCellProps {
   timeSlot: string;
   professional: Professional;
-  appointment?: Appointment;
-  isAppointmentStart: boolean;
+  appointments: Appointment[];
   selectedDate: string;
   onAddAppointment?: (appointmentData: any) => void;
   onEditAppointment?: (appointment: Appointment) => void;
@@ -22,8 +21,7 @@ interface TimeSlotCellProps {
 const TimeSlotCell = ({ 
   timeSlot, 
   professional, 
-  appointment, 
-  isAppointmentStart,
+  appointments = [],
   selectedDate, 
   onAddAppointment,
   onEditAppointment,
@@ -34,22 +32,28 @@ const TimeSlotCell = ({
   
   const shouldHaveRightBorder = professionalIndex < totalProfessionals - 1;
   
-  // Calcular quantos slots o agendamento ocupa
-  const calculateRowSpan = () => {
-    if (!appointment || !isAppointmentStart) return 1;
+  // Verificar se algum agendamento inicia neste slot
+  const appointmentsStartingHere = appointments.filter(apt => apt.time === timeSlot);
+  
+  // Calcular quantos slots o maior agendamento ocupa
+  const calculateMaxRowSpan = () => {
+    if (appointmentsStartingHere.length === 0) return 1;
     
-    const durationMatch = appointment.duration.match(/(\d+)/);
-    const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
+    let maxSpan = 1;
+    appointmentsStartingHere.forEach(appointment => {
+      const durationMatch = appointment.duration.match(/(\d+)/);
+      const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
+      const slotsOccupied = Math.ceil(durationMinutes / 10);
+      maxSpan = Math.max(maxSpan, slotsOccupied);
+    });
     
-    // Cada slot de 10 minutos = 1 linha
-    const slotsOccupied = Math.ceil(durationMinutes / 10);
-    return slotsOccupied;
+    return maxSpan;
   };
   
-  const rowSpan = calculateRowSpan();
+  const rowSpan = calculateMaxRowSpan();
   
-  // Se o slot está ocupado por um agendamento em andamento (mas não é o início), não renderizar
-  if (appointment && !isAppointmentStart) {
+  // Se há agendamentos em andamento (mas não iniciando aqui), não renderizar
+  if (appointments.length > 0 && appointmentsStartingHere.length === 0) {
     return null;
   }
   
@@ -64,21 +68,31 @@ const TimeSlotCell = ({
         className={`border-b-2 border-b-gray-400 p-1 cursor-pointer hover:bg-gray-100 ${
           shouldHaveRightBorder ? 'border-r-2 border-r-gray-400' : 'border-r border-gray-400'
         } ${
-          appointment && isAppointmentStart ? getProfessionalColor(professional.color) : 'bg-white'
+          appointmentsStartingHere.length > 0 ? getProfessionalColor(professional.color) : 'bg-white'
         }`}
         style={{
           height: `${rowSpan * 40}px`,
           minHeight: '40px',
-          zIndex: isAppointmentStart ? 10 : 1,
+          zIndex: appointmentsStartingHere.length > 0 ? 10 : 1,
           position: 'relative',
           gridRowEnd: `span ${rowSpan}`
         }}
       >
-        {appointment && isAppointmentStart ? (
-          <AppointmentCell 
-            appointment={appointment} 
-            onEditAppointment={onEditAppointment}
-          />
+        {appointmentsStartingHere.length > 0 ? (
+          <div className={`h-full ${appointmentsStartingHere.length > 1 ? 'flex gap-1' : ''}`}>
+            {appointmentsStartingHere.map((appointment, index) => (
+              <div 
+                key={appointment.id}
+                className={appointmentsStartingHere.length > 1 ? 'flex-1' : 'w-full'}
+              >
+                <AppointmentCell 
+                  appointment={appointment} 
+                  onEditAppointment={onEditAppointment}
+                  isCompact={appointmentsStartingHere.length > 1}
+                />
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="h-full rounded transition-opacity flex items-center justify-center border-dashed border border-gray-200">
             {/* Célula vazia */}

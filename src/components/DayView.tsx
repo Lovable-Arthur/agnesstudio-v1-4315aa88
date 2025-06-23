@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
@@ -29,9 +28,10 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     return [...originalAppointments, ...savedDayAppointments];
   };
 
-  const getAppointmentForTimeSlot = (professional: Professional, timeSlot: string): Appointment | undefined => {
+  const getAppointmentsForTimeSlot = (professional: Professional, timeSlot: string): Appointment[] => {
     const allAppointments = getAllAppointmentsForProfessional(professional);
     const currentSlotMinutes = convertTimeToMinutes(timeSlot);
+    const overlappingAppointments: Appointment[] = [];
     
     for (const apt of allAppointments) {
       const appointmentStartMinutes = convertTimeToMinutes(apt.time);
@@ -40,16 +40,15 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
       const appointmentEndMinutes = appointmentStartMinutes + durationMinutes;
       
       if (currentSlotMinutes >= appointmentStartMinutes && currentSlotMinutes < appointmentEndMinutes) {
-        return apt;
+        overlappingAppointments.push(apt);
       }
     }
     
-    return undefined;
+    return overlappingAppointments;
   };
 
-  const isAppointmentStart = (professional: Professional, timeSlot: string): boolean => {
-    const allAppointments = getAllAppointmentsForProfessional(professional);
-    return allAppointments.some(apt => apt.time === timeSlot);
+  const isAppointmentStart = (appointment: Appointment, timeSlot: string): boolean => {
+    return appointment.time === timeSlot;
   };
 
   const handleAddAppointment = (appointmentData: any) => {
@@ -151,13 +150,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
               
               {/* Colunas dos profissionais */}
               {professionals.map((professional, professionalIndex) => {
-                const appointment = getAppointmentForTimeSlot(professional, timeSlot);
-                const isStart = isAppointmentStart(professional, timeSlot);
-                
-                // Só renderizar se não há agendamento ou se é o início do agendamento
-                if (appointment && !isStart) {
-                  return null;
-                }
+                const appointments = getAppointmentsForTimeSlot(professional, timeSlot);
                 
                 return (
                   <div
@@ -170,8 +163,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
                     <TimeSlotCell
                       timeSlot={timeSlot}
                       professional={professional}
-                      appointment={appointment}
-                      isAppointmentStart={isStart}
+                      appointments={appointments}
                       selectedDate={selectedDate}
                       onAddAppointment={handleAddAppointment}
                       onEditAppointment={handleEditAppointment}
