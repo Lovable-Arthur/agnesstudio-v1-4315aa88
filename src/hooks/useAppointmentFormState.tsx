@@ -12,6 +12,7 @@ export const useAppointmentFormState = (
   const [endTime, setEndTime] = useState("");
   const [price, setPrice] = useState("");
   const [duration, setDuration] = useState(0);
+  const [status, setStatus] = useState<"agendado" | "confirmado" | "aguardando" | "em-atendimento" | "finalizado" | "pago" | "cancelado" | "faltou">("agendado");
   const [customLabels, setCustomLabels] = useState<string[]>([]);
   const [newLabel, setNewLabel] = useState("");
   const [observations, setObservations] = useState("");
@@ -24,6 +25,7 @@ export const useAppointmentFormState = (
     setEndTime("");
     setPrice("");
     setDuration(0);
+    setStatus("agendado");
     setCustomLabels([]);
     setNewLabel("");
     setObservations("");
@@ -45,6 +47,8 @@ export const useAppointmentFormState = (
     setPrice,
     duration,
     setDuration,
+    status,
+    setStatus,
     customLabels,
     setCustomLabels,
     newLabel,

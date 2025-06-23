@@ -34,7 +34,7 @@ const EditAppointmentForm = ({
   const [endTime, setEndTime] = useState("");
   const [price, setPrice] = useState("0");
   const [duration, setDuration] = useState(0);
-  const [status, setStatus] = useState(appointment.status);
+  const [status, setStatus] = useState<"agendado" | "confirmado" | "aguardando" | "em-atendimento" | "finalizado" | "pago" | "cancelado" | "faltou">(appointment.status);
   const [customLabels, setCustomLabels] = useState<string[]>(appointment.labels || []);
   const [newLabel, setNewLabel] = useState("");
   const [observations, setObservations] = useState(appointment.observations || "");
@@ -110,6 +110,10 @@ const EditAppointmentForm = ({
     onClose();
   };
 
+  const handleStatusChange = (newStatus: string) => {
+    setStatus(newStatus as "agendado" | "confirmado" | "aguardando" | "em-atendimento" | "finalizado" | "pago" | "cancelado" | "faltou");
+  };
+
   const isFormValid = clientName.trim() !== "" && selectedService !== "";
 
   return (
@@ -142,7 +146,7 @@ const EditAppointmentForm = ({
 
       <StatusSection
         status={status}
-        onStatusChange={setStatus}
+        onStatusChange={handleStatusChange}
       />
 
       <LabelsSection

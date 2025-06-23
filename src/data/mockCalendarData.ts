@@ -28,7 +28,7 @@ export const mockProfessionals: Professional[] = [
         service: "Corte e Escova",
         time: "09:00",
         duration: "1h 30min",
-        status: "confirmed",
+        status: "confirmado",
         date: "2024-01-15"
       },
       {
@@ -37,7 +37,7 @@ export const mockProfessionals: Professional[] = [
         service: "Barba",
         time: "11:00",
         duration: "30min",
-        status: "pending",
+        status: "aguardando",
         date: "2024-01-15"
       }
     ]
@@ -68,7 +68,7 @@ export const mockProfessionals: Professional[] = [
         service: "Corte Masculino",
         time: "10:00",
         duration: "45min",
-        status: "completed",
+        status: "finalizado",
         date: "2024-01-15"
       }
     ]
@@ -99,7 +99,7 @@ export const mockProfessionals: Professional[] = [
         service: "Manicure",
         time: "14:00",
         duration: "1h",
-        status: "completed",
+        status: "finalizado",
         date: "2024-01-15"
       },
       {
@@ -108,7 +108,7 @@ export const mockProfessionals: Professional[] = [
         service: "Pedicure",
         time: "15:30",
         duration: "1h 15min",
-        status: "confirmed",
+        status: "confirmado",
         date: "2024-01-15"
       },
       {
@@ -117,7 +117,7 @@ export const mockProfessionals: Professional[] = [
         service: "Nail Art",
         time: "17:00",
         duration: "2h",
-        status: "pending",
+        status: "aguardando",
         date: "2024-01-15"
       }
     ]
@@ -148,7 +148,7 @@ export const mockProfessionals: Professional[] = [
         service: "Limpeza de Pele",
         time: "13:00",
         duration: "1h 30min",
-        status: "confirmed",
+        status: "confirmado",
         date: "2024-01-15"
       }
     ]
