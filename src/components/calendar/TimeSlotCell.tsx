@@ -33,8 +33,13 @@ const TimeSlotCell = ({
   const shouldHaveRightBorder = professionalIndex < totalProfessionals - 1;
   const currentSlotMinutes = convertTimeToMinutes(timeSlot);
   
-  // Encontrar agendamentos que estão ativos neste slot
-  const activeAppointments = appointments.filter(appointment => {
+  // Encontrar agendamentos que iniciam exatamente neste slot
+  const appointmentsStartingHere = appointments.filter(appointment => appointment.time === timeSlot);
+  
+  // Encontrar agendamentos que estão em andamento neste slot (mas não iniciaram aqui)
+  const ongoingAppointments = appointments.filter(appointment => {
+    if (appointment.time === timeSlot) return false; // Já considerados acima
+    
     const appointmentStartMinutes = convertTimeToMinutes(appointment.time);
     const durationMatch = appointment.duration.match(/(\d+)/);
     const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
@@ -43,46 +48,42 @@ const TimeSlotCell = ({
     return currentSlotMinutes >= appointmentStartMinutes && currentSlotMinutes < appointmentEndMinutes;
   });
 
-  // Separar agendamentos que iniciam neste slot
-  const appointmentsStartingHere = activeAppointments.filter(apt => apt.time === timeSlot);
+  // Se há agendamentos em andamento mas nenhum iniciando aqui
+  if (appointmentsStartingHere.length === 0 && ongoingAppointments.length > 0) {
+    return (
+      <div 
+        className={`border-b-2 border-b-gray-400 cursor-pointer ${
+          shouldHaveRightBorder ? 'border-r-2 border-r-gray-400' : 'border-r border-gray-400'
+        }`}
+        style={{
+          height: '40px',
+          minHeight: '40px',
+          display: 'flex'
+        }}
+      >
+        {ongoingAppointments.map((appointment, index) => {
+          const width = 100 / ongoingAppointments.length;
+          
+          return (
+            <div 
+              key={`${appointment.id}-ongoing`}
+              className={`${getProfessionalColor(professional.color)}`}
+              style={{
+                width: `${width}%`,
+                height: '100%',
+                flexShrink: 0
+              }}
+            >
+              {/* Continuação do agendamento - sem conteúdo visual */}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
   
-  // Se não há agendamentos iniciando aqui, verificar se há agendamentos em andamento
+  // Se não há agendamentos iniciando aqui
   if (appointmentsStartingHere.length === 0) {
-    const hasOngoingAppointments = activeAppointments.length > 0;
-    
-    if (hasOngoingAppointments) {
-      // Célula em andamento - renderizar continuação dos agendamentos
-      return (
-        <div 
-          className={`border-b-2 border-b-gray-400 cursor-pointer flex ${
-            shouldHaveRightBorder ? 'border-r-2 border-r-gray-400' : 'border-r border-gray-400'
-          }`}
-          style={{
-            height: '40px',
-            minHeight: '40px'
-          }}
-        >
-          {activeAppointments.map((appointment, index) => {
-            const width = 100 / activeAppointments.length;
-            
-            return (
-              <div 
-                key={appointment.id}
-                className={`${getProfessionalColor(professional.color)} flex-1`}
-                style={{
-                  width: `${width}%`,
-                  height: '100%'
-                }}
-              >
-                {/* Continuação do agendamento - sem conteúdo visual */}
-              </div>
-            );
-          })}
-        </div>
-      );
-    }
-    
-    // Célula completamente vazia
     return (
       <AppointmentContextMenu
         timeSlot={timeSlot}
@@ -107,54 +108,19 @@ const TimeSlotCell = ({
     );
   }
 
-  // Detectar todos os agendamentos que se sobrepõem temporalmente
-  const getAllOverlappingAppointments = () => {
-    const overlapping: Appointment[] = [];
-    const processed = new Set<number>();
-    
-    appointmentsStartingHere.forEach(startingApt => {
-      if (processed.has(startingApt.id)) return;
-      
-      const startingAptStartMinutes = convertTimeToMinutes(startingApt.time);
-      const startingDurationMatch = startingApt.duration.match(/(\d+)/);
-      const startingAptDurationMinutes = startingDurationMatch ? parseInt(startingDurationMatch[1]) : 30;
-      const startingAptEndMinutes = startingAptStartMinutes + startingAptDurationMinutes;
-      
-      // Adicionar o próprio agendamento
-      overlapping.push(startingApt);
-      processed.add(startingApt.id);
-      
-      // Procurar outros agendamentos que se sobrepõem
-      appointments.forEach(otherApt => {
-        if (processed.has(otherApt.id)) return;
-        
-        const otherStartMinutes = convertTimeToMinutes(otherApt.time);
-        const otherDurationMatch = otherApt.duration.match(/(\d+)/);
-        const otherDurationMinutes = otherDurationMatch ? parseInt(otherDurationMatch[1]) : 30;
-        const otherEndMinutes = otherStartMinutes + otherDurationMinutes;
-        
-        // Verificar sobreposição temporal
-        const hasOverlap = (startingAptStartMinutes < otherEndMinutes && startingAptEndMinutes > otherStartMinutes);
-        
-        if (hasOverlap) {
-          overlapping.push(otherApt);
-          processed.add(otherApt.id);
-        }
-      });
-    });
-    
-    return overlapping.sort((a, b) => convertTimeToMinutes(a.time) - convertTimeToMinutes(b.time));
-  };
-
-  const overlappingAppointments = getAllOverlappingAppointments();
-  const totalOverlapping = overlappingAppointments.length;
-
-  // Calcular altura máxima baseada nos agendamentos que iniciam aqui
-  const maxRowSpan = Math.max(...appointmentsStartingHere.map(apt => {
+  // Há agendamentos iniciando neste slot
+  // Calcular altura máxima necessária
+  const maxHeight = Math.max(...appointmentsStartingHere.map(apt => {
     const durationMatch = apt.duration.match(/(\d+)/);
     const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
-    return Math.ceil(durationMinutes / 10);
+    return Math.ceil(durationMinutes / 10) * 40;
   }));
+
+  // Calcular quantos agendamentos precisam ser exibidos lado a lado
+  const totalAppointments = appointmentsStartingHere.length;
+  const appointmentWidth = 100 / totalAppointments;
+
+  console.log(`Slot ${timeSlot}: ${totalAppointments} agendamentos iniciando, largura: ${appointmentWidth}%`);
 
   return (
     <AppointmentContextMenu
@@ -164,49 +130,40 @@ const TimeSlotCell = ({
       onAddAppointment={onAddAppointment}
     >
       <div 
-        className={`border-b-2 border-b-gray-400 p-0 cursor-pointer hover:bg-gray-100 relative flex ${
+        className={`border-b-2 border-b-gray-400 cursor-pointer relative ${
           shouldHaveRightBorder ? 'border-r-2 border-r-gray-400' : 'border-r border-gray-400'
         }`}
         style={{
-          height: `${maxRowSpan * 40}px`,
+          height: `${maxHeight}px`,
           minHeight: '40px',
-          zIndex: 10,
-          gridRowEnd: `span ${maxRowSpan}`
+          display: 'flex',
+          flexDirection: 'row'
         }}
       >
         {appointmentsStartingHere.map((appointment, index) => {
           const durationMatch = appointment.duration.match(/(\d+)/);
           const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
-          const height = Math.ceil(durationMinutes / 10) * 40;
-          
-          // Calcular largura proporcional baseado na sobreposição
-          const width = 100 / totalOverlapping;
-          const appointmentIndex = overlappingAppointments.findIndex(apt => apt.id === appointment.id);
+          const appointmentHeight = Math.ceil(durationMinutes / 10) * 40;
           
           return (
             <div 
               key={appointment.id}
               className={`${getProfessionalColor(professional.color)}`}
               style={{
-                width: `${width}%`,
-                height: `${height}px`,
-                zIndex: 10 + index,
-                flexShrink: 0
+                width: `${appointmentWidth}%`,
+                height: `${appointmentHeight}px`,
+                flexShrink: 0,
+                position: 'relative'
               }}
             >
               <AppointmentCell 
                 appointment={appointment} 
                 onEditAppointment={onEditAppointment}
-                isCompact={totalOverlapping > 1}
+                isCompact={totalAppointments > 1}
               />
             </div>
           );
         })}
-        
-        {/* Preencher espaço restante se necessário */}
-        {appointmentsStartingHere.length < totalOverlapping && (
-          <div className="flex-1" />
-        )}
       </div>
     </AppointmentContextMenu>
   );
