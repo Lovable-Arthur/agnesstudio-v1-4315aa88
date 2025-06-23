@@ -45,11 +45,14 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
       const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
       const appointmentEndMinutes = appointmentStartMinutes + durationMinutes;
       
+      // Mudança: incluir agendamentos que estão ativos neste slot
+      // Mesmo que não tenham iniciado exatamente neste horário
       if (currentSlotMinutes >= appointmentStartMinutes && currentSlotMinutes < appointmentEndMinutes) {
         overlappingAppointments.push(apt);
       }
     }
     
+    console.log(`Slot ${timeSlot} para profissional ${professional.id}:`, overlappingAppointments.length, 'agendamentos');
     return overlappingAppointments;
   };
 

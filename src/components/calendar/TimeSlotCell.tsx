@@ -32,10 +32,13 @@ const TimeSlotCell = ({
   
   const shouldHaveRightBorder = professionalIndex < totalProfessionals - 1;
   
-  // Verificar se algum agendamento inicia neste slot
+  // Separar agendamentos que iniciam neste slot dos que apenas passam por ele
   const appointmentsStartingHere = appointments.filter(apt => apt.time === timeSlot);
+  const appointmentsOngoing = appointments.filter(apt => apt.time !== timeSlot);
   
-  // Calcular quantos slots o maior agendamento ocupa
+  console.log(`TimeSlotCell ${timeSlot}: ${appointmentsStartingHere.length} iniciando, ${appointmentsOngoing.length} em andamento`);
+  
+  // Calcular rowSpan baseado nos agendamentos que iniciam aqui
   const calculateMaxRowSpan = () => {
     if (appointmentsStartingHere.length === 0) return 1;
     
@@ -52,13 +55,8 @@ const TimeSlotCell = ({
   
   const rowSpan = calculateMaxRowSpan();
   
-  // Mudança principal: permitir renderização mesmo quando há agendamentos em andamento
-  // que não iniciaram neste slot, desde que haja espaço para mostrar sobreposição
-  const hasOngoingAppointments = appointments.length > 0 && appointmentsStartingHere.length === 0;
-  
-  // Se há agendamentos em andamento mas nenhum iniciando aqui, ainda renderizar a célula
-  // para permitir agendamentos sobrepostos
-  if (hasOngoingAppointments) {
+  // Se há apenas agendamentos em andamento (não iniciando aqui), mostrar célula simplificada
+  if (appointmentsStartingHere.length === 0 && appointmentsOngoing.length > 0) {
     return (
       <AppointmentContextMenu
         timeSlot={timeSlot}
@@ -69,16 +67,16 @@ const TimeSlotCell = ({
         <div 
           className={`border-b-2 border-b-gray-400 p-1 cursor-pointer hover:bg-gray-100 ${
             shouldHaveRightBorder ? 'border-r-2 border-r-gray-400' : 'border-r border-gray-400'
-          } bg-white`}
+          } ${getProfessionalColor(professional.color)} opacity-60`}
           style={{
             height: '40px',
             minHeight: '40px',
-            zIndex: 1,
+            zIndex: 5,
             position: 'relative'
           }}
         >
-          <div className="h-full rounded transition-opacity flex items-center justify-center border-dashed border border-gray-200 opacity-50">
-            {/* Célula com agendamento em andamento - permite sobreposição */}
+          <div className="h-full rounded transition-opacity flex items-center justify-center">
+            <span className="text-xs text-white font-medium">Em andamento</span>
           </div>
         </div>
       </AppointmentContextMenu>
