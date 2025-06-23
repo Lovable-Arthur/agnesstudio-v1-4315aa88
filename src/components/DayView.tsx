@@ -1,10 +1,12 @@
+
 import React, { useMemo, useState } from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { getDisplayTimeSlots } from "@/utils/dateUtils";
-import ProfessionalHeader from "./calendar/ProfessionalHeader";
-import TimeSlotCell from "./calendar/TimeSlotCell";
-import EditAppointmentDialog from "./appointment/EditAppointmentDialog";
 import { convertTimeToMinutes } from "@/utils/appointmentUtils";
+import DayViewHeader from "./calendar/DayViewHeader";
+import TimeGrid from "./calendar/TimeGrid";
+import EditAppointmentDialog from "./appointment/EditAppointmentDialog";
+import { useAppointmentManager } from "@/hooks/useAppointmentManager";
 
 interface DayViewProps {
   selectedDate: string;
@@ -13,14 +15,18 @@ interface DayViewProps {
 
 const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   const displayTimeSlots = useMemo(() => getDisplayTimeSlots(10), []);
-  const [savedAppointments, setSavedAppointments] = useState<{ [key: string]: Appointment[] }>({});
-  const [updatedAppointments, setUpdatedAppointments] = useState<{ [key: number]: Appointment }>({});
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [appointmentToEdit, setAppointmentToEdit] = useState<Appointment | null>(null);
 
+  const {
+    savedAppointments,
+    updatedAppointments,
+    handleAddAppointment,
+    handleUpdateAppointment
+  } = useAppointmentManager();
+
   const getAllAppointmentsForProfessional = (professional: Professional): Appointment[] => {
     const originalAppointments = professional.appointments.filter(apt => apt.date === selectedDate).map(apt => {
-      // Verificar se há uma versão atualizada deste agendamento
       return updatedAppointments[apt.id] || apt;
     });
     const dayKey = `${selectedDate}-${professional.id}`;
@@ -47,139 +53,30 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
     return overlappingAppointments;
   };
 
-  const isAppointmentStart = (appointment: Appointment, timeSlot: string): boolean => {
-    return appointment.time === timeSlot;
-  };
-
-  const handleAddAppointment = (appointmentData: any) => {
-    console.log("Novo agendamento:", appointmentData);
-    
-    appointmentData.services.forEach((service: any, index: number) => {
-      let calculatedDuration = "30min";
-      if (service.startTime && service.endTime) {
-        const startDate = new Date(`1970-01-01T${service.startTime}:00`);
-        const endDate = new Date(`1970-01-01T${service.endTime}:00`);
-        
-        if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
-          const durationMs = endDate.getTime() - startDate.getTime();
-          const durationMinutes = Math.round(durationMs / 60000);
-          calculatedDuration = `${durationMinutes}min`;
-        }
-      }
-
-      const newAppointment: Appointment = {
-        id: Date.now() + index,
-        clientName: appointmentData.clientName,
-        service: service.name,
-        time: service.startTime,
-        duration: calculatedDuration,
-        status: appointmentData.status,
-        date: appointmentData.date,
-        labels: appointmentData.labels || [],
-        observations: appointmentData.observations
-      };
-
-      const dayKey = `${appointmentData.date}-${service.professionalId}`;
-      setSavedAppointments(prev => ({
-        ...prev,
-        [dayKey]: [...(prev[dayKey] || []), newAppointment]
-      }));
-    });
-  };
-
   const handleEditAppointment = (appointment: Appointment) => {
     setAppointmentToEdit(appointment);
     setEditDialogOpen(true);
   };
 
-  const handleUpdateAppointment = (updatedAppointmentData: any) => {
-    console.log("Agendamento atualizado:", updatedAppointmentData);
-    
-    // Atualizar o agendamento no estado
-    setUpdatedAppointments(prev => ({
-      ...prev,
-      [updatedAppointmentData.id]: updatedAppointmentData
-    }));
-    
+  const handleUpdateAppointmentWithDialog = (updatedAppointmentData: any) => {
+    handleUpdateAppointment(updatedAppointmentData);
     setEditDialogOpen(false);
     setAppointmentToEdit(null);
   };
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header fixo com profissionais */}
-      <div className="sticky top-0 bg-white border-b-2 border-gray-400 z-20 shadow-sm">
-        <div 
-          className="grid gap-0 border-l border-r border-gray-400" 
-          style={{ gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)` }}
-        >
-          <div className="p-3 border-r border-gray-400 bg-gray-100">
-            <div className="text-xs text-muted-foreground font-medium">Horário</div>
-          </div>
-          {professionals.map((professional, index) => (
-            <div 
-              key={professional.id} 
-              className={index < professionals.length - 1 ? 'border-r-2 border-r-gray-400' : ''}
-            >
-              <ProfessionalHeader professional={professional} />
-            </div>
-          ))}
-        </div>
-      </div>
+      <DayViewHeader professionals={professionals} />
 
-      {/* Grade de horários com scroll */}
-      <div className="flex-1 overflow-auto">
-        <div 
-          className="grid gap-0 border-l border-r border-gray-400" 
-          style={{ 
-            gridTemplateColumns: `80px repeat(${professionals.length}, 1fr)`,
-            gridTemplateRows: `repeat(${displayTimeSlots.length}, 40px)`
-          }}
-        >
-          {displayTimeSlots.map((timeSlot, timeIndex) => (
-            <React.Fragment key={timeSlot}>
-              {/* Coluna de horário */}
-              <div 
-                className="p-2 border-r border-b-2 border-gray-400 bg-gray-100 text-center min-h-[40px] flex items-center justify-center"
-                style={{ gridRow: timeIndex + 1 }}
-              >
-                <div className="text-xs text-muted-foreground font-medium">
-                  {timeSlot}
-                </div>
-              </div>
-              
-              {/* Colunas dos profissionais */}
-              {professionals.map((professional, professionalIndex) => {
-                const appointments = getAppointmentsForTimeSlot(professional, timeSlot);
-                
-                return (
-                  <div
-                    key={`${timeSlot}-${professional.id}`}
-                    style={{ 
-                      gridColumn: professionalIndex + 2,
-                      gridRow: timeIndex + 1
-                    }}
-                  >
-                    <TimeSlotCell
-                      timeSlot={timeSlot}
-                      professional={professional}
-                      appointments={appointments}
-                      selectedDate={selectedDate}
-                      onAddAppointment={handleAddAppointment}
-                      onEditAppointment={handleEditAppointment}
-                      professionalIndex={professionalIndex}
-                      totalProfessionals={professionals.length}
-                      allTimeSlots={displayTimeSlots}
-                    />
-                  </div>
-                );
-              })}
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
+      <TimeGrid
+        professionals={professionals}
+        displayTimeSlots={displayTimeSlots}
+        selectedDate={selectedDate}
+        getAppointmentsForTimeSlot={getAppointmentsForTimeSlot}
+        onAddAppointment={handleAddAppointment}
+        onEditAppointment={handleEditAppointment}
+      />
 
-      {/* Diálogo de edição de agendamento */}
       <EditAppointmentDialog
         isOpen={editDialogOpen}
         onClose={() => {
@@ -187,7 +84,7 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
           setAppointmentToEdit(null);
         }}
         appointment={appointmentToEdit}
-        onUpdateAppointment={handleUpdateAppointment}
+        onUpdateAppointment={handleUpdateAppointmentWithDialog}
       />
     </div>
   );
