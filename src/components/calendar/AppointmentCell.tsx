@@ -2,6 +2,8 @@
 import React from "react";
 import { Appointment } from "@/types/calendar";
 import { getStatusColor } from "@/utils/styleUtils";
+import { Badge } from "@/components/ui/badge";
+import { getStatusBadgeColor, getStatusLabel } from "@/utils/styleUtils";
 
 interface AppointmentCellProps {
   appointment: Appointment;
@@ -44,8 +46,16 @@ const AppointmentCell = ({ appointment, onEditAppointment }: AppointmentCellProp
       className={`h-full p-2 rounded text-xs border-2 cursor-pointer hover:opacity-80 transition-opacity ${getStatusColor(appointment.status)}`}
       onClick={handleClick}
     >
-      <div className="font-medium truncate text-white mb-1">
-        {appointment.time}
+      <div className="flex items-center justify-between mb-1">
+        <div className="font-medium truncate text-white">
+          {appointment.time}
+        </div>
+        <Badge 
+          className={`${getStatusBadgeColor(appointment.status)} text-[8px] px-1 py-0`} 
+          variant="outline"
+        >
+          {getStatusLabel(appointment.status)}
+        </Badge>
       </div>
       <div className="font-semibold truncate text-white mb-1">
         {appointment.clientName}

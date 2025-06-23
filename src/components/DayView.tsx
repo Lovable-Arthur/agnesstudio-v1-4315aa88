@@ -15,11 +15,15 @@ interface DayViewProps {
 const DayView = ({ selectedDate, professionals }: DayViewProps) => {
   const displayTimeSlots = useMemo(() => getDisplayTimeSlots(10), []);
   const [savedAppointments, setSavedAppointments] = useState<{ [key: string]: Appointment[] }>({});
+  const [updatedAppointments, setUpdatedAppointments] = useState<{ [key: number]: Appointment }>({});
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [appointmentToEdit, setAppointmentToEdit] = useState<Appointment | null>(null);
 
   const getAllAppointmentsForProfessional = (professional: Professional): Appointment[] => {
-    const originalAppointments = professional.appointments.filter(apt => apt.date === selectedDate);
+    const originalAppointments = professional.appointments.filter(apt => apt.date === selectedDate).map(apt => {
+      // Verificar se há uma versão atualizada deste agendamento
+      return updatedAppointments[apt.id] || apt;
+    });
     const dayKey = `${selectedDate}-${professional.id}`;
     const savedDayAppointments = savedAppointments[dayKey] || [];
     return [...originalAppointments, ...savedDayAppointments];
@@ -91,8 +95,13 @@ const DayView = ({ selectedDate, professionals }: DayViewProps) => {
 
   const handleUpdateAppointment = (updatedAppointmentData: any) => {
     console.log("Agendamento atualizado:", updatedAppointmentData);
-    // Aqui você pode implementar a lógica para atualizar o agendamento
-    // Por exemplo, atualizar o estado dos agendamentos salvos
+    
+    // Atualizar o agendamento no estado
+    setUpdatedAppointments(prev => ({
+      ...prev,
+      [updatedAppointmentData.id]: updatedAppointmentData
+    }));
+    
     setEditDialogOpen(false);
     setAppointmentToEdit(null);
   };
