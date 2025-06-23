@@ -105,11 +105,12 @@ const TimeSlotCell = ({
         }}
       >
         {appointmentsStartingHere.length > 0 ? (
-          <div className={`h-full ${appointmentsStartingHere.length > 1 ? 'flex gap-1' : ''}`}>
+          <div className={`h-full flex gap-1`}>
             {appointmentsStartingHere.map((appointment, index) => (
               <div 
                 key={appointment.id}
-                className={appointmentsStartingHere.length > 1 ? 'flex-1' : 'w-full'}
+                className="flex-1"
+                style={{ minWidth: `${100/appointmentsStartingHere.length}%` }}
               >
                 <AppointmentCell 
                   appointment={appointment} 
