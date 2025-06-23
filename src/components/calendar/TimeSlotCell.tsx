@@ -52,9 +52,37 @@ const TimeSlotCell = ({
   
   const rowSpan = calculateMaxRowSpan();
   
-  // Se há agendamentos em andamento (mas não iniciando aqui), não renderizar
-  if (appointments.length > 0 && appointmentsStartingHere.length === 0) {
-    return null;
+  // Mudança principal: permitir renderização mesmo quando há agendamentos em andamento
+  // que não iniciaram neste slot, desde que haja espaço para mostrar sobreposição
+  const hasOngoingAppointments = appointments.length > 0 && appointmentsStartingHere.length === 0;
+  
+  // Se há agendamentos em andamento mas nenhum iniciando aqui, ainda renderizar a célula
+  // para permitir agendamentos sobrepostos
+  if (hasOngoingAppointments) {
+    return (
+      <AppointmentContextMenu
+        timeSlot={timeSlot}
+        professionalId={professional.id}
+        selectedDate={selectedDate}
+        onAddAppointment={onAddAppointment}
+      >
+        <div 
+          className={`border-b-2 border-b-gray-400 p-1 cursor-pointer hover:bg-gray-100 ${
+            shouldHaveRightBorder ? 'border-r-2 border-r-gray-400' : 'border-r border-gray-400'
+          } bg-white`}
+          style={{
+            height: '40px',
+            minHeight: '40px',
+            zIndex: 1,
+            position: 'relative'
+          }}
+        >
+          <div className="h-full rounded transition-opacity flex items-center justify-center border-dashed border border-gray-200 opacity-50">
+            {/* Célula com agendamento em andamento - permite sobreposição */}
+          </div>
+        </div>
+      </AppointmentContextMenu>
+    );
   }
   
   return (
