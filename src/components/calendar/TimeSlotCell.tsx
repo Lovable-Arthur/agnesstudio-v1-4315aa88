@@ -3,8 +3,7 @@ import React from "react";
 import { Professional, Appointment } from "@/types/calendar";
 import { useTimeSlotAppointments } from "@/hooks/useTimeSlotAppointments";
 import EmptyTimeSlotCell from "./EmptyTimeSlotCell";
-import OngoingAppointmentCell from "./OngoingAppointmentCell";
-import StartingAppointmentCell from "./StartingAppointmentCell";
+import ActiveAppointmentsCell from "./ActiveAppointmentsCell";
 
 interface TimeSlotCellProps {
   timeSlot: string;
@@ -33,25 +32,13 @@ const TimeSlotCell = ({
   const shouldHaveRightBorder = professionalIndex < totalProfessionals - 1;
   
   const {
+    activeAppointments,
     appointmentsStartingHere,
-    ongoingAppointments,
-    hasStartingAppointments,
-    hasOngoingAppointments
+    hasActiveAppointments
   } = useTimeSlotAppointments(appointments, timeSlot);
 
-  // Se há agendamentos em andamento mas nenhum iniciando aqui
-  if (!hasStartingAppointments && hasOngoingAppointments) {
-    return (
-      <OngoingAppointmentCell
-        appointments={ongoingAppointments}
-        professional={professional}
-        shouldHaveRightBorder={shouldHaveRightBorder}
-      />
-    );
-  }
-  
-  // Se não há agendamentos iniciando aqui
-  if (!hasStartingAppointments) {
+  // Se não há agendamentos ativos neste slot
+  if (!hasActiveAppointments) {
     return (
       <EmptyTimeSlotCell
         timeSlot={timeSlot}
@@ -63,10 +50,11 @@ const TimeSlotCell = ({
     );
   }
 
-  // Há agendamentos iniciando neste slot
+  // Há agendamentos ativos (iniciando ou em andamento) neste slot
   return (
-    <StartingAppointmentCell
-      appointments={appointmentsStartingHere}
+    <ActiveAppointmentsCell
+      appointments={activeAppointments}
+      appointmentsStartingHere={appointmentsStartingHere}
       professional={professional}
       timeSlot={timeSlot}
       selectedDate={selectedDate}
