@@ -55,6 +55,9 @@ const TimeSlotCell = ({
   const appointmentSpans = calculateAppointmentSpans();
   const maxRowSpan = appointmentSpans.length > 0 ? Math.max(...appointmentSpans.map(span => span.rowSpan)) : 1;
   
+  // Total de agendamentos (iniciando + em andamento)
+  const totalAppointments = appointmentsStartingHere.length + appointmentsOngoing.length;
+  
   // Se há apenas agendamentos em andamento (não iniciando aqui), mostrar célula simplificada
   if (appointmentsStartingHere.length === 0 && appointmentsOngoing.length > 0) {
     return (
@@ -104,16 +107,14 @@ const TimeSlotCell = ({
         }}
       >
         {appointmentsStartingHere.length > 0 ? (
-          <div className="h-full relative">
+          <div className="h-full relative flex gap-1">
             {appointmentSpans.map((span, index) => (
               <div 
                 key={span.appointment.id}
-                className={`absolute ${getProfessionalColor(professional.color)}`}
+                className={`flex-1 ${getProfessionalColor(professional.color)}`}
                 style={{
-                  left: `${(index * 100) / appointmentsStartingHere.length}%`,
-                  width: `${100 / appointmentsStartingHere.length}%`,
                   height: `${span.height}px`,
-                  top: 0,
+                  minWidth: 0, // Permite que os itens flex encolham
                   zIndex: 10 + index
                 }}
               >
