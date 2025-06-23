@@ -1,10 +1,9 @@
-
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Professional, Appointment } from "@/types/calendar";
 import { getWeekDays } from "@/utils/dateUtils";
-import { getStatusBadgeColor } from "@/utils/styleUtils";
+import { getStatusBadgeColor, getStatusLabel } from "@/utils/styleUtils";
 
 interface WeekViewProps {
   selectedDate: string;

@@ -5,6 +5,7 @@ import ClientSection from "./ClientSection";
 import DateSection from "./DateSection";
 import ServiceDetailsSection from "./ServiceDetailsSection";
 import MultipleServicesSection from "./MultipleServicesSection";
+import StatusSection from "./StatusSection";
 import LabelsSection from "./LabelsSection";
 import ObservationsSection from "./ObservationsSection";
 import AppointmentFormActions from "./AppointmentFormActions";
@@ -37,6 +38,8 @@ const AppointmentForm = ({
     price,
     setPrice,
     duration,
+    status,
+    setStatus,
     services,
     customLabels,
     setCustomLabels,
@@ -120,6 +123,11 @@ const AppointmentForm = ({
           getDurationForService={getDurationForService}
         />
       </div>
+
+      <StatusSection
+        status={status}
+        onStatusChange={setStatus}
+      />
 
       <LabelsSection
         customLabels={customLabels}

@@ -1,3 +1,4 @@
+
 export interface ServiceItem {
   id: string;
   serviceId: string;
@@ -20,7 +21,7 @@ export interface AppointmentFormData {
   time: string;
   endTime: string;
   duration: string;
-  status: "confirmed";
+  status: "agendado" | "confirmado" | "aguardando" | "em-atendimento" | "finalizado" | "pago" | "cancelado" | "faltou";
   date: string;
   professionalId: number;
   totalPrice: number;

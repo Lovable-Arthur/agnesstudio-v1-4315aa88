@@ -1,11 +1,10 @@
-
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Professional, Appointment } from "@/types/calendar";
 import { formatDate } from "@/utils/dateUtils";
-import { getStatusBadgeColor } from "@/utils/styleUtils";
+import { getStatusBadgeColor, getStatusLabel } from "@/utils/styleUtils";
 
 interface MonthViewProps {
   selectedDate: string;
@@ -117,9 +116,7 @@ const MonthView = ({ selectedDate, professionals }: MonthViewProps) => {
             variant="secondary" 
             className={`${getStatusBadgeColor(appointment.status)} text-xs`}
           >
-            {appointment.status === "confirmed" && "Confirmado"}
-            {appointment.status === "pending" && "Pendente"}
-            {appointment.status === "completed" && "Concluído"}
+            {getStatusLabel(appointment.status)}
           </Badge>
         </div>
         {appointment.labels && appointment.labels.length > 0 && (

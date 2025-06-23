@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Appointment } from "@/types/calendar";
 import { useProfessionals } from "@/contexts/ProfessionalsContext";
@@ -7,6 +6,7 @@ import AppointmentFormHeader from "./AppointmentFormHeader";
 import ClientSection from "./ClientSection";
 import DateSection from "./DateSection";
 import ServiceDetailsSection from "./ServiceDetailsSection";
+import StatusSection from "./StatusSection";
 import LabelsSection from "./LabelsSection";
 import ObservationsSection from "./ObservationsSection";
 import AppointmentFormActions from "./AppointmentFormActions";
@@ -34,6 +34,7 @@ const EditAppointmentForm = ({
   const [endTime, setEndTime] = useState("");
   const [price, setPrice] = useState("0");
   const [duration, setDuration] = useState(0);
+  const [status, setStatus] = useState(appointment.status);
   const [customLabels, setCustomLabels] = useState<string[]>(appointment.labels || []);
   const [newLabel, setNewLabel] = useState("");
   const [observations, setObservations] = useState(appointment.observations || "");
@@ -95,6 +96,7 @@ const EditAppointmentForm = ({
       service: availableServices.find(s => s.id.toString() === selectedService)?.name || appointment.service,
       time: startTime,
       duration: `${duration}min`,
+      status,
       labels: customLabels,
       observations
     };
@@ -136,6 +138,11 @@ const EditAppointmentForm = ({
         duration={duration}
         onDurationChange={handleDurationChange}
         onStartTimeChange={handleStartTimeChange}
+      />
+
+      <StatusSection
+        status={status}
+        onStatusChange={setStatus}
       />
 
       <LabelsSection

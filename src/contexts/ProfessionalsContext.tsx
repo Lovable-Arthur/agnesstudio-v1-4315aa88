@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Professional } from '@/types/calendar';
 
@@ -71,7 +70,7 @@ export const ProfessionalsProvider = ({ children }: ProfessionalsProviderProps) 
           service: "Esmaltação",
           time: "09:00",
           duration: "30min",
-          status: "confirmed",
+          status: "confirmado",
           date: "2024-06-13"
         },
         {
@@ -80,7 +79,7 @@ export const ProfessionalsProvider = ({ children }: ProfessionalsProviderProps) 
           service: "Pé e Mão",
           time: "14:30",
           duration: "90min",
-          status: "pending",
+          status: "aguardando",
           date: "2024-06-13"
         }
       ]
@@ -111,7 +110,7 @@ export const ProfessionalsProvider = ({ children }: ProfessionalsProviderProps) 
           service: "Corte Masculino",
           time: "10:00",
           duration: "45min",
-          status: "confirmed",
+          status: "em-atendimento",
           date: "2024-06-13"
         }
       ]

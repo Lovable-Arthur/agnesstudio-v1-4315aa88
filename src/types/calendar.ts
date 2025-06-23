@@ -5,7 +5,7 @@ export interface Appointment {
   service: string;
   time: string;
   duration: string;
-  status: "confirmed" | "pending" | "completed";
+  status: "agendado" | "confirmado" | "aguardando" | "em-atendimento" | "finalizado" | "pago" | "cancelado" | "faltou";
   date: string;
   labels?: string[];
   observations?: string;
