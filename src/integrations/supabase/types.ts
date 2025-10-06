@@ -14,7 +14,265 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          appointment_date: string
+          client_id: number | null
+          created_at: string | null
+          end_time: string
+          id: number
+          labels: string[] | null
+          observations: string | null
+          price: number | null
+          professional_id: number | null
+          service_id: number | null
+          start_time: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          appointment_date: string
+          client_id?: number | null
+          created_at?: string | null
+          end_time: string
+          id?: number
+          labels?: string[] | null
+          observations?: string | null
+          price?: number | null
+          professional_id?: number | null
+          service_id?: number | null
+          start_time: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          appointment_date?: string
+          client_id?: number | null
+          created_at?: string | null
+          end_time?: string
+          id?: number
+          labels?: string[] | null
+          observations?: string | null
+          price?: number | null
+          professional_id?: number | null
+          service_id?: number | null
+          start_time?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          address: string | null
+          birth_date: string | null
+          cpf: string | null
+          created_at: string | null
+          email: string | null
+          id: number
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          birth_date?: string | null
+          cpf?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: number
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          birth_date?: string | null
+          cpf?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: number
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          barcode: string | null
+          category: string | null
+          cost: number | null
+          created_at: string | null
+          description: string | null
+          id: number
+          is_active: boolean | null
+          min_quantity: number | null
+          name: string
+          price: number | null
+          quantity: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          barcode?: string | null
+          category?: string | null
+          cost?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          is_active?: boolean | null
+          min_quantity?: number | null
+          name: string
+          price?: number | null
+          quantity?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          barcode?: string | null
+          category?: string | null
+          cost?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          is_active?: boolean | null
+          min_quantity?: number | null
+          name?: string
+          price?: number | null
+          quantity?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      professionals: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          email: string | null
+          id: number
+          is_active: boolean | null
+          name: string
+          phone: string | null
+          specialty: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: number
+          is_active?: boolean | null
+          name: string
+          phone?: string | null
+          specialty?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: number
+          is_active?: boolean | null
+          name?: string
+          phone?: string | null
+          specialty?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          access_level: string
+          created_at: string | null
+          email: string
+          full_name: string | null
+          id: string
+          professional_id: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          access_level?: string
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          professional_id?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          access_level?: string
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          professional_id?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          commission_percentage: number | null
+          created_at: string | null
+          description: string | null
+          duration: number
+          id: number
+          is_active: boolean | null
+          name: string
+          price: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          commission_percentage?: number | null
+          created_at?: string | null
+          description?: string | null
+          duration?: number
+          id?: number
+          is_active?: boolean | null
+          name: string
+          price?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          commission_percentage?: number | null
+          created_at?: string | null
+          description?: string | null
+          duration?: number
+          id?: number
+          is_active?: boolean | null
+          name?: string
+          price?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
