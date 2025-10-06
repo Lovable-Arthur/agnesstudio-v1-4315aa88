@@ -1,11 +1,15 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: { email: string; accessLevel: string; professionalId?: number } | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  user: User | null;
+  session: Session | null;
+  profile: { email: string; accessLevel: string; professionalId?: number; fullName?: string } | null;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   loading: boolean;
 }
@@ -26,135 +30,112 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ email: string; accessLevel: string; professionalId?: number } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<{ email: string; accessLevel: string; professionalId?: number; fullName?: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Check for existing session on app load
-  useEffect(() => {
-    const checkSession = () => {
-      const token = localStorage.getItem('auth_token');
-      const sessionExpiry = localStorage.getItem('session_expiry');
-      const userEmail = localStorage.getItem('user_email');
-      const userAccessLevel = localStorage.getItem('user_access_level');
-      const userProfessionalId = localStorage.getItem('user_professional_id');
+  // Fetch user profile from database
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('email, full_name, access_level, professional_id')
+        .eq('id', userId)
+        .single();
 
-      if (token && sessionExpiry && userEmail && userAccessLevel) {
-        const now = new Date().getTime();
-        const expiry = parseInt(sessionExpiry);
+      if (error) throw error;
 
-        if (now < expiry) {
-          setIsAuthenticated(true);
-          setUser({ 
-            email: userEmail, 
-            accessLevel: userAccessLevel,
-            professionalId: userProfessionalId ? parseInt(userProfessionalId) : undefined
-          });
-          // Reset session expiry
-          const newExpiry = now + (30 * 60 * 1000); // 30 minutes
-          localStorage.setItem('session_expiry', newExpiry.toString());
-        } else {
-          // Session expired
-          clearSession();
-        }
+      if (data) {
+        setProfile({
+          email: data.email,
+          accessLevel: data.access_level || 'Professional',
+          professionalId: data.professional_id || undefined,
+          fullName: data.full_name || undefined
+        });
       }
-      setLoading(false);
-    };
-
-    checkSession();
-  }, []);
-
-  // Auto logout after inactivity
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
-    const resetTimeout = () => {
-      clearTimeout(timeoutId);
-      if (isAuthenticated) {
-        timeoutId = setTimeout(() => {
-          logout();
-        }, 30 * 60 * 1000); // 30 minutes
-      }
-    };
-
-    const handleActivity = () => {
-      if (isAuthenticated) {
-        const now = new Date().getTime();
-        const newExpiry = now + (30 * 60 * 1000);
-        localStorage.setItem('session_expiry', newExpiry.toString());
-        resetTimeout();
-      }
-    };
-
-    if (isAuthenticated) {
-      resetTimeout();
-      window.addEventListener('mousedown', handleActivity);
-      window.addEventListener('keydown', handleActivity);
-      window.addEventListener('scroll', handleActivity);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
     }
-
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener('mousedown', handleActivity);
-      window.removeEventListener('keydown', handleActivity);
-      window.removeEventListener('scroll', handleActivity);
-    };
-  }, [isAuthenticated]);
-
-  const clearSession = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('session_expiry');
-    localStorage.removeItem('user_email');
-    localStorage.removeItem('user_access_level');
-    localStorage.removeItem('user_professional_id');
-    setIsAuthenticated(false);
-    setUser(null);
   };
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    try {
-      // Simulate API call - in production, this would be a real API
-      await new Promise(resolve => setTimeout(resolve, 500));
+  // Set up auth state listener and check for existing session
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, currentSession) => {
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+        setIsAuthenticated(!!currentSession);
+        
+        // Defer profile fetch with setTimeout
+        if (currentSession?.user) {
+          setTimeout(() => {
+            fetchProfile(currentSession.user.id);
+          }, 0);
+        } else {
+          setProfile(null);
+        }
+        
+        setLoading(false);
+      }
+    );
 
-      // Simple authentication check - in production, this would be server-side
-      if (email === 'admin@admin.com' && password === 'admin') {
-        const now = new Date().getTime();
-        const expiry = now + (30 * 60 * 1000); // 30 minutes
-        
-        // Generate a simple session token
-        const token = btoa(`${email}:${now}`);
-        
-        // Admin user is associated with Master professional (ID 1)
-        const userAccessLevel = 'Admin';
-        const professionalId = 1; // Master professional
-        
-        localStorage.setItem('auth_token', token);
-        localStorage.setItem('session_expiry', expiry.toString());
-        localStorage.setItem('user_email', email);
-        localStorage.setItem('user_access_level', userAccessLevel);
-        localStorage.setItem('user_professional_id', professionalId.toString());
-        
-        setIsAuthenticated(true);
-        setUser({ email, accessLevel: userAccessLevel, professionalId });
-        
-        return true;
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      setIsAuthenticated(!!currentSession);
+      
+      if (currentSession?.user) {
+        setTimeout(() => {
+          fetchProfile(currentSession.user.id);
+        }, 0);
       }
       
-      return false;
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
     } catch (error) {
       console.error('Login error:', error);
-      return false;
+      return { success: false, error: 'Erro ao realizar login' };
     }
   };
 
-  const logout = () => {
-    clearSession();
-    navigate('/login');
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setSession(null);
+      setUser(null);
+      setProfile(null);
+      setIsAuthenticated(false);
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   const value = {
     isAuthenticated,
     user,
+    session,
+    profile,
     login,
     logout,
     loading

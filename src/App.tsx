@@ -13,6 +13,7 @@ import Index from "./pages/Index";
 import Schedule from "./pages/Schedule";
 import Commissions from "./pages/Commissions";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
                     <Route 
                       path="/agenda" 
                       element={

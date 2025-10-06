@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 interface LoginFormProps {
   onLogin: () => void;
@@ -25,9 +26,9 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
     setIsLoading(true);
     
     try {
-      const success = await login(email, password);
+      const result = await login(email, password);
       
-      if (success) {
+      if (result.success) {
         toast({
           title: "Login realizado com sucesso!",
           description: "Redirecionando para a agenda...",
@@ -36,7 +37,7 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
       } else {
         toast({
           title: "Erro no login",
-          description: "Email ou senha incorretos.",
+          description: result.error || "Email ou senha incorretos.",
           variant: "destructive",
         });
       }
@@ -119,10 +120,17 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
             </Button>
           </form>
           
-          <div className="mt-4 text-center">
-            <a href="#" className="text-cyan-500 hover:text-cyan-600 text-sm">
-              Esqueci minha senha
-            </a>
+          <div className="mt-4 text-center space-y-2">
+            <div>
+              <Link to="/signup" className="text-cyan-500 hover:text-cyan-600 text-sm">
+                Não tem uma conta? Cadastre-se
+              </Link>
+            </div>
+            <div>
+              <a href="#" className="text-gray-500 hover:text-gray-600 text-sm">
+                Esqueci minha senha
+              </a>
+            </div>
           </div>
         </CardContent>
       </Card>

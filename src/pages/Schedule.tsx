@@ -16,11 +16,11 @@ import ConfiguracoesView from "@/components/ConfiguracoesView";
 
 const Schedule = () => {
   const navigate = useNavigate();
-  const { logout, user } = useAuth();
+  const { logout, user, profile } = useAuth();
 
   // Nível de acesso baseado no usuário logado
-  const userAccessLevel = user?.accessLevel || "Profissionais";
-  const isRestrictedUser = userAccessLevel === "Profissionais";
+  const userAccessLevel = profile?.accessLevel || "Professional";
+  const isRestrictedUser = userAccessLevel === "Professional";
 
   const handleLogout = () => {
     logout();
@@ -48,10 +48,10 @@ const Schedule = () => {
               <h1 className="text-2xl font-bold text-primary">Beleza Salon</h1>
             </div>
             <div className="flex items-center space-x-3">
-              {user && (
+              {profile && (
                 <span className="text-sm text-muted-foreground">
-                  {user.email} ({userAccessLevel})
-                  {user.professionalId && ` - ID: ${user.professionalId}`}
+                  {profile.fullName || profile.email} ({userAccessLevel})
+                  {profile.professionalId && ` - ID: ${profile.professionalId}`}
                 </span>
               )}
               <Button 
